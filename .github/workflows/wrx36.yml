@@ -1,8 +1,6 @@
 name: WRX36 images
 on:
-   workflow_dispatch:
-   schedule:
-    - cron: '01 08 * * *'
+   workflow_dispatch:'
 jobs:
     build:
         name: Build WRX36 Images
@@ -22,7 +20,7 @@ jobs:
             - name: checkout
               uses: actions/checkout@v4
             - name: Build
-              run: |https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
+              run: |
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
@@ -33,7 +31,7 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
-                wget 
+                wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 git apply 01-diskman.patch
                 cd -
                 cd  feeds/packages
