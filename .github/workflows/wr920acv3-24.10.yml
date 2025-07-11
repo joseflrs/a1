@@ -21,7 +21,7 @@ jobs:
                 cd openwrt
                 git checkout openwrt-24.10
                 git apply mt76x8.patch
-                git apply 01-ip-addr.patch
+                git apply 01-ip-addr-24.10.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 mv wr920acv3-24.10 .config
