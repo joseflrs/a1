@@ -1,0 +1,1208 @@
+From 66332b9cebe3ef77cf4b4217877e059353bdcca3 Mon Sep 17 00:00:00 2001
+From: yuhui <yuhui@io.com>
+Date: Fri, 20 Sep 2024 12:36:49 -0400
+Subject: [PATCH] cpu
+
+---
+ package/cpu/cpufreq/Makefile                  |  29 ++
+ package/cpu/cpufreq/files/cpufreq.config      |   5 +
+ package/cpu/cpufreq/files/cpufreq.init        |  58 +++
+ package/cpu/cpufreq/files/cpufreq.uci         |  72 ++++
+ package/cpu/cpulimit/Makefile                 |  35 ++
+ package/cpu/cpusage/Makefile                  |  39 ++
+ package/cpu/cpusage/src/cpusage.c             | 343 ++++++++++++++++++
+ package/cpu/luci-app-cpufreq/Makefile         |  11 +
+ .../luci-static/resources/view/cpufreq.js     |  95 +++++
+ .../luci-app-cpufreq/po/templates/cpufreq.pot |  68 ++++
+ .../luci-app-cpufreq/po/zh_Hans/cpufreq.po    |  75 ++++
+ .../share/luci/menu.d/luci-app-cpufreq.json   |  14 +
+ .../share/rpcd/acl.d/luci-app-cpufreq.json    |  14 +
+ package/cpu/luci-app-cpulimit/Makefile        |  14 +
+ .../luasrc/controller/cpulimit.lua            |  11 +
+ .../luasrc/model/cbi/cpulimit.lua             |  38 ++
+ .../luci-app-cpulimit/po/zh_Hans/cpulimit.po  |  30 ++
+ .../root/etc/config/cpulimit                  |   6 +
+ .../root/etc/init.d/cpulimit                  |  16 +
+ .../root/usr/bin/cpulimit.sh                  |  35 ++
+ .../share/rpcd/acl.d/luci-app-cpulimit.json   |  11 +
+ .../usr/share/ucitrack/luci-app-cpulimit.json |   4 +
+ 22 files changed, 1023 insertions(+)
+ create mode 100644 package/cpu/cpufreq/Makefile
+ create mode 100644 package/cpu/cpufreq/files/cpufreq.config
+ create mode 100755 package/cpu/cpufreq/files/cpufreq.init
+ create mode 100644 package/cpu/cpufreq/files/cpufreq.uci
+ create mode 100644 package/cpu/cpulimit/Makefile
+ create mode 100644 package/cpu/cpusage/Makefile
+ create mode 100644 package/cpu/cpusage/src/cpusage.c
+ create mode 100644 package/cpu/luci-app-cpufreq/Makefile
+ create mode 100644 package/cpu/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js
+ create mode 100644 package/cpu/luci-app-cpufreq/po/templates/cpufreq.pot
+ create mode 100644 package/cpu/luci-app-cpufreq/po/zh_Hans/cpufreq.po
+ create mode 100644 package/cpu/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json
+ create mode 100644 package/cpu/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json
+ create mode 100644 package/cpu/luci-app-cpulimit/Makefile
+ create mode 100644 package/cpu/luci-app-cpulimit/luasrc/controller/cpulimit.lua
+ create mode 100644 package/cpu/luci-app-cpulimit/luasrc/model/cbi/cpulimit.lua
+ create mode 100644 package/cpu/luci-app-cpulimit/po/zh_Hans/cpulimit.po
+ create mode 100644 package/cpu/luci-app-cpulimit/root/etc/config/cpulimit
+ create mode 100755 package/cpu/luci-app-cpulimit/root/etc/init.d/cpulimit
+ create mode 100755 package/cpu/luci-app-cpulimit/root/usr/bin/cpulimit.sh
+ create mode 100644 package/cpu/luci-app-cpulimit/root/usr/share/rpcd/acl.d/luci-app-cpulimit.json
+ create mode 100644 package/cpu/luci-app-cpulimit/root/usr/share/ucitrack/luci-app-cpulimit.json
+
+diff --git a/package/cpu/cpufreq/Makefile b/package/cpu/cpufreq/Makefile
+new file mode 100644
+index 00000000000..4ec703204af
+--- /dev/null
++++ b/package/cpu/cpufreq/Makefile
+@@ -0,0 +1,29 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=cpufreq
++PKG_RELEASE:=1
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/cpufreq
++  TITLE:=CPU Frequency Scaling adjustment tool
++  DEPENDS:=@(arm||aarch64)
++  PKGARCH:=all
++endef
++
++define Build/Compile
++endef
++
++define Package/cpufreq/install
++	$(INSTALL_DIR) $(1)/etc/config
++	$(INSTALL_CONF) $(CURDIR)/files/cpufreq.config $(1)/etc/config/cpufreq
++	$(INSTALL_DIR) $(1)/etc/init.d
++	$(INSTALL_BIN) $(CURDIR)/files/cpufreq.init $(1)/etc/init.d/cpufreq
++	$(INSTALL_DIR) $(1)/etc/uci-defaults
++	$(INSTALL_BIN) $(CURDIR)/files/cpufreq.uci $(1)/etc/uci-defaults/10-cpufreq
++endef
++
++$(eval $(call BuildPackage,cpufreq))
+diff --git a/package/cpu/cpufreq/files/cpufreq.config b/package/cpu/cpufreq/files/cpufreq.config
+new file mode 100644
+index 00000000000..9004f1bd876
+--- /dev/null
++++ b/package/cpu/cpufreq/files/cpufreq.config
+@@ -0,0 +1,5 @@
++
++config settings 'cpufreq'
++
++config settings 'global'
++
+diff --git a/package/cpu/cpufreq/files/cpufreq.init b/package/cpu/cpufreq/files/cpufreq.init
+new file mode 100755
+index 00000000000..fc5dc47776a
+--- /dev/null
++++ b/package/cpu/cpufreq/files/cpufreq.init
+@@ -0,0 +1,58 @@
++#!/bin/sh /etc/rc.common
++
++START=15
++USE_PROCD=1
++
++NAME="cpufreq"
++CPUFREQ_PATH="/sys/devices/system/cpu/cpufreq"
++
++extra_command "get_policies" "Get CPU scaling governors and frequencies"
++
++get_policies() {
++	json_init
++	for policy in $(ls -d "$CPUFREQ_PATH"/policy[0-9]* 2>"/dev/null"); do
++		[ -s "$policy/scaling_available_frequencies" ] || continue
++		json_add_object "$(basename "$policy")"
++		json_add_string "index" "$(basename "$policy" | grep -Eo "[0-9]*$")"
++		json_add_string "cpus" "$(cat "$policy/affected_cpus")"
++		json_add_array "freqs"
++		for freq in $(cat "$policy/scaling_available_frequencies"); do
++			json_add_string "" "$freq"
++		done
++		json_close_array
++		json_add_array "governors"
++		for governor in $(cat "$policy/scaling_available_governors"); do
++			json_add_string "" "$governor"
++		done
++		json_close_array
++		json_close_object
++	done
++	json_dump
++}
++
++write_cpufreq_config() {
++	local value
++	config_get value "$NAME" "$1"
++	[ -z "$value" ] || echo -n "$value" > "$2"
++}
++
++start_service() {
++	config_load "$NAME"
++
++	for i in $(ls -d "$CPUFREQ_PATH"/policy[0-9]* 2>"/dev/null" | grep -Eo "[0-9]*$")
++	do
++		[ -z "$(config_get "$NAME" "governor$i")" ] && return
++
++		write_cpufreq_config "governor$i" "$CPUFREQ_PATH/policy$i/scaling_governor"
++		write_cpufreq_config "minfreq$i" "$CPUFREQ_PATH/policy$i/scaling_min_freq"
++		write_cpufreq_config "maxfreq$i" "$CPUFREQ_PATH/policy$i/scaling_max_freq"
++		if [ "$(config_get "$NAME" "governor$i")" = "ondemand" ]; then
++			write_cpufreq_config "sdfactor$i" "$CPUFREQ_PATH/ondemand/sampling_down_factor"
++			write_cpufreq_config "upthreshold$i" "$CPUFREQ_PATH/ondemand/up_threshold"
++		fi
++	done
++}
++
++service_triggers() {
++	procd_add_reload_trigger "$NAME"
++}
+diff --git a/package/cpu/cpufreq/files/cpufreq.uci b/package/cpu/cpufreq/files/cpufreq.uci
+new file mode 100644
+index 00000000000..a21ee5f0dc5
+--- /dev/null
++++ b/package/cpu/cpufreq/files/cpufreq.uci
+@@ -0,0 +1,72 @@
++#!/bin/sh
++
++uci_write_config() {
++	uci -q set "cpufreq.cpufreq.governor$1"="$2"
++	uci -q set "cpufreq.cpufreq.minfreq$1"="$3"
++	uci -q set "cpufreq.cpufreq.maxfreq$1"="$4"
++	[ -n "$5" ] && uci -q set "cpufreq.cpufreq.sdfactor$1"="$5"
++	[ -n "$6" ] && uci -q set "cpufreq.cpufreq.upthreshold$1"="$6"
++	uci -q commit cpufreq
++}
++
++[ "$(uci -q get cpufreq.global.set)" -eq "1" ] && exit 0
++
++CPU_FREQS="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies')"
++CPU_MIN_FREQ="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq')"
++CPU_MAX_FREQ="$(cat '/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq')"
++CPU_POLICYS="$(find '/sys/devices/system/cpu/cpufreq/policy'* -maxdepth 0 | grep -Eo '[0-9]+')"
++
++source "/etc/openwrt_release"
++case "$DISTRIB_TARGET" in
++	"bcm27xx/bcm2710"|\
++	"bcm27xx/bcm2711")
++		uci_write_config 0 ondemand 600000 "$CPU_MAX_FREQ" 10 50
++		;;
++	"ipq40xx/generic")
++		uci_write_config 0 performance 200000 "$CPU_MAX_FREQ"
++		;;
++	"ipq806x/generic")
++		uci_write_config 0 performance 600000 "$CPU_MAX_FREQ"
++		# IPQ8064/5
++		echo "$CPU_POLICYS" | grep -q "1" && uci_write_config 1 performance 600000 1200000
++		;;
++	"mediatek/mt7622")
++		uci_write_config 0 ondemand 600000 1350000 10 50
++		;;
++	"qualcommax/ipq60xx"|\
++	"qualcommax/ipq807x")
++		uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
++		;;
++	"rockchip/armv8")
++		if echo "$CPU_POLICYS" | grep -q "6"; then
++			# RK3588/J/S
++			uci_write_config 0 conservative "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
++			uci_write_config 4 conservative "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
++			uci_write_config 6 conservative "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
++		elif echo "$CPU_POLICYS" | grep -q "4"; then
++			# RK3399
++			uci_write_config 0 conservative 408000 1416000
++			uci_write_config 4 conservative 408000 1800000
++		else
++			if ! echo "$CPU_FREQS" | grep -q "1992000"; then
++				# RK3328
++				CPU_MAX_FREQ="1296000"
++			fi
++			uci_write_config 0 conservative 408000 "$CPU_MAX_FREQ"
++		fi
++		;;
++	"sunxi/cortexa53")
++		if echo "$CPU_FREQS" | grep -q "1800000"; then
++			# H6
++			uci_write_config 0 schedutil "888000" "$CPU_MAX_FREQ"
++		elif echo "$CPU_FREQS" | grep -q "1512000"; then
++			# H616/8
++			uci_write_config 0 schedutil "936000" "$CPU_MAX_FREQ"
++		else
++			# A64/H5
++			uci_write_config 0 schedutil "$CPU_MIN_FREQ" "$CPU_MAX_FREQ"
++		fi
++		;;
++esac
++
++exit 0
+diff --git a/package/cpu/cpulimit/Makefile b/package/cpu/cpulimit/Makefile
+new file mode 100644
+index 00000000000..ae81e249e7c
+--- /dev/null
++++ b/package/cpu/cpulimit/Makefile
+@@ -0,0 +1,35 @@
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=cpulimit
++PKG_VERSION:=0.3.2
++PKG_RELEASE:=1
++
++PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
++PKG_SOURCE_URL:=https://codeload.github.com/denji/cpulimit/tar.gz/$(PKG_VERSION)?
++PKG_HASH:=0c61d394407fdd0547b53e6435ecb817d2e3ba914b48aa9f48ccf42c8278d3a6
++
++PKG_BUILD_PARALLEL:=1
++PKG_LICENSE_FILES:=LICENSE
++
++MAKE_PATH:=src
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/cpulimit
++  SECTION:=utils
++  CATEGORY:=Utilities
++  TITLE:=CPU usage limiter
++  URL:=https://github.com/denji/cpulimit
++endef
++
++define Package/cpulimit/description
++  Cpulimit is a tool which limits the CPU usage of a process
++  (expressed in percentage, not in CPU time).
++endef
++
++define Package/cpulimit/install
++	$(INSTALL_DIR) $(1)/usr/bin/
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/cpulimit $(1)/usr/bin/
++endef
++
++$(eval $(call BuildPackage,cpulimit))
+diff --git a/package/cpu/cpusage/Makefile b/package/cpu/cpusage/Makefile
+new file mode 100644
+index 00000000000..995215e8d5a
+--- /dev/null
++++ b/package/cpu/cpusage/Makefile
+@@ -0,0 +1,39 @@
++# SPDX-Identifier-License: GPL-2.0-only
++#
++# Copyright (C) 2005 Fabian Schneider,
++#		2010 Florian Sesser,
++#               2022 Thomas Hühn
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=cpusage
++PKG_VERSION:=1
++PKG_MAINTAINER:=Thomas Hühn <thomas.huehn@hs-nordhausen.de>
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/cpusage
++  SECTION:=utils
++  CATEGORY:=Utilities
++  TITLE:=Outputs CPU usage statistics once per second
++endef
++
++define Package/cpusage/description
++  CPUsage outputs CPU usage statistics once per second.
++  Optionally writes CSV output (see '-o' option).
++  Originally written by Fabian Schneider (TUM, TUB) in 2005.
++  Timestamp and CSV-compliance by Florian Sesser (TUM), 2010.
++  Refreshed by Thomas Hühn in 2022.
++endef
++
++define Build/Compile
++  $(TARGET_CC) $(TARGET_CFLAGS) \
++		-o $(PKG_BUILD_DIR)/cpusage $(PKG_BUILD_DIR)/cpusage.c
++endef
++
++define Package/cpusage/install
++	$(INSTALL_DIR) $(1)/usr/bin
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/cpusage $(1)/usr/bin/
++endef
++
++$(eval $(call BuildPackage,cpusage))
+diff --git a/package/cpu/cpusage/src/cpusage.c b/package/cpu/cpusage/src/cpusage.c
+new file mode 100644
+index 00000000000..300fb62e214
+--- /dev/null
++++ b/package/cpu/cpusage/src/cpusage.c
+@@ -0,0 +1,343 @@
++#include <ctype.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <signal.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/resource.h>
++#include <sys/stat.h>
++#include <sys/time.h>
++#include <sys/types.h>
++#include <time.h>
++#include <unistd.h>
++#define CPUSTATES 7
++#define IDLEI 3
++/* long names:
++ * user - nice - system - idle - iowait - irq - soft irq */
++char *cpustatenames[] = {"user",   "nice", "system",  "idle",
++                         "iowait", "irq",  "softirq", NULL};
++
++#define LIMIT 95
++
++static const char usage[] =
++    "\n usage: cpusage [ -hos ] [ -a | -l limit | -o ] [ -c CPU ]\n";
++
++char *appname;
++
++static float cpu_perc[CPUSTATES];
++static float cpu_max[CPUSTATES];
++static float cpu_min[CPUSTATES];
++
++int cpunum; /* -1 all, 0-n CPU/Core 0-n */
++
++int output;
++
++int breakloop;
++
++/* returns 1-n yielding the number of CPU's/Cores */
++int getNumCPU() {
++  char buffer[32768];
++  int fd, len, i;
++  char *test;
++
++  fd = open("/proc/stat", O_RDONLY);
++  if (fd <= 0)
++    fprintf(stderr, "%s: cannot open /proc/stat \n", appname);
++
++  len = read(fd, buffer, sizeof(buffer) - 1);
++  close(fd);
++  buffer[len] = '\0';
++
++  i = 0;
++
++  test = strstr(buffer, "cpu");
++  if (test != NULL) {
++    test += sizeof("cpu");
++    test = strstr(test, "cpu");
++  }
++
++  while (test != NULL) {
++    test += sizeof("cpu");
++    /* fprintf(stderr, "%s: DEBUG: %s\n", appname, test); */
++    i++;
++    test = strstr(test, "cpu");
++  }
++  return i;
++}
++
++void getSysinfo(unsigned long *ptr, size_t size) {
++  char buffer[4096];
++  char match[100];
++  char *start;
++  int fd, len, j;
++
++  for (j = 0; j < size; j++)
++    ptr[j] = 0;
++
++  fd = open("/proc/stat", O_RDONLY);
++  if (fd <= 0)
++    fprintf(stderr, "%s: cannot open /proc/stat\n", appname);
++
++  len = read(fd, buffer, sizeof(buffer) - 1);
++  close(fd);
++  buffer[len] = '\0';
++
++  strcpy(match, "cpu ");
++  start = buffer;
++  if (cpunum != -1) {
++    sprintf(match, "cpu%d ", cpunum);
++    start = strstr(buffer, match);
++  }
++
++  strcat(match, "%ld %ld %ld %ld %ld %ld %ld");
++  if (sscanf(start, match, &ptr[0], &ptr[1], &ptr[2], &ptr[3], &ptr[4], &ptr[5],
++             &ptr[6]) != 7) {
++    fprintf(stderr, "%s: wrong /proc/stat format\n", appname);
++  }
++}
++
++long perc(int cpustates, long *cp_time, long *cp_old, long *cp_diff) {
++
++  int i = 0;
++  long total = 0;
++
++  for (i = 0; i < cpustates; i++) {
++    cp_diff[i] = cp_time[i] - cp_old[i];
++    total += cp_diff[i];
++  }
++
++  for (i = 0; i < cpustates; i++) {
++    cpu_perc[i] = ((float)cp_diff[i] * 100.0 / total);
++    /* new max ? */
++    if (cpu_perc[i] > cpu_max[i])
++      cpu_max[i] = cpu_perc[i];
++    /* new min ? */
++    if (cpu_perc[i] < cpu_min[i])
++      cpu_min[i] = cpu_perc[i];
++  }
++
++  return total;
++}
++
++void print_perc(float *perc, const char *head) {
++  int i;
++  time_t Zeitstempel;
++  struct tm *now;
++
++  /* human readable */
++  if ((output == 0) && (head != ""))
++    printf("%s: ", head);
++
++  /* machine readable */
++  if ((output == 1) && (head != ""))
++    printf("%s;", head);
++
++  /* timestamp */
++  time(&Zeitstempel);
++  now = localtime(&Zeitstempel);
++  if (output == 0)
++    printf("timestamp: %04d-%02d-%02d %02d.%02d.%02d, ", now->tm_year + 1900,
++           now->tm_mon + 1, now->tm_mday, now->tm_hour, now->tm_min,
++           now->tm_sec);
++  else
++    printf("%04d-%02d-%02d;%02d:%02d:%02d;", now->tm_year + 1900,
++           now->tm_mon + 1, now->tm_mday, now->tm_hour, now->tm_min,
++           now->tm_sec);
++
++  if (output == 0)
++    printf("%s: %5.1f%%, ", cpustatenames[0], perc[0]);
++  else
++    printf("%.1f", perc[0]);
++
++  /* print out calculated information in percentages */
++  for (i = 1; i < CPUSTATES; i++) {
++    if (output == 0)
++      printf("%s: %5.1f%%, ", cpustatenames[i], perc[i]);
++    else
++      printf(";%.1f", perc[i]);
++  }
++  printf("\n");
++}
++
++/* to catch Strg+C when looping */
++void loop_term_handler(int signum) { breakloop = 1; }
++
++int main(int argc, char **argv) {
++
++  appname = argv[0];
++
++  int i, c, limit;
++  int runonce; /* run just once and exit */
++  int avg;     /* is avg measurement allready running */
++  int avg_run; /* did we allready had an avg measurement */
++  static long cp_time1[CPUSTATES];
++  static long cp_time2[CPUSTATES];
++  static long cp_avg_start[CPUSTATES];
++  static long cp_avg_stop[CPUSTATES];
++  static long cp_diff[CPUSTATES];
++
++  struct sigaction sigold, signew;
++
++  long *old = cp_time2;
++  long *new = cp_time1;
++
++  long total;
++  limit = LIMIT;
++  output = 0;  /* 0: human readable; 1: machine readable */
++  runonce = 0; /* 0: run continuesly; 1: run once */
++
++  cpunum = -1; /* -1: all CPUs/Cores, 0-n: special CPU/Core */
++
++  /* reading commandline options */
++  while (1) {
++    c = getopt(argc, argv, "saohl:c:");
++
++    if (c == -1) {
++      break;
++    }
++
++    switch (c) {
++    /*run once and exit */
++    case 's':
++      runonce = 1;
++      break;
++    /* use avg from begin to end -> same as "-l 100" */
++    case 'a':
++      limit = 100;
++      break;
++    case 'o':
++      output = 1; /* machine readable */
++      // header for CSV output
++      printf("date;time;user;nice;system;idle;iowait;irq;softirq\n");
++      break;
++    /* print usage */
++    case 'h':
++      fprintf(stderr, "%s: %s", appname, usage);
++      exit(0);
++      break;
++    /* set limit */
++    case 'l':
++      if (!(sscanf(optarg, "%d", &limit) == 1)) {
++        fprintf(stderr, "%s: option for -l should be integer (is %s)\n",
++                appname, optarg);
++        exit(1);
++      }
++      break;
++    /* select CPU/Core */
++    case 'c':
++      if (!(sscanf(optarg, "%d", &cpunum) == 1)) {
++        fprintf(stderr, "%s: option for -c should be integer (is %s)\n",
++                appname, optarg);
++        exit(1);
++      }
++      break;
++    }
++  }
++
++  if (cpunum != -1) {
++    int numcpu = getNumCPU();
++    if (cpunum < numcpu) {
++      printf("-- Selected CPU %d\n", cpunum);
++    } else {
++      if (numcpu == 1) {
++        fprintf(stderr, "%s: CPU %d not available (found %d CPU: [0])\n",
++                appname, cpunum, numcpu);
++      } else {
++        fprintf(stderr,
++                "%s: CPU %d not available (found %d CPU's: [0]-[%d])\n ",
++                appname, cpunum, numcpu, numcpu - 1);
++      }
++      exit(1);
++    }
++  }
++
++  breakloop = 0;
++
++  for (i = 0; i < CPUSTATES; i++) {
++    cpu_max[i] = 0;
++    cpu_min[i] = 100;
++  }
++
++  /* get information */
++  getSysinfo((unsigned long *)new, CPUSTATES);
++
++  /* catch Strg+C when capturing to call pcap_breakloop() */
++  memset(&signew, 0, sizeof(signew));
++  signew.sa_handler = loop_term_handler;
++  if (sigaction(SIGINT, &signew, &sigold) < 0) {
++    fprintf(stderr, "Could not set signal handler -> exiting");
++  }
++
++  avg = 0;
++  avg_run = 0;
++
++  if (runonce) {
++    breakloop = 1;
++  }
++
++  while (1) {
++    usleep(1000000);
++
++    if (new == cp_time1) {
++      new = cp_time2;
++      old = cp_time1;
++    } else {
++      new = cp_time1;
++      old = cp_time2;
++    }
++
++    /* get information again */
++    getSysinfo((unsigned long *)new, CPUSTATES);
++
++    /* convert cp_time counts to percentages */
++    total = perc(CPUSTATES, new, old, cp_diff);
++
++    /* check for avg measurement start */
++    if (!avg_run && !avg && (cpu_perc[IDLEI] <= limit)) {
++      avg = 1;
++      for (i = 0; i < CPUSTATES; i++)
++        cp_avg_start[i] = new[i];
++    }
++
++    /* check for avg measurement stop */
++    if (!avg_run && avg && (cpu_perc[IDLEI] > limit)) {
++      avg = 0;
++      for (i = 0; i < CPUSTATES; i++)
++        cp_avg_stop[i] = new[i];
++      avg_run = 1;
++    }
++
++    print_perc(cpu_perc, "");
++
++    if (breakloop) {
++      if (avg) {
++        avg = 0;
++        for (i = 0; i < CPUSTATES; i++)
++          cp_avg_stop[i] = new[i];
++      }
++      break;
++    }
++  }
++
++  /* Set default behaviour when loop is done */
++  if (sigaction(SIGINT, &sigold, &signew) < 0) {
++    fprintf(stderr, "%s: Could not restore signal handler -> exiting", appname);
++  }
++
++  if (!runonce && output == 0) {
++    // print avg only when not making a one-shot msg and
++    // when not writing CSV output
++    printf("---Summary----\n");
++
++    print_perc(cpu_min, "Min");
++
++    print_perc(cpu_max, "Max");
++
++    perc(CPUSTATES, cp_avg_start, cp_avg_stop, cp_diff);
++
++    print_perc(cpu_perc, "Avg");
++  }
++
++  return 0;
++}
+diff --git a/package/cpu/luci-app-cpufreq/Makefile b/package/cpu/luci-app-cpufreq/Makefile
+new file mode 100644
+index 00000000000..3da521e8373
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/Makefile
+@@ -0,0 +1,11 @@
++# SPDX-License-Identifier: GPL-3.0-only
++#
++
++include $(TOPDIR)/rules.mk
++
++LUCI_TITLE:=LuCI for CPU Freq Setting
++LUCI_DEPENDS:=+cpufreq
++
++include $(TOPDIR)/feeds/luci/luci.mk
++
++# call BuildPackage - OpenWrt buildroot signature
+diff --git a/package/cpu/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js b/package/cpu/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js
+new file mode 100644
+index 00000000000..c0cdf2e7590
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js
+@@ -0,0 +1,95 @@
++/* SPDX-License-Identifier: GPL-3.0-only
++ *
++ * Copyright (C) 2022 ImmortalWrt.org
++ */
++
++'use strict';
++'require form';
++'require fs';
++'require uci';
++'require view';
++
++return view.extend({
++	load: function() {
++		return Promise.all([
++			uci.load('cpufreq'),
++			L.resolveDefault(fs.exec_direct('/etc/init.d/cpufreq', [ 'get_policies' ], 'json'), {})
++		]);
++	},
++
++	render: function(data) {
++		var m, s, o;
++
++		m = new form.Map('cpufreq', _('CPU Freq Settings'),
++			_('Set CPU Scaling Governor to Max Performance or Balance Mode'));
++
++		s = m.section(form.NamedSection, 'cpufreq', 'settings');
++
++		if (Object.keys(data[1]).length === 0) {
++			s.render = () => {
++				this.handleSaveApply = null;
++				this.handleSave = null;
++				this.handleReset = null;
++
++				return E('div', { 'class': 'cbi-section warning' }, [
++					E('h3', {}, _('Unsupported device!')),
++					E('p', {}, _('Your device/kernel does not support CPU frequency scaling.'))
++				]);
++			}
++		} else {
++			/* Mark user edited */
++			var ss = m.section(form.NamedSection, 'global', 'settings');
++			var so = ss.option(form.HiddenValue, 'set');
++			so.load = (/* ... */) => { return 1 };
++			so.readonly = true;
++			so.rmempty = false;
++
++			for (var i in data[1]) {
++				var index = data[1][i].index;
++				s.tab(index, i, _('<h4>Apply for CPU %s.</h4>').format(data[1][i].cpus));
++
++				o = s.taboption(index, form.ListValue, 'governor' + index, _('CPU Scaling Governor'));
++				for (var gov of data[1][i].governors)
++					o.value(gov);
++				o.rmempty = false;
++
++				o = s.taboption(index, form.ListValue, 'minfreq' + index, _('Min Idle CPU Freq'));
++				for (var freq of data[1][i].freqs)
++					o.value(freq);
++				o.rmempty = false;
++
++				o = s.taboption(index, form.ListValue, 'maxfreq' + index, _('Max Turbo Boost CPU Freq'));
++				for (var freq of data[1][i].freqs)
++					o.value(freq);
++				o.validate = function(section_id, value) {
++					if (!section_id)
++						return true;
++					else if (value === null || value === '')
++						return _('Expecting: %s').format('non-empty value');
++
++					var minfreq = this.map.lookupOption('minfreq' + index, section_id)[0].formvalue(section_id);
++					if (parseInt(value) < parseInt(minfreq))
++						return _('Max CPU Freq cannot be lower than Min CPU Freq.');
++
++					return true;
++				}
++
++				o = s.taboption(index, form.Value, 'sdfactor' + index, _('CPU Switching Sampling rate'),
++					_('The sampling rate determines how frequently the governor checks to tune the CPU (ms)'));
++				o.datatype = 'range(1,100000)';
++				o.default = '10';
++				o.depends('governor' + index, 'ondemand');
++				o.rmempty = false;
++
++				o = s.taboption(index, form.Value, 'upthreshold' + index, _('CPU Switching Threshold'),
++					_('Kernel make a decision on whether it should increase the frequency (%)'));
++				o.datatype = 'range(1,99)';
++				o.default = '50';
++				o.depends('governor' + index, 'ondemand');
++				o.rmempty = false;
++			}
++		}
++
++		return m.render();
++	}
++});
+diff --git a/package/cpu/luci-app-cpufreq/po/templates/cpufreq.pot b/package/cpu/luci-app-cpufreq/po/templates/cpufreq.pot
+new file mode 100644
+index 00000000000..9bc1c1a05b9
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/po/templates/cpufreq.pot
+@@ -0,0 +1,68 @@
++msgid ""
++msgstr "Content-Type: text/plain; charset=UTF-8"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:49
++msgid "<h4>Apply for CPU %s.</h4>"
++msgstr ""
++
++#: applications/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json:3
++msgid "CPU Freq"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:23
++msgid "CPU Freq Settings"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:51
++msgid "CPU Scaling Governor"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:77
++msgid "CPU Switching Sampling rate"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:84
++msgid "CPU Switching Threshold"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:68
++msgid "Expecting: %s"
++msgstr ""
++
++#: applications/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json:3
++msgid "Grant access to CPUFreq configuration"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:85
++msgid "Kernel make a decision on whether it should increase the frequency (%)"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:72
++msgid "Max CPU Freq cannot be lower than Min CPU Freq."
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:61
++msgid "Max Turbo Boost CPU Freq"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:56
++msgid "Min Idle CPU Freq"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:24
++msgid "Set CPU Scaling Governor to Max Performance or Balance Mode"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:78
++msgid ""
++"The sampling rate determines how frequently the governor checks to tune the "
++"CPU (ms)"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:35
++msgid "Unsupported device!"
++msgstr ""
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:36
++msgid "Your device/kernel does not support CPU frequency scaling."
++msgstr ""
+diff --git a/package/cpu/luci-app-cpufreq/po/zh_Hans/cpufreq.po b/package/cpu/luci-app-cpufreq/po/zh_Hans/cpufreq.po
+new file mode 100644
+index 00000000000..1d1c3e7dc0b
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/po/zh_Hans/cpufreq.po
+@@ -0,0 +1,75 @@
++msgid ""
++msgstr ""
++"Content-Type: text/plain; charset=UTF-8\n"
++"Project-Id-Version: PACKAGE VERSION\n"
++"Last-Translator: Automatically generated\n"
++"Language-Team: none\n"
++"Language: zh-Hans\n"
++"MIME-Version: 1.0\n"
++"Content-Transfer-Encoding: 8bit\n"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:49
++msgid "<h4>Apply for CPU %s.</h4>"
++msgstr "<h4>应用于 CPU %s。</h4>"
++
++#: applications/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json:3
++msgid "CPU Freq"
++msgstr "CPU 性能优化调节"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:23
++msgid "CPU Freq Settings"
++msgstr "CPU 性能优化调节设置"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:51
++msgid "CPU Scaling Governor"
++msgstr "CPU 工作模式"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:77
++msgid "CPU Switching Sampling rate"
++msgstr "CPU 切换周期"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:84
++msgid "CPU Switching Threshold"
++msgstr "CPU 切换频率触发阈值"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:68
++msgid "Expecting: %s"
++msgstr "请输入：%s"
++
++#: applications/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json:3
++msgid "Grant access to CPUFreq configuration"
++msgstr "授予访问 CPUFreq 配置的权限"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:85
++msgid "Kernel make a decision on whether it should increase the frequency (%)"
++msgstr "当 CPU 占用率超过 (%) 的情况下触发内核切换频率"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:72
++msgid "Max CPU Freq cannot be lower than Min CPU Freq."
++msgstr "最大 CPU 频率不能低于最小 CPU 频率。"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:61
++msgid "Max Turbo Boost CPU Freq"
++msgstr "最大 Turbo Boost CPU 频率"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:56
++msgid "Min Idle CPU Freq"
++msgstr "待机 CPU 最小频率"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:24
++msgid "Set CPU Scaling Governor to Max Performance or Balance Mode"
++msgstr "设置路由器的 CPU 性能模式（高性能/均衡省电）"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:78
++msgid ""
++"The sampling rate determines how frequently the governor checks to tune the "
++"CPU (ms)"
++msgstr "CPU 检查切换的周期 (ms)。注意：过于频繁的切换频率会引起网络延迟抖动"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:35
++msgid "Unsupported device!"
++msgstr "不支持的设备！"
++
++#: applications/luci-app-cpufreq/htdocs/luci-static/resources/view/cpufreq.js:36
++msgid "Your device/kernel does not support CPU frequency scaling."
++msgstr "您的 设备/内核 不支持 CPU 动态调频。"
+diff --git a/package/cpu/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json b/package/cpu/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json
+new file mode 100644
+index 00000000000..83bfa6d712d
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/root/usr/share/luci/menu.d/luci-app-cpufreq.json
+@@ -0,0 +1,14 @@
++{
++	"admin/system/cpufreq": {
++		"title": "CPU Freq",
++		"order": 90,
++		"action": {
++			"type": "view",
++			"path": "cpufreq"
++		},
++		"depends": {
++			"acl": [ "luci-app-cpufreq" ],
++			"uci": { "cpufreq": true }
++		}
++	}
++}
+diff --git a/package/cpu/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json b/package/cpu/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json
+new file mode 100644
+index 00000000000..5e92194bbdd
+--- /dev/null
++++ b/package/cpu/luci-app-cpufreq/root/usr/share/rpcd/acl.d/luci-app-cpufreq.json
+@@ -0,0 +1,14 @@
++{
++	"luci-app-cpufreq": {
++		"description": "Grant access to CPUFreq configuration",
++		"read": {
++			"file": {
++				"/etc/init.d/cpufreq get_policies": [ "exec" ]
++			},
++			"uci": [ "cpufreq" ]
++		},
++		"write": {
++			"uci": [ "cpufreq" ]
++		}
++	}
++}
+diff --git a/package/cpu/luci-app-cpulimit/Makefile b/package/cpu/luci-app-cpulimit/Makefile
+new file mode 100644
+index 00000000000..7f2159310bc
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/Makefile
+@@ -0,0 +1,14 @@
++#
++# Copyright (C) 2008-2014 The LuCI Team <luci@lists.subsignal.org>
++#
++# This is free software, licensed under the Apache License, Version 2.0 .
++#
++
++include $(TOPDIR)/rules.mk
++
++LUCI_TITLE:=cpulimit configuration module
++LUCI_DEPENDS:=+cpulimit
++
++include $(TOPDIR)/feeds/luci/luci.mk
++
++# call BuildPackage - OpenWrt buildroot signature
+diff --git a/package/cpu/luci-app-cpulimit/luasrc/controller/cpulimit.lua b/package/cpu/luci-app-cpulimit/luasrc/controller/cpulimit.lua
+new file mode 100644
+index 00000000000..40ebe07f2a3
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/luasrc/controller/cpulimit.lua
+@@ -0,0 +1,11 @@
++module("luci.controller.cpulimit", package.seeall)
++
++function index()
++	if not nixio.fs.access("/etc/config/cpulimit") then
++		return
++	end
++
++	local page = entry({"admin", "system", "cpulimit"}, cbi("cpulimit"), _("cpulimit"), 65)
++	page.dependent = true
++	page.acl_depends = { "luci-app-cpulimit" }
++end
+diff --git a/package/cpu/luci-app-cpulimit/luasrc/model/cbi/cpulimit.lua b/package/cpu/luci-app-cpulimit/luasrc/model/cbi/cpulimit.lua
+new file mode 100644
+index 00000000000..3eb0db829d0
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/luasrc/model/cbi/cpulimit.lua
+@@ -0,0 +1,38 @@
++m = Map("cpulimit", translate("cpulimit"))
++m.description = translate("cpulimit  ")
++
++s = m:section(TypedSection, "list", translate("Settings"))
++s.template = "cbi/tblsection"
++s.anonymous = true
++s.addremove = true
++
++enable = s:option(Flag, "enabled", translate("enable", "enable"))
++enable.optional = false
++enable.rmempty = false
++
++exename = s:option(Value, "exename", translate("exename"), translate("name of the executable program file or path name"))
++exename.optional = false
++exename.rmempty = false
++exename.default = "/usr/bin/transmission-daemon"
++exename:value("transmission","/usr/bin/transmission-daemon")
++exename:value("samba","/usr/sbin/smbd")
++exename:value("mount.ntfs-3g","mount.ntfs-3g")
++exename:value("vsftpd","/usr/sbin/vsftpd")
++exename:value("pure-ftpd","/usr/sbin/pure-ftpd")
++
++limit = s:option(Value, "limit", translate("limit"))
++limit.optional = false
++limit.rmempty = false
++limit.default = "50"
++limit:value("100","100%")
++limit:value("90","90%")
++limit:value("80","80%")
++limit:value("70","70%")
++limit:value("60","60%")
++limit:value("50","50%")
++limit:value("40","40%")
++limit:value("30","30%")
++limit:value("20","20%")
++limit:value("10","10%")
++
++return m
+diff --git a/package/cpu/luci-app-cpulimit/po/zh_Hans/cpulimit.po b/package/cpu/luci-app-cpulimit/po/zh_Hans/cpulimit.po
+new file mode 100644
+index 00000000000..697addf9487
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/po/zh_Hans/cpulimit.po
+@@ -0,0 +1,30 @@
++msgid ""
++msgstr ""
++"Project-Id-Version: PACKAGE VERSION\n"
++"Report-Msgid-Bugs-To: \n"
++"POT-Creation-Date: 2014-06-28\n"
++"PO-Revision-Date: 2014-06-28\n"
++"Last-Translator: Syrone Wong <wong.syrone@gmail.com>\n"
++"Language: zh_Hans\n"
++"MIME-Version: 1.0\n"
++"Content-Type: text/plain; charset=UTF-8\n"
++"Content-Transfer-Encoding: 8bit\n"
++"Plural-Forms: nplurals=1; plural=0;\n"
++
++msgid "cpulimit"
++msgstr "CPU占用率限制"
++
++msgid "Use cpulimit to restrict app's cpu usage."
++msgstr "利用cpulimit限制应用程序的CPU使用率"
++
++msgid "Usage restrictions"
++msgstr "使用率限制"
++
++msgid "exename"
++msgstr "进程名称"
++
++msgid "name of the executable program file or path name"
++msgstr "可执行文件名称。不能是应用程序路径！"
++
++msgid "limit"
++msgstr "占用率限制"
+\ No newline at end of file
+diff --git a/package/cpu/luci-app-cpulimit/root/etc/config/cpulimit b/package/cpu/luci-app-cpulimit/root/etc/config/cpulimit
+new file mode 100644
+index 00000000000..df66e8fec6e
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/root/etc/config/cpulimit
+@@ -0,0 +1,6 @@
++
++config 'list'
++	option 'exename' '/usr/bin/transmission-daemon'
++	option 'limit' '50'
++	option 'enabled' '0'
++
+diff --git a/package/cpu/luci-app-cpulimit/root/etc/init.d/cpulimit b/package/cpu/luci-app-cpulimit/root/etc/init.d/cpulimit
+new file mode 100755
+index 00000000000..0ae23f8cd26
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/root/etc/init.d/cpulimit
+@@ -0,0 +1,16 @@
++#!/bin/sh /etc/rc.common
++# Copyright (C) 2006-2011 OpenWrt.org
++. /lib/functions.sh
++
++START=50
++
++DEFAULT=/etc/default/cpulimit
++
++
++start() {
++ /usr/bin/cpulimit.sh start &
++}
++
++stop() {
++  killall -9 cpulimit
++}
+diff --git a/package/cpu/luci-app-cpulimit/root/usr/bin/cpulimit.sh b/package/cpu/luci-app-cpulimit/root/usr/bin/cpulimit.sh
+new file mode 100755
+index 00000000000..d9eafe557fa
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/root/usr/bin/cpulimit.sh
+@@ -0,0 +1,35 @@
++#!/bin/sh
++
++. /lib/functions.sh
++
++cpulimit_get(){
++	echo cpulimit_get
++	config_get enabled $1 enabled
++	[ $enabled -gt 0 ] || return 1
++	config_get limit $1 limit
++	config_get exename $1 exename
++	cpulimit -l $limit -e $exename &
++	echo cpulimit -l $limit -e $exename
++}
++
++
++
++stop() {
++killall -9 cpulimit
++#	ps -a|grep cpulimit|while read line
++#	do
++#	  killall cpulimit>/dev/null 2>&1
++#	done
++}
++
++case "$1" in
++	"start")
++	echo start
++	killall -9 cpulimit
++	config_load cpulimit
++	config_foreach cpulimit_get list
++	echo end
++	exit 0	
++;;
++	"stop")echo stop; killall -9 cpulimit;;
++esac
+diff --git a/package/cpu/luci-app-cpulimit/root/usr/share/rpcd/acl.d/luci-app-cpulimit.json b/package/cpu/luci-app-cpulimit/root/usr/share/rpcd/acl.d/luci-app-cpulimit.json
+new file mode 100644
+index 00000000000..84fa3043516
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/root/usr/share/rpcd/acl.d/luci-app-cpulimit.json
+@@ -0,0 +1,11 @@
++{
++	"luci-app-cpulimit": {
++		"description": "Grant UCI access for luci-app-cpulimit",
++		"read": {
++			"uci": [ "cpulimit" ]
++		},
++		"write": {
++			"uci": [ "cpulimit" ]
++		}
++	}
++}
+diff --git a/package/cpu/luci-app-cpulimit/root/usr/share/ucitrack/luci-app-cpulimit.json b/package/cpu/luci-app-cpulimit/root/usr/share/ucitrack/luci-app-cpulimit.json
+new file mode 100644
+index 00000000000..1cecd9006cc
+--- /dev/null
++++ b/package/cpu/luci-app-cpulimit/root/usr/share/ucitrack/luci-app-cpulimit.json
+@@ -0,0 +1,4 @@
++{
++	"config": "cpulimit",
++	"init": [ "cpulimit" ]
++}

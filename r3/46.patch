@@ -1,0 +1,71 @@
+From e080bb96915b86eb8e6baa0a97dbcd09601a17e6 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Sat, 21 Jun 2025 18:35:12 -0400
+Subject: [PATCH] 46
+
+---
+ .../rockchip/patches-6.12/130-m4-led.patch    | 22 +++++++++++++++++++
+ .../rockchip/patches-6.6/130-m4-led.patch     | 22 +++++++++++++++++++
+ 2 files changed, 44 insertions(+)
+ create mode 100644 target/linux/rockchip/patches-6.12/130-m4-led.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/130-m4-led.patch
+
+diff --git a/target/linux/rockchip/patches-6.12/130-m4-led.patch b/target/linux/rockchip/patches-6.12/130-m4-led.patch
+new file mode 100644
+index 0000000000..8699b5d50c
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/130-m4-led.patch
+@@ -0,0 +1,22 @@
++--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
++@@ -21,6 +21,10 @@
++ 		mmc0 = &sdio0;
++ 		mmc1 = &sdmmc;
++ 		mmc2 = &sdhci;
+++		led-boot = &status_led;
+++		led-failsafe = &status_led;
+++		led-running = &status_led;
+++		led-upgrade = &status_led;
++ 	};
++ 
++ 	chosen {
++@@ -128,7 +132,7 @@
++ 		status_led: led-0 {
++ 			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++ 			label = "status_led";
++-			linux,default-trigger = "heartbeat";
+++			default-state = "on";
++ 		};
++ 	};
++ 
+diff --git a/target/linux/rockchip/patches-6.6/130-m4-led.patch b/target/linux/rockchip/patches-6.6/130-m4-led.patch
+new file mode 100644
+index 0000000000..8699b5d50c
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/130-m4-led.patch
+@@ -0,0 +1,22 @@
++--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
++@@ -21,6 +21,10 @@
++ 		mmc0 = &sdio0;
++ 		mmc1 = &sdmmc;
++ 		mmc2 = &sdhci;
+++		led-boot = &status_led;
+++		led-failsafe = &status_led;
+++		led-running = &status_led;
+++		led-upgrade = &status_led;
++ 	};
++ 
++ 	chosen {
++@@ -128,7 +132,7 @@
++ 		status_led: led-0 {
++ 			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++ 			label = "status_led";
++-			linux,default-trigger = "heartbeat";
+++			default-state = "on";
++ 		};
++ 	};
++ 
+-- 
+2.46.0
+

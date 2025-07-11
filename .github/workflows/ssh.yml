@@ -1,0 +1,17 @@
+name: Debug Session
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Build rockchip
+        runs-on: ubuntu-22.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Setup Debug Session
+              uses: sbwml/action-ssh@master
+

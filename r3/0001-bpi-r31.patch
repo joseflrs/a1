@@ -1,0 +1,171 @@
+From 106f6fbd4ea87610698e153674125cc2df92af0e Mon Sep 17 00:00:00 2001
+From: n n <xxx@gnail.com>
+Date: Sun, 5 Jan 2025 07:16:42 -0500
+Subject: [PATCH] fix
+
+---
+ feeds.conf.default                            |  8 +--
+ package/base-files/Makefile                   |  4 --
+ .../firmware/wireless-regdb/patches/005.patch | 56 +++++++++++++++++++
+ .../hack-6.6/400-fixup-ubi-warning.patch      | 24 ++++++++
+ .../filogic/base-files/etc/board.d/02_network |  2 +-
+ 5 files changed, 85 insertions(+), 9 deletions(-)
+ create mode 100644 package/firmware/wireless-regdb/patches/005.patch
+ create mode 100644 target/linux/generic/hack-6.6/400-fixup-ubi-warning.patch
+
+diff --git a/feeds.conf.default b/feeds.conf.default
+index 05f5c8c47c..81cce6074d 100644
+--- a/feeds.conf.default
++++ b/feeds.conf.default
+@@ -1,7 +1,7 @@
+-src-git packages https://git.openwrt.org/feed/packages.git
+-src-git luci https://git.openwrt.org/project/luci.git
+-src-git routing https://git.openwrt.org/feed/routing.git
+-src-git telephony https://git.openwrt.org/feed/telephony.git
++src-git packages https://github.com/openwrt/packages.git
++src-git luci https://github.com/openwrt/luci.git
++src-git routing https://github.com/openwrt/routing.git
++src-git telephony https://github.com/openwrt/telephony.git
+ src-git video https://github.com/openwrt/video.git
+ #src-git targets https://github.com/openwrt/targets.git
+ #src-git oldpackages http://git.openwrt.org/packages.git
+diff --git a/package/base-files/Makefile b/package/base-files/Makefile
+index b90ee3a64e..3f63472c45 100644
+--- a/package/base-files/Makefile
++++ b/package/base-files/Makefile
+@@ -121,12 +121,10 @@ endef
+ Build/Compile = $(Build/Compile/Default)
+ 
+ ifneq ($(CONFIG_USE_APK),)
+-ifndef CONFIG_BUILDBOT
+   define Package/base-files/install-key
+ 	mkdir -p $(1)/etc/apk/keys
+ 	$(CP) $(BUILD_KEY_APK_PUB) $(1)/etc/apk/keys/
+   endef
+-endif
+ else
+ ifdef CONFIG_SIGNED_PACKAGES
+   define Build/Configure
+@@ -138,14 +136,12 @@ ifdef CONFIG_SIGNED_PACKAGES
+ 
+   endef
+ 
+-ifndef CONFIG_BUILDBOT
+   define Package/base-files/install-key
+ 	mkdir -p $(1)/etc/opkg/keys
+ 	$(CP) $(BUILD_KEY).pub $(1)/etc/opkg/keys/`$(STAGING_DIR_HOST)/bin/usign -F -p $(BUILD_KEY).pub`
+   endef
+ endif
+ endif
+-endif
+ 
+ ifeq ($(CONFIG_NAND_SUPPORT),)
+   define Package/base-files/nand-support
+diff --git a/package/firmware/wireless-regdb/patches/005.patch b/package/firmware/wireless-regdb/patches/005.patch
+new file mode 100644
+index 0000000000..089e85bd40
+--- /dev/null
++++ b/package/firmware/wireless-regdb/patches/005.patch
+@@ -0,0 +1,56 @@
++--- a/db.txt
+++++ b/db.txt
++@@ -95,12 +95,10 @@ country AN: DFS-ETSI
++ # Source:
++ # https://www.boletinoficial.gob.ar/detalleAviso/primera/287126/20230524
++ country AR: DFS-FCC
++-	(2402 - 2482 @ 40), (20)
++-	(5170 - 5250 @ 80), (17), AUTO-BW
++-	(5250 - 5330 @ 80), (24), DFS, AUTO-BW
++-	(5490 - 5730 @ 160), (24), DFS
++-	(5735 - 5835 @ 80), (30)
++-	(5925 - 7125 @ 320), (12), NO-OUTDOOR
+++	(2402 - 2482 @ 40), (30)
+++	(5170 - 5330 @ 160), (30)
+++	(5490 - 5835 @ 160), (30)
+++	(5925 - 7125 @ 320), (12), AUTO-BW
++ 
++ country AS: DFS-FCC
++ 	(2402 - 2472 @ 40), (30)
++@@ -421,9 +419,8 @@ country CL: DFS-JP
++ # https://www.miit.gov.cn/cms_files/filemanager/1226211233/attach/20236/d1dc19424d5a4cfe90d631adeee8dd58.pdf
++ # Note: The transmit power for 5250-5350MHz bands can be raised by 3dBm when TPC is implemented
++ country CN: DFS-FCC
++-	(2400 - 2483.5 @ 40), (20)
++-	(5150 - 5250 @ 80), (23), NO-OUTDOOR, AUTO-BW
++-	(5250 - 5350 @ 80), (20), NO-OUTDOOR, DFS, AUTO-BW
+++	(2400 - 2483.5 @ 40), (30)
+++	(5150 - 5350 @ 160), (30)
++ 	(5725 - 5850 @ 80), (33)
++ 	# 60 GHz band channels 1,4: 28dBm, channels 2,3: 44dBm
++ 	# ref: http://www.miit.gov.cn/n11293472/n11505629/n11506593/n11960250/n11960606/n11960700/n12330791.files/n12330790.pdf
++@@ -1916,20 +1913,18 @@ country US: DFS-FCC
++ 	(920 - 928 @ 8), (30)
++ 	(2400 - 2472 @ 40), (30)
++ 	# 5.15 ~ 5.25 GHz: 30 dBm for master mode, 23 dBm for clients
++-	(5150 - 5250 @ 80), (23), AUTO-BW
++-	(5250 - 5350 @ 80), (24), DFS, AUTO-BW
+++	(5150 - 5350 @ 160), (30)
++ 	# This range ends at 5725 MHz, but channel 144 extends to 5730 MHz.
++ 	# Since 5725 ~ 5730 MHz belongs to the next range which has looser
++ 	# requirements, we can extend the range by 5 MHz to make the kernel
++ 	# happy and be able to use channel 144.
++-	(5470 - 5730 @ 160), (24), DFS
++-	(5730 - 5850 @ 80), (30), AUTO-BW
+++	(5470 - 5850 @ 160), (30)
++ 	# https://www.federalregister.gov/documents/2021/05/03/2021-08802/use-of-the-5850-5925-ghz-band
++ 	# max. 33 dBm AP @ 20MHz, 36 dBm AP @ 40Mhz+, 6 dB less for clients
++-	(5850 - 5895 @ 40), (27), NO-OUTDOOR, AUTO-BW, NO-IR
+++	(5850 - 5895 @ 40), (27), NO-OUTDOOR, AUTO-BW
++ 	# 6g band
++ 	# https://www.federalregister.gov/documents/2020/05/26/2020-11236/unlicensed-use-of-the-6ghz-band
++-	(5925 - 7125 @ 320), (12), NO-OUTDOOR, NO-IR
+++	(5925 - 7125 @ 320), (12), AUTO-BW
++ 	# 60g band
++ 	# reference: section IV-D https://docs.fcc.gov/public/attachments/FCC-16-89A1.pdf
++ 	# channels 1-6 EIRP=40dBm(43dBm peak)
+diff --git a/target/linux/generic/hack-6.6/400-fixup-ubi-warning.patch b/target/linux/generic/hack-6.6/400-fixup-ubi-warning.patch
+new file mode 100644
+index 0000000000..22d59a92cc
+--- /dev/null
++++ b/target/linux/generic/hack-6.6/400-fixup-ubi-warning.patch
+@@ -0,0 +1,24 @@
++--- a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
+++++ b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
++@@ -42,7 +42,7 @@
++ 		compatible = "pwm-fan";
++ 		#cooling-cells = <2>;
++ 		/* cooling level (0, 1, 2) - pwm inverted */
++-		cooling-levels = <255 96 0>;
+++		cooling-levels = <0 96 255>;
++ 		pwms = <&pwm 0 10000>;
++ 		status = "okay";
++ 	};
++--- a/drivers/mtd/mtdblock.c
+++++ b/drivers/mtd/mtdblock.c
++@@ -261,10 +261,6 @@ static int mtdblock_open(struct mtd_blkt
++ 		return 0;
++ 	}
++ 
++-	if (mtd_type_is_nand(mbd->mtd))
++-		pr_warn_ratelimited("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
++-			mbd->tr->name, mbd->mtd->name);
++-
++ 	/* OK, it's not open. Create cache info for it */
++ 	mtdblk->count = 1;
++ 	mutex_init(&mtdblk->cache_mutex);
+diff --git a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
+index e9f63938b2..94cd652988 100644
+--- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
++++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
+@@ -60,7 +60,7 @@ mediatek_setup_interfaces()
+ 		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
+ 		;;
+ 	bananapi,bpi-r3)
+-		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "sfp1 wan"
++		ucidef_set_interfaces_lan_wan "eth2 lan1 lan2 lan3 lan4 sfp1 sfp2" wan
+ 		;;
+ 	bananapi,bpi-r3-mini|\
+ 	edgecore,eap111|\
+-- 
+2.46.0
+

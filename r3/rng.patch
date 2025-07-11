@@ -1,0 +1,1800 @@
+From e0118aa880662350308acea2447a2c3d5a65d47a Mon Sep 17 00:00:00 2001
+From: I L <il@il.com>
+Date: Sun, 15 Jun 2025 21:07:46 -0400
+Subject: [PATCH 1/2] rockchip: add RK3588 Hardware Random Number Generator
+
+
+---
+ ...-reset-Add-SCMI-reset-IDs-for-RK3588.patch |  74 +++
+ ...-add-binding-for-Rockchip-RK3588-RNG.patch |  91 ++++
+ ...rockchip-rk3588-rng-Drop-unnecessary.patch |  27 ++
+ ...p-store-dev-pointer-in-driver-struct.patch |  67 +++
+ ...liminate-some-unnecessary-dereferenc.patch |  42 ++
+ ...dd-support-for-rk3588-s-standalone-T.patch | 422 ++++++++++++++++++
+ ...-dts-rockchip-Add-rng-node-to-RK3588.patch |  34 ++
+ ...ip-change-rng-reset-id-back-to-its-c.patch |  25 ++
+ ...ckchip-rst-is-used-only-during-probe.patch |  53 +++
+ ...handle-devm_pm_runtime_enable-errors.patch |  27 ++
+ ...-reset-Add-SCMI-reset-IDs-for-RK3588.patch |  74 +++
+ ...-add-binding-for-Rockchip-RK3588-RNG.patch |  91 ++++
+ ...rockchip-rk3588-rng-Drop-unnecessary.patch |  27 ++
+ ...p-store-dev-pointer-in-driver-struct.patch |  67 +++
+ ...liminate-some-unnecessary-dereferenc.patch |  42 ++
+ ...dd-support-for-rk3588-s-standalone-T.patch | 422 ++++++++++++++++++
+ ...-dts-rockchip-Add-rng-node-to-RK3588.patch |  34 ++
+ ...ip-change-rng-reset-id-back-to-its-c.patch |  25 ++
+ 18 files changed, 1644 insertions(+)
+ create mode 100644 target/linux/rockchip/patches-6.12/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+ create mode 100644 target/linux/rockchip/patches-6.12/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-01-v6.12-hwrng-rockchip-rst-is-used-only-during-probe.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-02-v6.12-hwrng-rockchip-handle-devm_pm_runtime_enable-errors.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+ create mode 100644 target/linux/rockchip/patches-6.6/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+
+diff --git a/target/linux/rockchip/patches-6.12/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch b/target/linux/rockchip/patches-6.12/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+new file mode 100644
+index 0000000000..8f98680aea
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+@@ -0,0 +1,74 @@
++From 849d9db170fc8a03ce9f64133a1d0cd46c135105 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:46 +0100
++Subject: [PATCH] dt-bindings: reset: Add SCMI reset IDs for RK3588
++
++When TF-A is used to assert/deassert the resets through SCMI, the
++IDs communicated to it are different than the ones mainline Linux uses.
++
++Import the list of SCMI reset IDs from mainline TF-A so that devicetrees
++can use these IDs more easily.
++
++Co-developed-by: XiaoDong Huang <derrick.huang@rock-chips.com>
++Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
++Acked-by: Conor Dooley <conor.dooley@microchip.com>
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ .../dt-bindings/reset/rockchip,rk3588-cru.h   | 41 ++++++++++++++++++-
++ 1 file changed, 40 insertions(+), 1 deletion(-)
++
++--- a/include/dt-bindings/reset/rockchip,rk3588-cru.h
+++++ b/include/dt-bindings/reset/rockchip,rk3588-cru.h
++@@ -1,6 +1,6 @@
++ /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
++ /*
++- * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
+++ * Copyright (c) 2021, 2024 Rockchip Electronics Co. Ltd.
++  * Copyright (c) 2022 Collabora Ltd.
++  *
++  * Author: Elaine Zhang <zhangqing@rock-chips.com>
++@@ -753,4 +753,43 @@
++ 
++ #define SRST_A_HDMIRX_BIU		660
++ 
+++/* SCMI Secure Resets */
+++
+++/* Name=SECURE_SOFTRST_CON00,Offset=0xA00 */
+++#define SCMI_SRST_A_SECURE_NS_BIU	10
+++#define SCMI_SRST_H_SECURE_NS_BIU	11
+++#define SCMI_SRST_A_SECURE_S_BIU	12
+++#define SCMI_SRST_H_SECURE_S_BIU	13
+++#define SCMI_SRST_P_SECURE_S_BIU	14
+++#define SCMI_SRST_CRYPTO_CORE		15
+++/* Name=SECURE_SOFTRST_CON01,Offset=0xA04 */
+++#define SCMI_SRST_CRYPTO_PKA		16
+++#define SCMI_SRST_CRYPTO_RNG		17
+++#define SCMI_SRST_A_CRYPTO		18
+++#define SCMI_SRST_H_CRYPTO		19
+++#define SCMI_SRST_KEYLADDER_CORE	25
+++#define SCMI_SRST_KEYLADDER_RNG		26
+++#define SCMI_SRST_A_KEYLADDER		27
+++#define SCMI_SRST_H_KEYLADDER		28
+++#define SCMI_SRST_P_OTPC_S		29
+++#define SCMI_SRST_OTPC_S		30
+++#define SCMI_SRST_WDT_S			31
+++/* Name=SECURE_SOFTRST_CON02,Offset=0xA08 */
+++#define SCMI_SRST_T_WDT_S		32
+++#define SCMI_SRST_H_BOOTROM		33
+++#define SCMI_SRST_A_DCF			34
+++#define SCMI_SRST_P_DCF			35
+++#define SCMI_SRST_H_BOOTROM_NS		37
+++#define SCMI_SRST_P_KEYLADDER		46
+++#define SCMI_SRST_H_TRNG_S		47
+++/* Name=SECURE_SOFTRST_CON03,Offset=0xA0C */
+++#define SCMI_SRST_H_TRNG_NS		48
+++#define SCMI_SRST_D_SDMMC_BUFFER	49
+++#define SCMI_SRST_H_SDMMC		50
+++#define SCMI_SRST_H_SDMMC_BUFFER	51
+++#define SCMI_SRST_SDMMC			52
+++#define SCMI_SRST_P_TRNG_CHK		53
+++#define SCMI_SRST_TRNG_S		54
+++
+++
++ #endif
+diff --git a/target/linux/rockchip/patches-6.12/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch b/target/linux/rockchip/patches-6.12/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+new file mode 100644
+index 0000000000..cb7e15527b
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+@@ -0,0 +1,91 @@
++From e00fc3d6e7c2d0b2ab5cf03a576df39cd94479aa Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:47 +0100
++Subject: [PATCH] dt-bindings: rng: add binding for Rockchip RK3588 RNG
++
++The Rockchip RK3588 SoC has two hardware RNGs accessible to the
++non-secure world: an RNG in the Crypto IP, and a standalone RNG that is
++new to this SoC.
++
++Add a binding for this new standalone RNG. It is distinct hardware from
++the existing rockchip,rk3568-rng, and therefore gets its own binding as
++the two hardware IPs are unrelated other than both being made by the
++same vendor.
++
++The RNG is capable of firing an interrupt when entropy is ready.
++
++The reset is optional, as the hardware does a power-on reset, and
++functions without the software manually resetting it.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Acked-by: Conor Dooley <conor.dooley@microchip.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ .../bindings/rng/rockchip,rk3588-rng.yaml     | 60 +++++++++++++++++++
++ MAINTAINERS                                   |  1 +
++ 2 files changed, 61 insertions(+)
++ create mode 100644 Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++
++--- /dev/null
+++++ b/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++@@ -0,0 +1,60 @@
+++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+++%YAML 1.2
+++---
+++$id: http://devicetree.org/schemas/rng/rockchip,rk3588-rng.yaml#
+++$schema: http://devicetree.org/meta-schemas/core.yaml#
+++
+++title: Rockchip RK3588 TRNG
+++
+++description: True Random Number Generator on Rockchip RK3588 SoC
+++
+++maintainers:
+++  - Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+++
+++properties:
+++  compatible:
+++    enum:
+++      - rockchip,rk3588-rng
+++
+++  reg:
+++    maxItems: 1
+++
+++  clocks:
+++    items:
+++      - description: TRNG AHB clock
+++
+++  interrupts:
+++    maxItems: 1
+++
+++  resets:
+++    maxItems: 1
+++
+++required:
+++  - compatible
+++  - reg
+++  - clocks
+++  - interrupts
+++
+++additionalProperties: false
+++
+++examples:
+++  - |
+++    #include <dt-bindings/clock/rockchip,rk3588-cru.h>
+++    #include <dt-bindings/interrupt-controller/arm-gic.h>
+++    #include <dt-bindings/interrupt-controller/irq.h>
+++    #include <dt-bindings/reset/rockchip,rk3588-cru.h>
+++    bus {
+++      #address-cells = <2>;
+++      #size-cells = <2>;
+++
+++      rng@fe378000 {
+++        compatible = "rockchip,rk3588-rng";
+++        reg = <0x0 0xfe378000 0x0 0x200>;
+++        interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
+++        clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
+++        resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
+++        status = "okay";
+++      };
+++    };
+++
+++...
+diff --git a/target/linux/rockchip/patches-6.12/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch b/target/linux/rockchip/patches-6.12/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+new file mode 100644
+index 0000000000..1dde09f1af
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+@@ -0,0 +1,27 @@
++From 52b3b329d8e589575d16d8d9adbca9e08041ee82 Mon Sep 17 00:00:00 2001
++From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++Date: Fri, 7 Mar 2025 10:33:09 +0100
++Subject: [PATCH] dt-bindings: rng: rockchip,rk3588-rng: Drop unnecessary
++ status from example
++
++Device nodes are enabled by default, so no need for 'status = "okay"' in
++the DTS example.
++
++Reviewed-by: Heiko Stuebner <heiko@sntech.de>
++Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++Acked-by: Rob Herring (Arm) <robh@kernel.org>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml | 1 -
++ 1 file changed, 1 deletion(-)
++
++--- a/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
+++++ b/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++@@ -53,7 +53,6 @@ examples:
++         interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
++         clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
++         resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
++-        status = "okay";
++       };
++     };
++ 
+diff --git a/target/linux/rockchip/patches-6.12/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch b/target/linux/rockchip/patches-6.12/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+new file mode 100644
+index 0000000000..2f14fcd888
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+@@ -0,0 +1,67 @@
++From 8bb8609293ff3d8998d75c8db605c0529e83bcd9 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:48 +0100
++Subject: [PATCH] hwrng: rockchip - store dev pointer in driver struct
++
++The rockchip rng driver does a dance to store the dev pointer in the
++hwrng's unsigned long "priv" member. However, since the struct hwrng
++member of rk_rng is not a pointer, we can use container_of to get the
++struct rk_rng instance from just the struct hwrng*, which means we don't
++have to subvert what little there is in C of a type system and can
++instead store a pointer to the device struct in the rk_rng itself.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 12 ++++++------
++ 1 file changed, 6 insertions(+), 6 deletions(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -54,6 +54,7 @@ struct rk_rng {
++ 	void __iomem *base;
++ 	int clk_num;
++ 	struct clk_bulk_data *clk_bulks;
+++	struct device *dev;
++ };
++ 
++ /* The mask in the upper 16 bits determines the bits that are updated */
++@@ -70,8 +71,7 @@ static int rk_rng_init(struct hwrng *rng
++ 	/* start clocks */
++ 	ret = clk_bulk_prepare_enable(rk_rng->clk_num, rk_rng->clk_bulks);
++ 	if (ret < 0) {
++-		dev_err((struct device *) rk_rng->rng.priv,
++-			"Failed to enable clks %d\n", ret);
+++		dev_err(rk_rng->dev, "Failed to enable clocks: %d\n", ret);
++ 		return ret;
++ 	}
++ 
++@@ -105,7 +105,7 @@ static int rk_rng_read(struct hwrng *rng
++ 	u32 reg;
++ 	int ret = 0;
++ 
++-	ret = pm_runtime_resume_and_get((struct device *) rk_rng->rng.priv);
+++	ret = pm_runtime_resume_and_get(rk_rng->dev);
++ 	if (ret < 0)
++ 		return ret;
++ 
++@@ -122,8 +122,8 @@ static int rk_rng_read(struct hwrng *rng
++ 	/* Read random data stored in the registers */
++ 	memcpy_fromio(buf, rk_rng->base + TRNG_RNG_DOUT, to_read);
++ out:
++-	pm_runtime_mark_last_busy((struct device *) rk_rng->rng.priv);
++-	pm_runtime_put_sync_autosuspend((struct device *) rk_rng->rng.priv);
+++	pm_runtime_mark_last_busy(rk_rng->dev);
+++	pm_runtime_put_sync_autosuspend(rk_rng->dev);
++ 
++ 	return (ret < 0) ? ret : to_read;
++ }
++@@ -164,7 +164,7 @@ static int rk_rng_probe(struct platform_
++ 		rk_rng->rng.cleanup = rk_rng_cleanup;
++ 	}
++ 	rk_rng->rng.read = rk_rng_read;
++-	rk_rng->rng.priv = (unsigned long) dev;
+++	rk_rng->dev = dev;
++ 	rk_rng->rng.quality = 900;
++ 
++ 	pm_runtime_set_autosuspend_delay(dev, RK_RNG_AUTOSUSPEND_DELAY);
+diff --git a/target/linux/rockchip/patches-6.12/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch b/target/linux/rockchip/patches-6.12/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+new file mode 100644
+index 0000000000..a3bdff9641
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+@@ -0,0 +1,42 @@
++From 24aaa42ed65c0811b598674a593fc653d643a7e6 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:49 +0100
++Subject: [PATCH] hwrng: rockchip - eliminate some unnecessary dereferences
++
++Despite assigning a temporary variable the value of &pdev->dev early on
++in the probe function, the probe function then continues to use this
++construct when it could just use the local dev variable instead.
++
++Simplify this by using the local dev variable directly.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 6 +++---
++ 1 file changed, 3 insertions(+), 3 deletions(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -148,7 +148,7 @@ static int rk_rng_probe(struct platform_
++ 		return dev_err_probe(dev, rk_rng->clk_num,
++ 				     "Failed to get clks property\n");
++ 
++-	rst = devm_reset_control_array_get_exclusive(&pdev->dev);
+++	rst = devm_reset_control_array_get_exclusive(dev);
++ 	if (IS_ERR(rst))
++ 		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
++ 
++@@ -171,11 +171,11 @@ static int rk_rng_probe(struct platform_
++ 	pm_runtime_use_autosuspend(dev);
++ 	ret = devm_pm_runtime_enable(dev);
++ 	if (ret)
++-		return dev_err_probe(&pdev->dev, ret, "Runtime pm activation failed.\n");
+++		return dev_err_probe(dev, ret, "Runtime pm activation failed.\n");
++ 
++ 	ret = devm_hwrng_register(dev, &rk_rng->rng);
++ 	if (ret)
++-		return dev_err_probe(&pdev->dev, ret, "Failed to register Rockchip hwrng\n");
+++		return dev_err_probe(dev, ret, "Failed to register Rockchip hwrng\n");
++ 
++ 	return 0;
++ }
+diff --git a/target/linux/rockchip/patches-6.12/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch b/target/linux/rockchip/patches-6.12/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+new file mode 100644
+index 0000000000..9ae621a54a
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+@@ -0,0 +1,422 @@
++From 8eff8eb83fc0ae8b5f76220e2bb8644d836e99ff Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:50 +0100
++Subject: [PATCH] hwrng: rockchip - add support for rk3588's standalone TRNG
++
++The RK3588 SoC includes several TRNGs, one part of the Crypto IP block,
++and the other one (referred to as "trngv1") as a standalone new IP.
++
++Add support for this new standalone TRNG to the driver by both
++generalising it to support multiple different rockchip RNGs and then
++implementing the required functionality for the new hardware.
++
++This work was partly based on the downstream vendor driver by Rockchip's
++Lin Jinhan, which is why they are listed as a Co-author.
++
++While the hardware does support notifying the CPU with an IRQ when the
++random data is ready, I've discovered while implementing the code to use
++this interrupt that this results in significantly slower throughput of
++the TRNG even when under heavy CPU load. I assume this is because with
++only 32 bytes of data per invocation, the overhead of reinitialising a
++completion, enabling the interrupt, sleeping and then triggering the
++completion in the IRQ handler is way more expensive than busylooping.
++
++Speaking of busylooping, the poll interval for reading the ISTAT is an
++atomic read with a delay of 0. In my testing, I've found that this gives
++us the largest throughput, and it appears the random data is ready
++pretty much the moment we begin polling, as increasing the poll delay
++leads to a drop in throughput significant enough to not just be due to
++the poll interval missing the ideal timing by a microsecond or two.
++
++According to downstream, the IP should take 1024 clock cycles to
++generate 56 bits of random data, which at 150MHz should work out to
++6.8us. I did not test whether the data really does take 256/56*6.8us
++to arrive, though changing the readl to a __raw_readl makes no
++difference in throughput, and this data does pass the rngtest FIPS
++checks, so I'm not entirely sure what's going on but I presume it's got
++something to do with the AHB bus speed and the memory barriers that
++mainline's readl/writel functions insert.
++
++The only other current SoC that uses this new IP is the Rockchip RV1106,
++but that SoC does not have mainline support as of the time of writing,
++so we make no effort to declare it as supported for now.
++
++Co-developed-by: Lin Jinhan <troy.lin@rock-chips.com>
++Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/Kconfig        |   3 +-
++ drivers/char/hw_random/rockchip-rng.c | 234 +++++++++++++++++++++++---
++ 2 files changed, 216 insertions(+), 21 deletions(-)
++
++--- a/drivers/char/hw_random/Kconfig
+++++ b/drivers/char/hw_random/Kconfig
++@@ -580,7 +580,8 @@ config HW_RANDOM_ROCKCHIP
++ 	default HW_RANDOM
++ 	help
++ 	  This driver provides kernel-side support for the True Random Number
++-	  Generator hardware found on some Rockchip SoC like RK3566 or RK3568.
+++	  Generator hardware found on some Rockchip SoCs like RK3566, RK3568
+++	  or RK3588.
++ 
++ 	  To compile this driver as a module, choose M here: the
++ 	  module will be called rockchip-rng.
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -1,12 +1,14 @@
++ // SPDX-License-Identifier: GPL-2.0
++ /*
++- * rockchip-rng.c True Random Number Generator driver for Rockchip RK3568 SoC
+++ * rockchip-rng.c True Random Number Generator driver for Rockchip SoCs
++  *
++  * Copyright (c) 2018, Fuzhou Rockchip Electronics Co., Ltd.
++  * Copyright (c) 2022, Aurelien Jarno
+++ * Copyright (c) 2025, Collabora Ltd.
++  * Authors:
++  *  Lin Jinhan <troy.lin@rock-chips.com>
++  *  Aurelien Jarno <aurelien@aurel32.net>
+++ *  Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++  */
++ #include <linux/clk.h>
++ #include <linux/hw_random.h>
++@@ -32,6 +34,9 @@
++  */
++ #define RK_RNG_SAMPLE_CNT		1000
++ 
+++/* after how many bytes of output TRNGv1 implementations should be reseeded */
+++#define RK_TRNG_V1_AUTO_RESEED_CNT	16000
+++
++ /* TRNG registers from RK3568 TRM-Part2, section 5.4.1 */
++ #define TRNG_RST_CTL			0x0004
++ #define TRNG_RNG_CTL			0x0400
++@@ -49,25 +54,85 @@
++ #define TRNG_RNG_SAMPLE_CNT		0x0404
++ #define TRNG_RNG_DOUT			0x0410
++ 
+++/*
+++ * TRNG V1 register definitions
+++ * The TRNG V1 IP is a stand-alone TRNG implementation (not part of a crypto IP)
+++ * and can be found in the Rockchip RK3588 SoC
+++ */
+++#define TRNG_V1_CTRL				0x0000
+++#define TRNG_V1_CTRL_NOP			0x00
+++#define TRNG_V1_CTRL_RAND			0x01
+++#define TRNG_V1_CTRL_SEED			0x02
+++
+++#define TRNG_V1_STAT				0x0004
+++#define TRNG_V1_STAT_SEEDED			BIT(9)
+++#define TRNG_V1_STAT_GENERATING			BIT(30)
+++#define TRNG_V1_STAT_RESEEDING			BIT(31)
+++
+++#define TRNG_V1_MODE				0x0008
+++#define TRNG_V1_MODE_128_BIT			(0x00 << 3)
+++#define TRNG_V1_MODE_256_BIT			(0x01 << 3)
+++
+++/* Interrupt Enable register; unused because polling is faster */
+++#define TRNG_V1_IE				0x0010
+++#define TRNG_V1_IE_GLBL_EN			BIT(31)
+++#define TRNG_V1_IE_SEED_DONE_EN			BIT(1)
+++#define TRNG_V1_IE_RAND_RDY_EN			BIT(0)
+++
+++#define TRNG_V1_ISTAT				0x0014
+++#define TRNG_V1_ISTAT_RAND_RDY			BIT(0)
+++
+++/* RAND0 ~ RAND7 */
+++#define TRNG_V1_RAND0				0x0020
+++#define TRNG_V1_RAND7				0x003C
+++
+++/* Auto Reseed Register */
+++#define TRNG_V1_AUTO_RQSTS			0x0060
+++
+++#define TRNG_V1_VERSION				0x00F0
+++#define TRNG_v1_VERSION_CODE			0x46bc
+++/* end of TRNG_V1 register definitions */
+++
+++/* Before removing this assert, give rk3588_rng_read an upper bound of 32 */
+++static_assert(RK_RNG_MAX_BYTE <= (TRNG_V1_RAND7 + 4 - TRNG_V1_RAND0),
+++	      "You raised RK_RNG_MAX_BYTE and broke rk3588-rng, congrats.");
+++
++ struct rk_rng {
++ 	struct hwrng rng;
++ 	void __iomem *base;
++ 	int clk_num;
++ 	struct clk_bulk_data *clk_bulks;
+++	const struct rk_rng_soc_data *soc_data;
++ 	struct device *dev;
++ };
++ 
+++struct rk_rng_soc_data {
+++	int (*rk_rng_init)(struct hwrng *rng);
+++	int (*rk_rng_read)(struct hwrng *rng, void *buf, size_t max, bool wait);
+++	void (*rk_rng_cleanup)(struct hwrng *rng);
+++	unsigned short quality;
+++	bool reset_optional;
+++};
+++
++ /* The mask in the upper 16 bits determines the bits that are updated */
++ static void rk_rng_write_ctl(struct rk_rng *rng, u32 val, u32 mask)
++ {
++ 	writel((mask << 16) | val, rng->base + TRNG_RNG_CTL);
++ }
++ 
++-static int rk_rng_init(struct hwrng *rng)
+++static inline void rk_rng_writel(struct rk_rng *rng, u32 val, u32 offset)
++ {
++-	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++-	int ret;
+++	writel(val, rng->base + offset);
+++}
++ 
+++static inline u32 rk_rng_readl(struct rk_rng *rng, u32 offset)
+++{
+++	return readl(rng->base + offset);
+++}
+++
+++static int rk_rng_enable_clks(struct rk_rng *rk_rng)
+++{
+++	int ret;
++ 	/* start clocks */
++ 	ret = clk_bulk_prepare_enable(rk_rng->clk_num, rk_rng->clk_bulks);
++ 	if (ret < 0) {
++@@ -75,6 +140,18 @@ static int rk_rng_init(struct hwrng *rng
++ 		return ret;
++ 	}
++ 
+++	return 0;
+++}
+++
+++static int rk3568_rng_init(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	int ret;
+++
+++	ret = rk_rng_enable_clks(rk_rng);
+++	if (ret < 0)
+++		return ret;
+++
++ 	/* set the sample period */
++ 	writel(RK_RNG_SAMPLE_CNT, rk_rng->base + TRNG_RNG_SAMPLE_CNT);
++ 
++@@ -87,7 +164,7 @@ static int rk_rng_init(struct hwrng *rng
++ 	return 0;
++ }
++ 
++-static void rk_rng_cleanup(struct hwrng *rng)
+++static void rk3568_rng_cleanup(struct hwrng *rng)
++ {
++ 	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++ 
++@@ -98,7 +175,7 @@ static void rk_rng_cleanup(struct hwrng
++ 	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
++ }
++ 
++-static int rk_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+++static int rk3568_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
++ {
++ 	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++ 	size_t to_read = min_t(size_t, max, RK_RNG_MAX_BYTE);
++@@ -128,6 +205,114 @@ out:
++ 	return (ret < 0) ? ret : to_read;
++ }
++ 
+++static int rk3588_rng_init(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	u32 version, status, mask, istat;
+++	int ret;
+++
+++	ret = rk_rng_enable_clks(rk_rng);
+++	if (ret < 0)
+++		return ret;
+++
+++	version = rk_rng_readl(rk_rng, TRNG_V1_VERSION);
+++	if (version != TRNG_v1_VERSION_CODE) {
+++		dev_err(rk_rng->dev,
+++			"wrong trng version, expected = %08x, actual = %08x\n",
+++			TRNG_V1_VERSION, version);
+++		ret = -EFAULT;
+++		goto err_disable_clk;
+++	}
+++
+++	mask = TRNG_V1_STAT_SEEDED | TRNG_V1_STAT_GENERATING |
+++	       TRNG_V1_STAT_RESEEDING;
+++	if (readl_poll_timeout(rk_rng->base + TRNG_V1_STAT, status,
+++			       (status & mask) == TRNG_V1_STAT_SEEDED,
+++			       RK_RNG_POLL_PERIOD_US, RK_RNG_POLL_TIMEOUT_US) < 0) {
+++		dev_err(rk_rng->dev, "timed out waiting for hwrng to reseed\n");
+++		ret = -ETIMEDOUT;
+++		goto err_disable_clk;
+++	}
+++
+++	/*
+++	 * clear ISTAT flag, downstream advises to do this to avoid
+++	 * auto-reseeding "on power on"
+++	 */
+++	istat = rk_rng_readl(rk_rng, TRNG_V1_ISTAT);
+++	rk_rng_writel(rk_rng, istat, TRNG_V1_ISTAT);
+++
+++	/* auto reseed after RK_TRNG_V1_AUTO_RESEED_CNT bytes */
+++	rk_rng_writel(rk_rng, RK_TRNG_V1_AUTO_RESEED_CNT / 16, TRNG_V1_AUTO_RQSTS);
+++
+++	return 0;
+++err_disable_clk:
+++	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
+++	return ret;
+++}
+++
+++static void rk3588_rng_cleanup(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++
+++	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
+++}
+++
+++static int rk3588_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	size_t to_read = min_t(size_t, max, RK_RNG_MAX_BYTE);
+++	int ret = 0;
+++	u32 reg;
+++
+++	ret = pm_runtime_resume_and_get(rk_rng->dev);
+++	if (ret < 0)
+++		return ret;
+++
+++	/* Clear ISTAT, even without interrupts enabled, this will be updated */
+++	reg = rk_rng_readl(rk_rng, TRNG_V1_ISTAT);
+++	rk_rng_writel(rk_rng, reg, TRNG_V1_ISTAT);
+++
+++	/* generate 256 bits of random data */
+++	rk_rng_writel(rk_rng, TRNG_V1_MODE_256_BIT, TRNG_V1_MODE);
+++	rk_rng_writel(rk_rng, TRNG_V1_CTRL_RAND, TRNG_V1_CTRL);
+++
+++	ret = readl_poll_timeout_atomic(rk_rng->base + TRNG_V1_ISTAT, reg,
+++					(reg & TRNG_V1_ISTAT_RAND_RDY), 0,
+++					RK_RNG_POLL_TIMEOUT_US);
+++	if (ret < 0)
+++		goto out;
+++
+++	/* Read random data that's in registers TRNG_V1_RAND0 through RAND7 */
+++	memcpy_fromio(buf, rk_rng->base + TRNG_V1_RAND0, to_read);
+++
+++out:
+++	/* Clear ISTAT */
+++	rk_rng_writel(rk_rng, reg, TRNG_V1_ISTAT);
+++	/* close the TRNG */
+++	rk_rng_writel(rk_rng, TRNG_V1_CTRL_NOP, TRNG_V1_CTRL);
+++
+++	pm_runtime_mark_last_busy(rk_rng->dev);
+++	pm_runtime_put_sync_autosuspend(rk_rng->dev);
+++
+++	return (ret < 0) ? ret : to_read;
+++}
+++
+++static const struct rk_rng_soc_data rk3568_soc_data = {
+++	.rk_rng_init = rk3568_rng_init,
+++	.rk_rng_read = rk3568_rng_read,
+++	.rk_rng_cleanup = rk3568_rng_cleanup,
+++	.quality = 900,
+++	.reset_optional = false,
+++};
+++
+++static const struct rk_rng_soc_data rk3588_soc_data = {
+++	.rk_rng_init = rk3588_rng_init,
+++	.rk_rng_read = rk3588_rng_read,
+++	.rk_rng_cleanup = rk3588_rng_cleanup,
+++	.quality = 999,		/* as determined by actual testing */
+++	.reset_optional = true,
+++};
+++
++ static int rk_rng_probe(struct platform_device *pdev)
++ {
++ 	struct device *dev = &pdev->dev;
++@@ -139,6 +324,7 @@ static int rk_rng_probe(struct platform_
++ 	if (!rk_rng)
++ 		return -ENOMEM;
++ 
+++	rk_rng->soc_data = of_device_get_match_data(dev);
++ 	rk_rng->base = devm_platform_ioremap_resource(pdev, 0);
++ 	if (IS_ERR(rk_rng->base))
++ 		return PTR_ERR(rk_rng->base);
++@@ -148,24 +334,30 @@ static int rk_rng_probe(struct platform_
++ 		return dev_err_probe(dev, rk_rng->clk_num,
++ 				     "Failed to get clks property\n");
++ 
++-	rst = devm_reset_control_array_get_exclusive(dev);
++-	if (IS_ERR(rst))
++-		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
++-
++-	reset_control_assert(rst);
++-	udelay(2);
++-	reset_control_deassert(rst);
+++	if (rk_rng->soc_data->reset_optional)
+++		rst = devm_reset_control_array_get_optional_exclusive(dev);
+++	else
+++		rst = devm_reset_control_array_get_exclusive(dev);
+++
+++	if (rst) {
+++		if (IS_ERR(rst))
+++			return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
+++
+++		reset_control_assert(rst);
+++		udelay(2);
+++		reset_control_deassert(rst);
+++	}
++ 
++ 	platform_set_drvdata(pdev, rk_rng);
++ 
++ 	rk_rng->rng.name = dev_driver_string(dev);
++ 	if (!IS_ENABLED(CONFIG_PM)) {
++-		rk_rng->rng.init = rk_rng_init;
++-		rk_rng->rng.cleanup = rk_rng_cleanup;
+++		rk_rng->rng.init = rk_rng->soc_data->rk_rng_init;
+++		rk_rng->rng.cleanup = rk_rng->soc_data->rk_rng_cleanup;
++ 	}
++-	rk_rng->rng.read = rk_rng_read;
+++	rk_rng->rng.read = rk_rng->soc_data->rk_rng_read;
++ 	rk_rng->dev = dev;
++-	rk_rng->rng.quality = 900;
+++	rk_rng->rng.quality = rk_rng->soc_data->quality;
++ 
++ 	pm_runtime_set_autosuspend_delay(dev, RK_RNG_AUTOSUSPEND_DELAY);
++ 	pm_runtime_use_autosuspend(dev);
++@@ -184,7 +376,7 @@ static int __maybe_unused rk_rng_runtime
++ {
++ 	struct rk_rng *rk_rng = dev_get_drvdata(dev);
++ 
++-	rk_rng_cleanup(&rk_rng->rng);
+++	rk_rng->soc_data->rk_rng_cleanup(&rk_rng->rng);
++ 
++ 	return 0;
++ }
++@@ -193,7 +385,7 @@ static int __maybe_unused rk_rng_runtime
++ {
++ 	struct rk_rng *rk_rng = dev_get_drvdata(dev);
++ 
++-	return rk_rng_init(&rk_rng->rng);
+++	return rk_rng->soc_data->rk_rng_init(&rk_rng->rng);
++ }
++ 
++ static const struct dev_pm_ops rk_rng_pm_ops = {
++@@ -204,7 +396,8 @@ static const struct dev_pm_ops rk_rng_pm
++ };
++ 
++ static const struct of_device_id rk_rng_dt_match[] = {
++-	{ .compatible = "rockchip,rk3568-rng", },
+++	{ .compatible = "rockchip,rk3568-rng", .data = (void *)&rk3568_soc_data },
+++	{ .compatible = "rockchip,rk3588-rng", .data = (void *)&rk3588_soc_data },
++ 	{ /* sentinel */ },
++ };
++ 
++@@ -221,8 +414,9 @@ static struct platform_driver rk_rng_dri
++ 
++ module_platform_driver(rk_rng_driver);
++ 
++-MODULE_DESCRIPTION("Rockchip RK3568 True Random Number Generator driver");
+++MODULE_DESCRIPTION("Rockchip True Random Number Generator driver");
++ MODULE_AUTHOR("Lin Jinhan <troy.lin@rock-chips.com>");
++ MODULE_AUTHOR("Aurelien Jarno <aurelien@aurel32.net>");
++ MODULE_AUTHOR("Daniel Golle <daniel@makrotopia.org>");
+++MODULE_AUTHOR("Nicolas Frattaroli <nicolas.frattaroli@collabora.com>");
++ MODULE_LICENSE("GPL");
+diff --git a/target/linux/rockchip/patches-6.12/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch b/target/linux/rockchip/patches-6.12/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+new file mode 100644
+index 0000000000..1bb84a97fe
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+@@ -0,0 +1,34 @@
++From 6ee0b9ad3995ee5fa229035c69013b7dd0d3634b Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:51 +0100
++Subject: [PATCH] arm64: dts: rockchip: Add rng node to RK3588
++
++Add the RK3588's standalone hardware random number generator node to its
++device tree, and enable it.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Link: https://lore.kernel.org/r/20250204-rk3588-trng-submission-v2-6-608172b6fd91@collabora.com
++[changed reset-id to its numeric value while the constant makes its
++ way through the crypto tree]
++Signed-off-by: Heiko Stuebner <heiko@sntech.de>
++---
++ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 8 ++++++++
++ 1 file changed, 8 insertions(+)
++
++--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
++@@ -1879,6 +1879,14 @@
++ 		status = "disabled";
++ 	};
++ 
+++	rng@fe378000 {
+++		compatible = "rockchip,rk3588-rng";
+++		reg = <0x0 0xfe378000 0x0 0x200>;
+++		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
+++		clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
+++		resets = <&scmi_reset 48>;
+++	};
+++
++ 	i2s0_8ch: i2s@fe470000 {
++ 		compatible = "rockchip,rk3588-i2s-tdm";
++ 		reg = <0x0 0xfe470000 0x0 0x1000>;
+diff --git a/target/linux/rockchip/patches-6.12/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch b/target/linux/rockchip/patches-6.12/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+new file mode 100644
+index 0000000000..df998a69af
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+@@ -0,0 +1,25 @@
++From 55a43c346d24434e46ef7fcc09a9df8179c346e4 Mon Sep 17 00:00:00 2001
++From: Heiko Stuebner <heiko@sntech.de>
++Date: Sun, 16 Feb 2025 16:27:42 +0100
++Subject: [PATCH] arm64: dts: rockchip: change rng reset id back to its
++ constant value
++
++With the binding header now providing the SCMI_SRST_H_TRNG_NS constant,
++switch back to it from the temporary numeric value.
++
++Signed-off-by: Heiko Stuebner <heiko@sntech.de>
++---
++ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
++@@ -1884,7 +1884,7 @@
++ 		reg = <0x0 0xfe378000 0x0 0x200>;
++ 		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
++ 		clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
++-		resets = <&scmi_reset 48>;
+++		resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
++ 	};
++ 
++ 	i2s0_8ch: i2s@fe470000 {
+diff --git a/target/linux/rockchip/patches-6.6/057-01-v6.12-hwrng-rockchip-rst-is-used-only-during-probe.patch b/target/linux/rockchip/patches-6.6/057-01-v6.12-hwrng-rockchip-rst-is-used-only-during-probe.patch
+new file mode 100644
+index 0000000000..452506fe37
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-01-v6.12-hwrng-rockchip-rst-is-used-only-during-probe.patch
+@@ -0,0 +1,53 @@
++From 9c2797093a4095a1d686b6c51fbd321a627855ee Mon Sep 17 00:00:00 2001
++From: Martin Kaiser <martin@kaiser.cx>
++Date: Wed, 21 Aug 2024 20:12:34 +0200
++Subject: [PATCH] hwrng: rockchip - rst is used only during probe
++
++The driver uses the rst variable only for an initial reset when the chip
++is probed. There's no need to store rst in the driver's private data, we
++can make it a local variable in the probe function.
++
++Signed-off-by: Martin Kaiser <martin@kaiser.cx>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 13 ++++++-------
++ 1 file changed, 6 insertions(+), 7 deletions(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -52,7 +52,6 @@
++ struct rk_rng {
++ 	struct hwrng rng;
++ 	void __iomem *base;
++-	struct reset_control *rst;
++ 	int clk_num;
++ 	struct clk_bulk_data *clk_bulks;
++ };
++@@ -132,6 +131,7 @@ out:
++ static int rk_rng_probe(struct platform_device *pdev)
++ {
++ 	struct device *dev = &pdev->dev;
+++	struct reset_control *rst;
++ 	struct rk_rng *rk_rng;
++ 	int ret;
++ 
++@@ -148,14 +148,13 @@ static int rk_rng_probe(struct platform_
++ 		return dev_err_probe(dev, rk_rng->clk_num,
++ 				     "Failed to get clks property\n");
++ 
++-	rk_rng->rst = devm_reset_control_array_get_exclusive(&pdev->dev);
++-	if (IS_ERR(rk_rng->rst))
++-		return dev_err_probe(dev, PTR_ERR(rk_rng->rst),
++-				     "Failed to get reset property\n");
+++	rst = devm_reset_control_array_get_exclusive(&pdev->dev);
+++	if (IS_ERR(rst))
+++		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
++ 
++-	reset_control_assert(rk_rng->rst);
+++	reset_control_assert(rst);
++ 	udelay(2);
++-	reset_control_deassert(rk_rng->rst);
+++	reset_control_deassert(rst);
++ 
++ 	platform_set_drvdata(pdev, rk_rng);
++ 
+diff --git a/target/linux/rockchip/patches-6.6/057-02-v6.12-hwrng-rockchip-handle-devm_pm_runtime_enable-errors.patch b/target/linux/rockchip/patches-6.6/057-02-v6.12-hwrng-rockchip-handle-devm_pm_runtime_enable-errors.patch
+new file mode 100644
+index 0000000000..5d4b875bc9
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-02-v6.12-hwrng-rockchip-handle-devm_pm_runtime_enable-errors.patch
+@@ -0,0 +1,27 @@
++From 866ff78da10178cf98600f59ea353fb1b2b7976e Mon Sep 17 00:00:00 2001
++From: Martin Kaiser <martin@kaiser.cx>
++Date: Wed, 21 Aug 2024 20:12:35 +0200
++Subject: [PATCH] hwrng: rockchip - handle devm_pm_runtime_enable errors
++
++It's unlikely that devm_pm_runtime_enable ever fails. Still, it makes
++sense to read the return value and handle errors.
++
++Signed-off-by: Martin Kaiser <martin@kaiser.cx>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 4 +++-
++ 1 file changed, 3 insertions(+), 1 deletion(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -169,7 +169,9 @@ static int rk_rng_probe(struct platform_
++ 
++ 	pm_runtime_set_autosuspend_delay(dev, RK_RNG_AUTOSUSPEND_DELAY);
++ 	pm_runtime_use_autosuspend(dev);
++-	devm_pm_runtime_enable(dev);
+++	ret = devm_pm_runtime_enable(dev);
+++	if (ret)
+++		return dev_err_probe(&pdev->dev, ret, "Runtime pm activation failed.\n");
++ 
++ 	ret = devm_hwrng_register(dev, &rk_rng->rng);
++ 	if (ret)
+diff --git a/target/linux/rockchip/patches-6.6/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch b/target/linux/rockchip/patches-6.6/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+new file mode 100644
+index 0000000000..8f98680aea
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-03-v6.15-dt-bindings-reset-Add-SCMI-reset-IDs-for-RK3588.patch
+@@ -0,0 +1,74 @@
++From 849d9db170fc8a03ce9f64133a1d0cd46c135105 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:46 +0100
++Subject: [PATCH] dt-bindings: reset: Add SCMI reset IDs for RK3588
++
++When TF-A is used to assert/deassert the resets through SCMI, the
++IDs communicated to it are different than the ones mainline Linux uses.
++
++Import the list of SCMI reset IDs from mainline TF-A so that devicetrees
++can use these IDs more easily.
++
++Co-developed-by: XiaoDong Huang <derrick.huang@rock-chips.com>
++Signed-off-by: XiaoDong Huang <derrick.huang@rock-chips.com>
++Acked-by: Conor Dooley <conor.dooley@microchip.com>
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ .../dt-bindings/reset/rockchip,rk3588-cru.h   | 41 ++++++++++++++++++-
++ 1 file changed, 40 insertions(+), 1 deletion(-)
++
++--- a/include/dt-bindings/reset/rockchip,rk3588-cru.h
+++++ b/include/dt-bindings/reset/rockchip,rk3588-cru.h
++@@ -1,6 +1,6 @@
++ /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
++ /*
++- * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
+++ * Copyright (c) 2021, 2024 Rockchip Electronics Co. Ltd.
++  * Copyright (c) 2022 Collabora Ltd.
++  *
++  * Author: Elaine Zhang <zhangqing@rock-chips.com>
++@@ -753,4 +753,43 @@
++ 
++ #define SRST_A_HDMIRX_BIU		660
++ 
+++/* SCMI Secure Resets */
+++
+++/* Name=SECURE_SOFTRST_CON00,Offset=0xA00 */
+++#define SCMI_SRST_A_SECURE_NS_BIU	10
+++#define SCMI_SRST_H_SECURE_NS_BIU	11
+++#define SCMI_SRST_A_SECURE_S_BIU	12
+++#define SCMI_SRST_H_SECURE_S_BIU	13
+++#define SCMI_SRST_P_SECURE_S_BIU	14
+++#define SCMI_SRST_CRYPTO_CORE		15
+++/* Name=SECURE_SOFTRST_CON01,Offset=0xA04 */
+++#define SCMI_SRST_CRYPTO_PKA		16
+++#define SCMI_SRST_CRYPTO_RNG		17
+++#define SCMI_SRST_A_CRYPTO		18
+++#define SCMI_SRST_H_CRYPTO		19
+++#define SCMI_SRST_KEYLADDER_CORE	25
+++#define SCMI_SRST_KEYLADDER_RNG		26
+++#define SCMI_SRST_A_KEYLADDER		27
+++#define SCMI_SRST_H_KEYLADDER		28
+++#define SCMI_SRST_P_OTPC_S		29
+++#define SCMI_SRST_OTPC_S		30
+++#define SCMI_SRST_WDT_S			31
+++/* Name=SECURE_SOFTRST_CON02,Offset=0xA08 */
+++#define SCMI_SRST_T_WDT_S		32
+++#define SCMI_SRST_H_BOOTROM		33
+++#define SCMI_SRST_A_DCF			34
+++#define SCMI_SRST_P_DCF			35
+++#define SCMI_SRST_H_BOOTROM_NS		37
+++#define SCMI_SRST_P_KEYLADDER		46
+++#define SCMI_SRST_H_TRNG_S		47
+++/* Name=SECURE_SOFTRST_CON03,Offset=0xA0C */
+++#define SCMI_SRST_H_TRNG_NS		48
+++#define SCMI_SRST_D_SDMMC_BUFFER	49
+++#define SCMI_SRST_H_SDMMC		50
+++#define SCMI_SRST_H_SDMMC_BUFFER	51
+++#define SCMI_SRST_SDMMC			52
+++#define SCMI_SRST_P_TRNG_CHK		53
+++#define SCMI_SRST_TRNG_S		54
+++
+++
++ #endif
+diff --git a/target/linux/rockchip/patches-6.6/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch b/target/linux/rockchip/patches-6.6/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+new file mode 100644
+index 0000000000..cb7e15527b
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-04-v6.15-dt-bindings-rng-add-binding-for-Rockchip-RK3588-RNG.patch
+@@ -0,0 +1,91 @@
++From e00fc3d6e7c2d0b2ab5cf03a576df39cd94479aa Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:47 +0100
++Subject: [PATCH] dt-bindings: rng: add binding for Rockchip RK3588 RNG
++
++The Rockchip RK3588 SoC has two hardware RNGs accessible to the
++non-secure world: an RNG in the Crypto IP, and a standalone RNG that is
++new to this SoC.
++
++Add a binding for this new standalone RNG. It is distinct hardware from
++the existing rockchip,rk3568-rng, and therefore gets its own binding as
++the two hardware IPs are unrelated other than both being made by the
++same vendor.
++
++The RNG is capable of firing an interrupt when entropy is ready.
++
++The reset is optional, as the hardware does a power-on reset, and
++functions without the software manually resetting it.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Acked-by: Conor Dooley <conor.dooley@microchip.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ .../bindings/rng/rockchip,rk3588-rng.yaml     | 60 +++++++++++++++++++
++ MAINTAINERS                                   |  1 +
++ 2 files changed, 61 insertions(+)
++ create mode 100644 Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++
++--- /dev/null
+++++ b/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++@@ -0,0 +1,60 @@
+++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+++%YAML 1.2
+++---
+++$id: http://devicetree.org/schemas/rng/rockchip,rk3588-rng.yaml#
+++$schema: http://devicetree.org/meta-schemas/core.yaml#
+++
+++title: Rockchip RK3588 TRNG
+++
+++description: True Random Number Generator on Rockchip RK3588 SoC
+++
+++maintainers:
+++  - Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
+++
+++properties:
+++  compatible:
+++    enum:
+++      - rockchip,rk3588-rng
+++
+++  reg:
+++    maxItems: 1
+++
+++  clocks:
+++    items:
+++      - description: TRNG AHB clock
+++
+++  interrupts:
+++    maxItems: 1
+++
+++  resets:
+++    maxItems: 1
+++
+++required:
+++  - compatible
+++  - reg
+++  - clocks
+++  - interrupts
+++
+++additionalProperties: false
+++
+++examples:
+++  - |
+++    #include <dt-bindings/clock/rockchip,rk3588-cru.h>
+++    #include <dt-bindings/interrupt-controller/arm-gic.h>
+++    #include <dt-bindings/interrupt-controller/irq.h>
+++    #include <dt-bindings/reset/rockchip,rk3588-cru.h>
+++    bus {
+++      #address-cells = <2>;
+++      #size-cells = <2>;
+++
+++      rng@fe378000 {
+++        compatible = "rockchip,rk3588-rng";
+++        reg = <0x0 0xfe378000 0x0 0x200>;
+++        interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
+++        clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
+++        resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
+++        status = "okay";
+++      };
+++    };
+++
+++...
+diff --git a/target/linux/rockchip/patches-6.6/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch b/target/linux/rockchip/patches-6.6/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+new file mode 100644
+index 0000000000..1dde09f1af
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-05-v6.15-dt-bindings-rng-rockchip-rk3588-rng-Drop-unnecessary.patch
+@@ -0,0 +1,27 @@
++From 52b3b329d8e589575d16d8d9adbca9e08041ee82 Mon Sep 17 00:00:00 2001
++From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++Date: Fri, 7 Mar 2025 10:33:09 +0100
++Subject: [PATCH] dt-bindings: rng: rockchip,rk3588-rng: Drop unnecessary
++ status from example
++
++Device nodes are enabled by default, so no need for 'status = "okay"' in
++the DTS example.
++
++Reviewed-by: Heiko Stuebner <heiko@sntech.de>
++Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
++Acked-by: Rob Herring (Arm) <robh@kernel.org>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml | 1 -
++ 1 file changed, 1 deletion(-)
++
++--- a/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
+++++ b/Documentation/devicetree/bindings/rng/rockchip,rk3588-rng.yaml
++@@ -53,7 +53,6 @@ examples:
++         interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
++         clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
++         resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
++-        status = "okay";
++       };
++     };
++ 
+diff --git a/target/linux/rockchip/patches-6.6/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch b/target/linux/rockchip/patches-6.6/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+new file mode 100644
+index 0000000000..2f14fcd888
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-06-v6.15-hwrng-rockchip-store-dev-pointer-in-driver-struct.patch
+@@ -0,0 +1,67 @@
++From 8bb8609293ff3d8998d75c8db605c0529e83bcd9 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:48 +0100
++Subject: [PATCH] hwrng: rockchip - store dev pointer in driver struct
++
++The rockchip rng driver does a dance to store the dev pointer in the
++hwrng's unsigned long "priv" member. However, since the struct hwrng
++member of rk_rng is not a pointer, we can use container_of to get the
++struct rk_rng instance from just the struct hwrng*, which means we don't
++have to subvert what little there is in C of a type system and can
++instead store a pointer to the device struct in the rk_rng itself.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 12 ++++++------
++ 1 file changed, 6 insertions(+), 6 deletions(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -54,6 +54,7 @@ struct rk_rng {
++ 	void __iomem *base;
++ 	int clk_num;
++ 	struct clk_bulk_data *clk_bulks;
+++	struct device *dev;
++ };
++ 
++ /* The mask in the upper 16 bits determines the bits that are updated */
++@@ -70,8 +71,7 @@ static int rk_rng_init(struct hwrng *rng
++ 	/* start clocks */
++ 	ret = clk_bulk_prepare_enable(rk_rng->clk_num, rk_rng->clk_bulks);
++ 	if (ret < 0) {
++-		dev_err((struct device *) rk_rng->rng.priv,
++-			"Failed to enable clks %d\n", ret);
+++		dev_err(rk_rng->dev, "Failed to enable clocks: %d\n", ret);
++ 		return ret;
++ 	}
++ 
++@@ -105,7 +105,7 @@ static int rk_rng_read(struct hwrng *rng
++ 	u32 reg;
++ 	int ret = 0;
++ 
++-	ret = pm_runtime_resume_and_get((struct device *) rk_rng->rng.priv);
+++	ret = pm_runtime_resume_and_get(rk_rng->dev);
++ 	if (ret < 0)
++ 		return ret;
++ 
++@@ -122,8 +122,8 @@ static int rk_rng_read(struct hwrng *rng
++ 	/* Read random data stored in the registers */
++ 	memcpy_fromio(buf, rk_rng->base + TRNG_RNG_DOUT, to_read);
++ out:
++-	pm_runtime_mark_last_busy((struct device *) rk_rng->rng.priv);
++-	pm_runtime_put_sync_autosuspend((struct device *) rk_rng->rng.priv);
+++	pm_runtime_mark_last_busy(rk_rng->dev);
+++	pm_runtime_put_sync_autosuspend(rk_rng->dev);
++ 
++ 	return (ret < 0) ? ret : to_read;
++ }
++@@ -164,7 +164,7 @@ static int rk_rng_probe(struct platform_
++ 		rk_rng->rng.cleanup = rk_rng_cleanup;
++ 	}
++ 	rk_rng->rng.read = rk_rng_read;
++-	rk_rng->rng.priv = (unsigned long) dev;
+++	rk_rng->dev = dev;
++ 	rk_rng->rng.quality = 900;
++ 
++ 	pm_runtime_set_autosuspend_delay(dev, RK_RNG_AUTOSUSPEND_DELAY);
+diff --git a/target/linux/rockchip/patches-6.6/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch b/target/linux/rockchip/patches-6.6/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+new file mode 100644
+index 0000000000..a3bdff9641
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-07-v6.15-hwrng-rockchip-eliminate-some-unnecessary-dereferenc.patch
+@@ -0,0 +1,42 @@
++From 24aaa42ed65c0811b598674a593fc653d643a7e6 Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:49 +0100
++Subject: [PATCH] hwrng: rockchip - eliminate some unnecessary dereferences
++
++Despite assigning a temporary variable the value of &pdev->dev early on
++in the probe function, the probe function then continues to use this
++construct when it could just use the local dev variable instead.
++
++Simplify this by using the local dev variable directly.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/rockchip-rng.c | 6 +++---
++ 1 file changed, 3 insertions(+), 3 deletions(-)
++
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -148,7 +148,7 @@ static int rk_rng_probe(struct platform_
++ 		return dev_err_probe(dev, rk_rng->clk_num,
++ 				     "Failed to get clks property\n");
++ 
++-	rst = devm_reset_control_array_get_exclusive(&pdev->dev);
+++	rst = devm_reset_control_array_get_exclusive(dev);
++ 	if (IS_ERR(rst))
++ 		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
++ 
++@@ -171,11 +171,11 @@ static int rk_rng_probe(struct platform_
++ 	pm_runtime_use_autosuspend(dev);
++ 	ret = devm_pm_runtime_enable(dev);
++ 	if (ret)
++-		return dev_err_probe(&pdev->dev, ret, "Runtime pm activation failed.\n");
+++		return dev_err_probe(dev, ret, "Runtime pm activation failed.\n");
++ 
++ 	ret = devm_hwrng_register(dev, &rk_rng->rng);
++ 	if (ret)
++-		return dev_err_probe(&pdev->dev, ret, "Failed to register Rockchip hwrng\n");
+++		return dev_err_probe(dev, ret, "Failed to register Rockchip hwrng\n");
++ 
++ 	return 0;
++ }
+diff --git a/target/linux/rockchip/patches-6.6/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch b/target/linux/rockchip/patches-6.6/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+new file mode 100644
+index 0000000000..9ae621a54a
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-08-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+@@ -0,0 +1,422 @@
++From 8eff8eb83fc0ae8b5f76220e2bb8644d836e99ff Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:50 +0100
++Subject: [PATCH] hwrng: rockchip - add support for rk3588's standalone TRNG
++
++The RK3588 SoC includes several TRNGs, one part of the Crypto IP block,
++and the other one (referred to as "trngv1") as a standalone new IP.
++
++Add support for this new standalone TRNG to the driver by both
++generalising it to support multiple different rockchip RNGs and then
++implementing the required functionality for the new hardware.
++
++This work was partly based on the downstream vendor driver by Rockchip's
++Lin Jinhan, which is why they are listed as a Co-author.
++
++While the hardware does support notifying the CPU with an IRQ when the
++random data is ready, I've discovered while implementing the code to use
++this interrupt that this results in significantly slower throughput of
++the TRNG even when under heavy CPU load. I assume this is because with
++only 32 bytes of data per invocation, the overhead of reinitialising a
++completion, enabling the interrupt, sleeping and then triggering the
++completion in the IRQ handler is way more expensive than busylooping.
++
++Speaking of busylooping, the poll interval for reading the ISTAT is an
++atomic read with a delay of 0. In my testing, I've found that this gives
++us the largest throughput, and it appears the random data is ready
++pretty much the moment we begin polling, as increasing the poll delay
++leads to a drop in throughput significant enough to not just be due to
++the poll interval missing the ideal timing by a microsecond or two.
++
++According to downstream, the IP should take 1024 clock cycles to
++generate 56 bits of random data, which at 150MHz should work out to
++6.8us. I did not test whether the data really does take 256/56*6.8us
++to arrive, though changing the readl to a __raw_readl makes no
++difference in throughput, and this data does pass the rngtest FIPS
++checks, so I'm not entirely sure what's going on but I presume it's got
++something to do with the AHB bus speed and the memory barriers that
++mainline's readl/writel functions insert.
++
++The only other current SoC that uses this new IP is the Rockchip RV1106,
++but that SoC does not have mainline support as of the time of writing,
++so we make no effort to declare it as supported for now.
++
++Co-developed-by: Lin Jinhan <troy.lin@rock-chips.com>
++Signed-off-by: Lin Jinhan <troy.lin@rock-chips.com>
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
++---
++ drivers/char/hw_random/Kconfig        |   3 +-
++ drivers/char/hw_random/rockchip-rng.c | 234 +++++++++++++++++++++++---
++ 2 files changed, 216 insertions(+), 21 deletions(-)
++
++--- a/drivers/char/hw_random/Kconfig
+++++ b/drivers/char/hw_random/Kconfig
++@@ -580,7 +580,8 @@ config HW_RANDOM_ROCKCHIP
++ 	default HW_RANDOM
++ 	help
++ 	  This driver provides kernel-side support for the True Random Number
++-	  Generator hardware found on some Rockchip SoC like RK3566 or RK3568.
+++	  Generator hardware found on some Rockchip SoCs like RK3566, RK3568
+++	  or RK3588.
++ 
++ 	  To compile this driver as a module, choose M here: the
++ 	  module will be called rockchip-rng.
++--- a/drivers/char/hw_random/rockchip-rng.c
+++++ b/drivers/char/hw_random/rockchip-rng.c
++@@ -1,12 +1,14 @@
++ // SPDX-License-Identifier: GPL-2.0
++ /*
++- * rockchip-rng.c True Random Number Generator driver for Rockchip RK3568 SoC
+++ * rockchip-rng.c True Random Number Generator driver for Rockchip SoCs
++  *
++  * Copyright (c) 2018, Fuzhou Rockchip Electronics Co., Ltd.
++  * Copyright (c) 2022, Aurelien Jarno
+++ * Copyright (c) 2025, Collabora Ltd.
++  * Authors:
++  *  Lin Jinhan <troy.lin@rock-chips.com>
++  *  Aurelien Jarno <aurelien@aurel32.net>
+++ *  Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++  */
++ #include <linux/clk.h>
++ #include <linux/hw_random.h>
++@@ -32,6 +34,9 @@
++  */
++ #define RK_RNG_SAMPLE_CNT		1000
++ 
+++/* after how many bytes of output TRNGv1 implementations should be reseeded */
+++#define RK_TRNG_V1_AUTO_RESEED_CNT	16000
+++
++ /* TRNG registers from RK3568 TRM-Part2, section 5.4.1 */
++ #define TRNG_RST_CTL			0x0004
++ #define TRNG_RNG_CTL			0x0400
++@@ -49,25 +54,85 @@
++ #define TRNG_RNG_SAMPLE_CNT		0x0404
++ #define TRNG_RNG_DOUT			0x0410
++ 
+++/*
+++ * TRNG V1 register definitions
+++ * The TRNG V1 IP is a stand-alone TRNG implementation (not part of a crypto IP)
+++ * and can be found in the Rockchip RK3588 SoC
+++ */
+++#define TRNG_V1_CTRL				0x0000
+++#define TRNG_V1_CTRL_NOP			0x00
+++#define TRNG_V1_CTRL_RAND			0x01
+++#define TRNG_V1_CTRL_SEED			0x02
+++
+++#define TRNG_V1_STAT				0x0004
+++#define TRNG_V1_STAT_SEEDED			BIT(9)
+++#define TRNG_V1_STAT_GENERATING			BIT(30)
+++#define TRNG_V1_STAT_RESEEDING			BIT(31)
+++
+++#define TRNG_V1_MODE				0x0008
+++#define TRNG_V1_MODE_128_BIT			(0x00 << 3)
+++#define TRNG_V1_MODE_256_BIT			(0x01 << 3)
+++
+++/* Interrupt Enable register; unused because polling is faster */
+++#define TRNG_V1_IE				0x0010
+++#define TRNG_V1_IE_GLBL_EN			BIT(31)
+++#define TRNG_V1_IE_SEED_DONE_EN			BIT(1)
+++#define TRNG_V1_IE_RAND_RDY_EN			BIT(0)
+++
+++#define TRNG_V1_ISTAT				0x0014
+++#define TRNG_V1_ISTAT_RAND_RDY			BIT(0)
+++
+++/* RAND0 ~ RAND7 */
+++#define TRNG_V1_RAND0				0x0020
+++#define TRNG_V1_RAND7				0x003C
+++
+++/* Auto Reseed Register */
+++#define TRNG_V1_AUTO_RQSTS			0x0060
+++
+++#define TRNG_V1_VERSION				0x00F0
+++#define TRNG_v1_VERSION_CODE			0x46bc
+++/* end of TRNG_V1 register definitions */
+++
+++/* Before removing this assert, give rk3588_rng_read an upper bound of 32 */
+++static_assert(RK_RNG_MAX_BYTE <= (TRNG_V1_RAND7 + 4 - TRNG_V1_RAND0),
+++	      "You raised RK_RNG_MAX_BYTE and broke rk3588-rng, congrats.");
+++
++ struct rk_rng {
++ 	struct hwrng rng;
++ 	void __iomem *base;
++ 	int clk_num;
++ 	struct clk_bulk_data *clk_bulks;
+++	const struct rk_rng_soc_data *soc_data;
++ 	struct device *dev;
++ };
++ 
+++struct rk_rng_soc_data {
+++	int (*rk_rng_init)(struct hwrng *rng);
+++	int (*rk_rng_read)(struct hwrng *rng, void *buf, size_t max, bool wait);
+++	void (*rk_rng_cleanup)(struct hwrng *rng);
+++	unsigned short quality;
+++	bool reset_optional;
+++};
+++
++ /* The mask in the upper 16 bits determines the bits that are updated */
++ static void rk_rng_write_ctl(struct rk_rng *rng, u32 val, u32 mask)
++ {
++ 	writel((mask << 16) | val, rng->base + TRNG_RNG_CTL);
++ }
++ 
++-static int rk_rng_init(struct hwrng *rng)
+++static inline void rk_rng_writel(struct rk_rng *rng, u32 val, u32 offset)
++ {
++-	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++-	int ret;
+++	writel(val, rng->base + offset);
+++}
++ 
+++static inline u32 rk_rng_readl(struct rk_rng *rng, u32 offset)
+++{
+++	return readl(rng->base + offset);
+++}
+++
+++static int rk_rng_enable_clks(struct rk_rng *rk_rng)
+++{
+++	int ret;
++ 	/* start clocks */
++ 	ret = clk_bulk_prepare_enable(rk_rng->clk_num, rk_rng->clk_bulks);
++ 	if (ret < 0) {
++@@ -75,6 +140,18 @@ static int rk_rng_init(struct hwrng *rng
++ 		return ret;
++ 	}
++ 
+++	return 0;
+++}
+++
+++static int rk3568_rng_init(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	int ret;
+++
+++	ret = rk_rng_enable_clks(rk_rng);
+++	if (ret < 0)
+++		return ret;
+++
++ 	/* set the sample period */
++ 	writel(RK_RNG_SAMPLE_CNT, rk_rng->base + TRNG_RNG_SAMPLE_CNT);
++ 
++@@ -87,7 +164,7 @@ static int rk_rng_init(struct hwrng *rng
++ 	return 0;
++ }
++ 
++-static void rk_rng_cleanup(struct hwrng *rng)
+++static void rk3568_rng_cleanup(struct hwrng *rng)
++ {
++ 	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++ 
++@@ -98,7 +175,7 @@ static void rk_rng_cleanup(struct hwrng
++ 	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
++ }
++ 
++-static int rk_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+++static int rk3568_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
++ {
++ 	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
++ 	size_t to_read = min_t(size_t, max, RK_RNG_MAX_BYTE);
++@@ -128,6 +205,114 @@ out:
++ 	return (ret < 0) ? ret : to_read;
++ }
++ 
+++static int rk3588_rng_init(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	u32 version, status, mask, istat;
+++	int ret;
+++
+++	ret = rk_rng_enable_clks(rk_rng);
+++	if (ret < 0)
+++		return ret;
+++
+++	version = rk_rng_readl(rk_rng, TRNG_V1_VERSION);
+++	if (version != TRNG_v1_VERSION_CODE) {
+++		dev_err(rk_rng->dev,
+++			"wrong trng version, expected = %08x, actual = %08x\n",
+++			TRNG_V1_VERSION, version);
+++		ret = -EFAULT;
+++		goto err_disable_clk;
+++	}
+++
+++	mask = TRNG_V1_STAT_SEEDED | TRNG_V1_STAT_GENERATING |
+++	       TRNG_V1_STAT_RESEEDING;
+++	if (readl_poll_timeout(rk_rng->base + TRNG_V1_STAT, status,
+++			       (status & mask) == TRNG_V1_STAT_SEEDED,
+++			       RK_RNG_POLL_PERIOD_US, RK_RNG_POLL_TIMEOUT_US) < 0) {
+++		dev_err(rk_rng->dev, "timed out waiting for hwrng to reseed\n");
+++		ret = -ETIMEDOUT;
+++		goto err_disable_clk;
+++	}
+++
+++	/*
+++	 * clear ISTAT flag, downstream advises to do this to avoid
+++	 * auto-reseeding "on power on"
+++	 */
+++	istat = rk_rng_readl(rk_rng, TRNG_V1_ISTAT);
+++	rk_rng_writel(rk_rng, istat, TRNG_V1_ISTAT);
+++
+++	/* auto reseed after RK_TRNG_V1_AUTO_RESEED_CNT bytes */
+++	rk_rng_writel(rk_rng, RK_TRNG_V1_AUTO_RESEED_CNT / 16, TRNG_V1_AUTO_RQSTS);
+++
+++	return 0;
+++err_disable_clk:
+++	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
+++	return ret;
+++}
+++
+++static void rk3588_rng_cleanup(struct hwrng *rng)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++
+++	clk_bulk_disable_unprepare(rk_rng->clk_num, rk_rng->clk_bulks);
+++}
+++
+++static int rk3588_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
+++{
+++	struct rk_rng *rk_rng = container_of(rng, struct rk_rng, rng);
+++	size_t to_read = min_t(size_t, max, RK_RNG_MAX_BYTE);
+++	int ret = 0;
+++	u32 reg;
+++
+++	ret = pm_runtime_resume_and_get(rk_rng->dev);
+++	if (ret < 0)
+++		return ret;
+++
+++	/* Clear ISTAT, even without interrupts enabled, this will be updated */
+++	reg = rk_rng_readl(rk_rng, TRNG_V1_ISTAT);
+++	rk_rng_writel(rk_rng, reg, TRNG_V1_ISTAT);
+++
+++	/* generate 256 bits of random data */
+++	rk_rng_writel(rk_rng, TRNG_V1_MODE_256_BIT, TRNG_V1_MODE);
+++	rk_rng_writel(rk_rng, TRNG_V1_CTRL_RAND, TRNG_V1_CTRL);
+++
+++	ret = readl_poll_timeout_atomic(rk_rng->base + TRNG_V1_ISTAT, reg,
+++					(reg & TRNG_V1_ISTAT_RAND_RDY), 0,
+++					RK_RNG_POLL_TIMEOUT_US);
+++	if (ret < 0)
+++		goto out;
+++
+++	/* Read random data that's in registers TRNG_V1_RAND0 through RAND7 */
+++	memcpy_fromio(buf, rk_rng->base + TRNG_V1_RAND0, to_read);
+++
+++out:
+++	/* Clear ISTAT */
+++	rk_rng_writel(rk_rng, reg, TRNG_V1_ISTAT);
+++	/* close the TRNG */
+++	rk_rng_writel(rk_rng, TRNG_V1_CTRL_NOP, TRNG_V1_CTRL);
+++
+++	pm_runtime_mark_last_busy(rk_rng->dev);
+++	pm_runtime_put_sync_autosuspend(rk_rng->dev);
+++
+++	return (ret < 0) ? ret : to_read;
+++}
+++
+++static const struct rk_rng_soc_data rk3568_soc_data = {
+++	.rk_rng_init = rk3568_rng_init,
+++	.rk_rng_read = rk3568_rng_read,
+++	.rk_rng_cleanup = rk3568_rng_cleanup,
+++	.quality = 900,
+++	.reset_optional = false,
+++};
+++
+++static const struct rk_rng_soc_data rk3588_soc_data = {
+++	.rk_rng_init = rk3588_rng_init,
+++	.rk_rng_read = rk3588_rng_read,
+++	.rk_rng_cleanup = rk3588_rng_cleanup,
+++	.quality = 999,		/* as determined by actual testing */
+++	.reset_optional = true,
+++};
+++
++ static int rk_rng_probe(struct platform_device *pdev)
++ {
++ 	struct device *dev = &pdev->dev;
++@@ -139,6 +324,7 @@ static int rk_rng_probe(struct platform_
++ 	if (!rk_rng)
++ 		return -ENOMEM;
++ 
+++	rk_rng->soc_data = of_device_get_match_data(dev);
++ 	rk_rng->base = devm_platform_ioremap_resource(pdev, 0);
++ 	if (IS_ERR(rk_rng->base))
++ 		return PTR_ERR(rk_rng->base);
++@@ -148,24 +334,30 @@ static int rk_rng_probe(struct platform_
++ 		return dev_err_probe(dev, rk_rng->clk_num,
++ 				     "Failed to get clks property\n");
++ 
++-	rst = devm_reset_control_array_get_exclusive(dev);
++-	if (IS_ERR(rst))
++-		return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
++-
++-	reset_control_assert(rst);
++-	udelay(2);
++-	reset_control_deassert(rst);
+++	if (rk_rng->soc_data->reset_optional)
+++		rst = devm_reset_control_array_get_optional_exclusive(dev);
+++	else
+++		rst = devm_reset_control_array_get_exclusive(dev);
+++
+++	if (rst) {
+++		if (IS_ERR(rst))
+++			return dev_err_probe(dev, PTR_ERR(rst), "Failed to get reset property\n");
+++
+++		reset_control_assert(rst);
+++		udelay(2);
+++		reset_control_deassert(rst);
+++	}
++ 
++ 	platform_set_drvdata(pdev, rk_rng);
++ 
++ 	rk_rng->rng.name = dev_driver_string(dev);
++ 	if (!IS_ENABLED(CONFIG_PM)) {
++-		rk_rng->rng.init = rk_rng_init;
++-		rk_rng->rng.cleanup = rk_rng_cleanup;
+++		rk_rng->rng.init = rk_rng->soc_data->rk_rng_init;
+++		rk_rng->rng.cleanup = rk_rng->soc_data->rk_rng_cleanup;
++ 	}
++-	rk_rng->rng.read = rk_rng_read;
+++	rk_rng->rng.read = rk_rng->soc_data->rk_rng_read;
++ 	rk_rng->dev = dev;
++-	rk_rng->rng.quality = 900;
+++	rk_rng->rng.quality = rk_rng->soc_data->quality;
++ 
++ 	pm_runtime_set_autosuspend_delay(dev, RK_RNG_AUTOSUSPEND_DELAY);
++ 	pm_runtime_use_autosuspend(dev);
++@@ -184,7 +376,7 @@ static int __maybe_unused rk_rng_runtime
++ {
++ 	struct rk_rng *rk_rng = dev_get_drvdata(dev);
++ 
++-	rk_rng_cleanup(&rk_rng->rng);
+++	rk_rng->soc_data->rk_rng_cleanup(&rk_rng->rng);
++ 
++ 	return 0;
++ }
++@@ -193,7 +385,7 @@ static int __maybe_unused rk_rng_runtime
++ {
++ 	struct rk_rng *rk_rng = dev_get_drvdata(dev);
++ 
++-	return rk_rng_init(&rk_rng->rng);
+++	return rk_rng->soc_data->rk_rng_init(&rk_rng->rng);
++ }
++ 
++ static const struct dev_pm_ops rk_rng_pm_ops = {
++@@ -204,7 +396,8 @@ static const struct dev_pm_ops rk_rng_pm
++ };
++ 
++ static const struct of_device_id rk_rng_dt_match[] = {
++-	{ .compatible = "rockchip,rk3568-rng", },
+++	{ .compatible = "rockchip,rk3568-rng", .data = (void *)&rk3568_soc_data },
+++	{ .compatible = "rockchip,rk3588-rng", .data = (void *)&rk3588_soc_data },
++ 	{ /* sentinel */ },
++ };
++ 
++@@ -221,8 +414,9 @@ static struct platform_driver rk_rng_dri
++ 
++ module_platform_driver(rk_rng_driver);
++ 
++-MODULE_DESCRIPTION("Rockchip RK3568 True Random Number Generator driver");
+++MODULE_DESCRIPTION("Rockchip True Random Number Generator driver");
++ MODULE_AUTHOR("Lin Jinhan <troy.lin@rock-chips.com>");
++ MODULE_AUTHOR("Aurelien Jarno <aurelien@aurel32.net>");
++ MODULE_AUTHOR("Daniel Golle <daniel@makrotopia.org>");
+++MODULE_AUTHOR("Nicolas Frattaroli <nicolas.frattaroli@collabora.com>");
++ MODULE_LICENSE("GPL");
+diff --git a/target/linux/rockchip/patches-6.6/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch b/target/linux/rockchip/patches-6.6/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+new file mode 100644
+index 0000000000..49d3c69b56
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-09-v6.15-arm64-dts-rockchip-Add-rng-node-to-RK3588.patch
+@@ -0,0 +1,34 @@
++From 6ee0b9ad3995ee5fa229035c69013b7dd0d3634b Mon Sep 17 00:00:00 2001
++From: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Date: Tue, 4 Feb 2025 16:35:51 +0100
++Subject: [PATCH] arm64: dts: rockchip: Add rng node to RK3588
++
++Add the RK3588's standalone hardware random number generator node to its
++device tree, and enable it.
++
++Signed-off-by: Nicolas Frattaroli <nicolas.frattaroli@collabora.com>
++Link: https://lore.kernel.org/r/20250204-rk3588-trng-submission-v2-6-608172b6fd91@collabora.com
++[changed reset-id to its numeric value while the constant makes its
++ way through the crypto tree]
++Signed-off-by: Heiko Stuebner <heiko@sntech.de>
++---
++ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 8 ++++++++
++ 1 file changed, 8 insertions(+)
++
++--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
++@@ -1763,6 +1763,14 @@
++ 		status = "disabled";
++ 	};
++ 
+++	rng@fe378000 {
+++		compatible = "rockchip,rk3588-rng";
+++		reg = <0x0 0xfe378000 0x0 0x200>;
+++		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
+++		clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
+++		resets = <&scmi_reset 48>;
+++	};
+++
++ 	i2s0_8ch: i2s@fe470000 {
++ 		compatible = "rockchip,rk3588-i2s-tdm";
++ 		reg = <0x0 0xfe470000 0x0 0x1000>;
+diff --git a/target/linux/rockchip/patches-6.6/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch b/target/linux/rockchip/patches-6.6/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+new file mode 100644
+index 0000000000..8ba4c45f77
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.6/057-10-v6.15-arm64-dts-rockchip-change-rng-reset-id-back-to-its-c.patch
+@@ -0,0 +1,25 @@
++From 55a43c346d24434e46ef7fcc09a9df8179c346e4 Mon Sep 17 00:00:00 2001
++From: Heiko Stuebner <heiko@sntech.de>
++Date: Sun, 16 Feb 2025 16:27:42 +0100
++Subject: [PATCH] arm64: dts: rockchip: change rng reset id back to its
++ constant value
++
++With the binding header now providing the SCMI_SRST_H_TRNG_NS constant,
++switch back to it from the temporary numeric value.
++
++Signed-off-by: Heiko Stuebner <heiko@sntech.de>
++---
++ arch/arm64/boot/dts/rockchip/rk3588-base.dtsi | 2 +-
++ 1 file changed, 1 insertion(+), 1 deletion(-)
++
++--- a/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3588-base.dtsi
++@@ -1768,7 +1768,7 @@
++ 		reg = <0x0 0xfe378000 0x0 0x200>;
++ 		interrupts = <GIC_SPI 400 IRQ_TYPE_LEVEL_HIGH 0>;
++ 		clocks = <&scmi_clk SCMI_HCLK_SECURE_NS>;
++-		resets = <&scmi_reset 48>;
+++		resets = <&scmi_reset SCMI_SRST_H_TRNG_NS>;
++ 	};
++ 
++ 	i2s0_8ch: i2s@fe470000 {
+-- 
+2.46.0
+

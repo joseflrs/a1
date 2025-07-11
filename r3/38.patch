@@ -1,0 +1,13 @@
+diff --git a/include/target.mk b/include/target.mk
+index d13902ad6e..e5629e8324 100644
+--- a/include/target.mk
++++ b/include/target.mk
+@@ -37,7 +37,7 @@ DEFAULT_PACKAGES.nas:=\
+ 	mdadm
+ # For router targets
+ DEFAULT_PACKAGES.router:=\
+-	dnsmasq \
++	dnsmasq-full \
+ 	firewall4 \
+ 	nftables \
+ 	kmod-nft-offload \

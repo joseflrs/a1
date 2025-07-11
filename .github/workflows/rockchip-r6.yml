@@ -1,0 +1,93 @@
+name: Build rockchip R6
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Build rockchip test
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.23.5'
+                cache: false
+            - name: Go Version
+              run: go version
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Build
+              run: |
+                git clone https://github.com/anon503/e27xx..git openwrt
+                cp -rf r3/config-rockchip openwrt/
+                cp -rf r3/0001-ar.patch openwrt/
+                cp -rf r3/66332b9cebe3ef77cf4b4217877e059353bdcca3.patch openwrt/
+                cp -rf r3/01-ip-addr.patch openwrt/
+                cd openwrt
+                git checkout linux-6.6
+                git apply 0001-ar.patch
+                git apply 66332b9cebe3ef77cf4b4217877e059353bdcca3.patch
+                git apply 01-ip-addr.patch
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                cd feeds/luci
+                wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
+                git apply 01-diskman.patch
+                cd -
+                cd  feeds/packages
+                wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
+                wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
+                git apply 01-cpu.patch
+                git apply 20-lxc.patch
+                cd -
+                sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
+                sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
+                sed -i "195s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
+                sed -i "212s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
+                sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
+                sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                mv config-rockchip .config
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.23.5/arm64/bin"' >> .config
+                make defconfig
+                wget https://gist.githubusercontent.com/mj22226/9a69bb754a83e8a5cf03fcc60d62d473/raw/cc6f36831d6098de4a7fccf04a312d36a0dbc999/01-key.patch
+                git apply 01-key.patch
+                make download -j32
+                rm 01-key.patch
+                mkdir -p files/www/repo
+                wget https://gist.githubusercontent.com/mj22226/2ce53b7a5e5742be6f9052a4e4d3203d/raw/674531914187c1afa92427ef51e6fa01f95aae3f/feeds-rk.patch
+                git apply feeds-rk.patch
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/rockchip/armv8/logs.tar.gz logs
+                mv bin/packages/aarch64_generic/base/*cpufreq* bin/targets/rockchip/armv8/packages/ || true
+                make -j$(nproc) package/index V=s
+                cp -R bin/targets/rockchip/armv8/packages/ files/www/repo/ || true
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/rockchip/armv8/feeds-packages.tar.gz bin/packages || true
+                tar -czvf bin/targets/rockchip/armv8/packages.tar.gz bin/targets/rockchip/armv8/packages || true
+                rm -rf bin/targets/rockchip/armv8/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: rockchip-r6
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@v1.14.0
+              with:
+                allowUpdates: true
+                name: Rockchip R6 Images ${{ env.D }}
+                tag: rockchip-r6
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/rockchip/armv8/*
+

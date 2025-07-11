@@ -1,0 +1,763 @@
+CONFIG_TARGET_mediatek=y
+CONFIG_TARGET_mediatek_filogic=y
+CONFIG_TARGET_MULTI_PROFILE=y
+CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bananapi_bpi-r3=y
+CONFIG_TARGET_DEVICE_PACKAGES_mediatek_filogic_DEVICE_bananapi_bpi-r3=""
+CONFIG_ALL_KMODS=y
+CONFIG_ALL_NONSHARED=y
+CONFIG_DEVEL=y
+CONFIG_BUSYBOX_CUSTOM=y
+CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+CONFIG_AUTOREMOVE=y
+CONFIG_BUILDBOT=y
+CONFIG_BUILD_LOG=y
+CONFIG_BUSYBOX_CONFIG_FEATURE_GETOPT_LONG=y
+CONFIG_BUSYBOX_CONFIG_FEATURE_SEAMLESS_XZ=y
+CONFIG_BUSYBOX_CONFIG_FEATURE_TAR_LONG_OPTIONS=y
+CONFIG_BUSYBOX_CONFIG_GETOPT=y
+CONFIG_BUSYBOX_CONFIG_MOUNTPOINT=y
+CONFIG_BUSYBOX_CONFIG_UNXZ=y
+CONFIG_BUSYBOX_CONFIG_XZ=y
+CONFIG_COLLECT_KERNEL_DEBUG=y
+CONFIG_DOCKER_CGROUP_OPTIONS=y
+CONFIG_DOCKER_CHECK_CONFIG=y
+CONFIG_DOCKER_NET_ENCRYPT=y
+CONFIG_DOCKER_NET_MACVLAN=y
+CONFIG_DOCKER_NET_OVERLAY=y
+CONFIG_DOCKER_NET_TFTP=y
+CONFIG_DOCKER_OPTIONAL_FEATURES=y
+CONFIG_DOCKER_STO_BTRFS=y
+CONFIG_DOCKER_STO_DEVMAPPER=y
+CONFIG_DOCKER_STO_EXT4=y
+CONFIG_GNUTLS_ALPN=y
+CONFIG_GNUTLS_ANON=y
+CONFIG_GNUTLS_DTLS_SRTP=y
+CONFIG_GNUTLS_HEARTBEAT=y
+CONFIG_GNUTLS_OCSP=y
+CONFIG_GNUTLS_PSK=y
+CONFIG_HOST_EXTRA_CFLAGS=""
+CONFIG_HOST_EXTRA_CPPFLAGS=""
+CONFIG_HOST_EXTRA_CXXFLAGS=""
+CONFIG_HOST_EXTRA_LDFLAGS=""
+CONFIG_HOST_FLAGS_OPT="-O2"
+CONFIG_HOST_FLAGS_STRIP="-Wl,-s"
+CONFIG_HOST_TOOLS_STRIP=y
+CONFIG_HTOP_LMSENSORS=y
+CONFIG_IB=y
+CONFIG_JSON_CYCLONEDX_SBOM=y
+CONFIG_KERNEL_ARM_PMU=y
+CONFIG_KERNEL_ARM_PMUV3=y
+CONFIG_KERNEL_BUILD_DOMAIN="buildhost"
+CONFIG_KERNEL_BUILD_USER="builder"
+CONFIG_KERNEL_CFQ_GROUP_IOSCHED=y
+CONFIG_KERNEL_CGROUP_DEVICE=y
+CONFIG_KERNEL_CGROUP_FREEZER=y
+CONFIG_KERNEL_CGROUP_HUGETLB=y
+CONFIG_KERNEL_CGROUP_NET_PRIO=y
+CONFIG_KERNEL_CGROUP_PERF=y
+CONFIG_KERNEL_HUGETLBFS=y
+CONFIG_KERNEL_HUGETLB_PAGE=y
+CONFIG_KERNEL_MEMCG_SWAP_ENABLED=y
+CONFIG_KERNEL_NET_CLS_CGROUP=y
+CONFIG_KERNEL_PERF_EVENTS=y
+CONFIG_KERNEL_TRANSPARENT_HUGEPAGE=y
+CONFIG_KERNEL_TRANSPARENT_HUGEPAGE_ALWAYS=y
+# CONFIG_KERNEL_WERROR is not set
+CONFIG_LIBCURL_COOKIES=y
+CONFIG_LIBCURL_FILE=y
+CONFIG_LIBCURL_FTP=y
+CONFIG_LIBCURL_HTTP=y
+CONFIG_LIBCURL_MBEDTLS=y
+CONFIG_LIBCURL_NGHTTP2=y
+CONFIG_LIBCURL_NO_SMB="!"
+CONFIG_LIBCURL_PROXY=y
+CONFIG_LIBCURL_UNIX_SOCKETS=y
+CONFIG_LXC_BUSYBOX_OPTIONS=y
+CONFIG_LXC_KERNEL_OPTIONS=y
+CONFIG_LXC_NETWORKING=y
+CONFIG_LXC_SECCOMP=y
+CONFIG_OPENSSL_ENGINE=y
+CONFIG_OPENSSL_ENGINE_BUILTIN=y
+CONFIG_OPENSSL_ENGINE_BUILTIN_DEVCRYPTO=y
+CONFIG_OPENSSL_OPTIMIZE_SPEED=y
+CONFIG_OPENSSL_WITH_ASM=y
+CONFIG_OPENSSL_WITH_CHACHA_POLY1305=y
+CONFIG_OPENSSL_WITH_CMS=y
+CONFIG_OPENSSL_WITH_DEPRECATED=y
+CONFIG_OPENSSL_WITH_ERROR_MESSAGES=y
+CONFIG_OPENSSL_WITH_IDEA=y
+CONFIG_OPENSSL_WITH_MDC2=y
+CONFIG_OPENSSL_WITH_PSK=y
+CONFIG_OPENSSL_WITH_SEED=y
+CONFIG_OPENSSL_WITH_SRP=y
+CONFIG_OPENSSL_WITH_TLS13=y
+CONFIG_OPENSSL_WITH_WHIRLPOOL=y
+CONFIG_OPENVPN_openssl_ENABLE_FRAGMENT=y
+CONFIG_OPENVPN_openssl_ENABLE_LZ4=y
+CONFIG_OPENVPN_openssl_ENABLE_LZO=y
+CONFIG_OPENVPN_openssl_ENABLE_PORT_SHARE=y
+CONFIG_OPTIMIZE_HOST_TOOLS=y
+CONFIG_PACKAGE_NTFS-3G_HAS_PROBE=y
+CONFIG_PACKAGE_TAR_BZIP2=y
+CONFIG_PACKAGE_TAR_GZIP=y
+CONFIG_PACKAGE_TAR_POSIX_ACL=y
+CONFIG_PACKAGE_TAR_XATTR=y
+CONFIG_PACKAGE_TAR_XZ=y
+CONFIG_PACKAGE_TAR_ZSTD=y
+CONFIG_PACKAGE_adb=y
+# CONFIG_PACKAGE_airoha-en8811h-firmware is not set
+CONFIG_PACKAGE_arp-scan=y
+CONFIG_PACKAGE_arp-scan-database=y
+CONFIG_PACKAGE_atop=y
+CONFIG_PACKAGE_bash=y
+CONFIG_PACKAGE_blkdiscard=y
+CONFIG_PACKAGE_blkid=y
+CONFIG_PACKAGE_block-mount=y
+CONFIG_PACKAGE_blockd=y
+CONFIG_PACKAGE_blockdev=y
+CONFIG_PACKAGE_bridge=y
+CONFIG_PACKAGE_bridger=y
+CONFIG_PACKAGE_btop=y
+CONFIG_PACKAGE_btrfs-progs=y
+CONFIG_PACKAGE_bzip2=y
+CONFIG_PACKAGE_ca-certificates=y
+CONFIG_PACKAGE_ccrypt=y
+CONFIG_PACKAGE_certtool=y
+CONFIG_PACKAGE_cfdisk=y
+CONFIG_PACKAGE_cgi-io=y
+CONFIG_PACKAGE_cgroup-tools=y
+CONFIG_PACKAGE_cgroupfs-mount=y
+CONFIG_PACKAGE_collectd=y
+CONFIG_PACKAGE_collectd-mod-conntrack=y
+CONFIG_PACKAGE_collectd-mod-cpu=y
+CONFIG_PACKAGE_collectd-mod-cpufreq=y
+CONFIG_PACKAGE_collectd-mod-interface=y
+CONFIG_PACKAGE_collectd-mod-irq=y
+CONFIG_PACKAGE_collectd-mod-iwinfo=y
+CONFIG_PACKAGE_collectd-mod-load=y
+CONFIG_PACKAGE_collectd-mod-memory=y
+CONFIG_PACKAGE_collectd-mod-network=y
+CONFIG_PACKAGE_collectd-mod-rrdtool=y
+CONFIG_PACKAGE_collectd-mod-sensors=y
+CONFIG_PACKAGE_collectd-mod-thermal=y
+CONFIG_PACKAGE_containerd=y
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-sort=y
+CONFIG_PACKAGE_dnsmasq=m
+CONFIG_PACKAGE_dnsmasq-full=y
+CONFIG_PACKAGE_dnsmasq_full_auth=y
+CONFIG_PACKAGE_dnsmasq_full_conntrack=y
+CONFIG_PACKAGE_dnsmasq_full_dhcp=y
+CONFIG_PACKAGE_dnsmasq_full_dhcpv6=y
+CONFIG_PACKAGE_dnsmasq_full_dnssec=y
+CONFIG_PACKAGE_dnsmasq_full_nftset=y
+CONFIG_PACKAGE_dnsmasq_full_noid=y
+CONFIG_PACKAGE_dnsmasq_full_tftp=y
+CONFIG_PACKAGE_docker=y
+CONFIG_PACKAGE_docker-compose=y
+CONFIG_PACKAGE_dockerd=y
+CONFIG_PACKAGE_dosfstools=y
+CONFIG_PACKAGE_e2fsprogs=y
+CONFIG_PACKAGE_eject=y
+CONFIG_PACKAGE_ethtool=y
+CONFIG_PACKAGE_exfat-fsck=y
+CONFIG_PACKAGE_exfat-mkfs=y
+CONFIG_PACKAGE_fdisk=y
+CONFIG_PACKAGE_findfs=y
+CONFIG_PACKAGE_fixparts=y
+CONFIG_PACKAGE_flock=y
+CONFIG_PACKAGE_gawk=y
+CONFIG_PACKAGE_getopt=y
+CONFIG_PACKAGE_glib2=y
+CONFIG_PACKAGE_gnupg=y
+CONFIG_PACKAGE_gnupg-utils=y
+CONFIG_PACKAGE_gnutls-utils=y
+CONFIG_PACKAGE_htop=y
+CONFIG_PACKAGE_ip-full=y
+CONFIG_PACKAGE_ip6tables-nft=y
+CONFIG_PACKAGE_iperf3-ssl=y
+CONFIG_PACKAGE_ipset=y
+CONFIG_PACKAGE_iptables-mod-extra=y
+CONFIG_PACKAGE_iptables-mod-ipopt=y
+CONFIG_PACKAGE_iptables-nft=y
+CONFIG_PACKAGE_iw=y
+CONFIG_PACKAGE_kmod-asn1-decoder=y
+CONFIG_PACKAGE_kmod-ata-ahci=y
+CONFIG_PACKAGE_kmod-ata-core=y
+CONFIG_PACKAGE_kmod-br-netfilter=y
+CONFIG_PACKAGE_kmod-cfg80211=y
+CONFIG_PACKAGE_kmod-crypto-acompress=y
+CONFIG_PACKAGE_kmod-crypto-arc4=y
+CONFIG_PACKAGE_kmod-crypto-blake2b=y
+CONFIG_PACKAGE_kmod-crypto-cbc=y
+CONFIG_PACKAGE_kmod-crypto-ccm=y
+CONFIG_PACKAGE_kmod-crypto-chacha20poly1305=y
+CONFIG_PACKAGE_kmod-crypto-cmac=y
+CONFIG_PACKAGE_kmod-crypto-ctr=y
+CONFIG_PACKAGE_kmod-crypto-deflate=y
+CONFIG_PACKAGE_kmod-crypto-ecb=y
+CONFIG_PACKAGE_kmod-crypto-echainiv=y
+CONFIG_PACKAGE_kmod-crypto-gcm=y
+CONFIG_PACKAGE_kmod-crypto-geniv=y
+CONFIG_PACKAGE_kmod-crypto-gf128=y
+CONFIG_PACKAGE_kmod-crypto-ghash=y
+CONFIG_PACKAGE_kmod-crypto-kpp=y
+CONFIG_PACKAGE_kmod-crypto-lib-chacha20=y
+CONFIG_PACKAGE_kmod-crypto-lib-chacha20poly1305=y
+CONFIG_PACKAGE_kmod-crypto-lib-curve25519=y
+CONFIG_PACKAGE_kmod-crypto-lib-poly1305=y
+CONFIG_PACKAGE_kmod-crypto-misc=y
+CONFIG_PACKAGE_kmod-crypto-rng=y
+CONFIG_PACKAGE_kmod-crypto-seqiv=y
+CONFIG_PACKAGE_kmod-crypto-sha3=y
+CONFIG_PACKAGE_kmod-crypto-user=y
+CONFIG_PACKAGE_kmod-crypto-xts=y
+CONFIG_PACKAGE_kmod-crypto-xxhash=y
+CONFIG_PACKAGE_kmod-cryptodev=y
+CONFIG_PACKAGE_kmod-dax=y
+CONFIG_PACKAGE_kmod-dm=y
+CONFIG_PACKAGE_kmod-dummy=y
+# CONFIG_PACKAGE_kmod-eeprom-at24 is not set
+CONFIG_PACKAGE_kmod-fs-autofs4=y
+CONFIG_PACKAGE_kmod-fs-btrfs=y
+CONFIG_PACKAGE_kmod-fs-exfat=y
+CONFIG_PACKAGE_kmod-fs-ext4=y
+CONFIG_PACKAGE_kmod-fs-ksmbd=y
+CONFIG_PACKAGE_kmod-fs-msdos=y
+CONFIG_PACKAGE_kmod-fs-netfs=y
+CONFIG_PACKAGE_kmod-fs-ntfs3=y
+CONFIG_PACKAGE_kmod-fs-smbfs-common=y
+CONFIG_PACKAGE_kmod-fs-vfat=y
+CONFIG_PACKAGE_kmod-fuse=y
+CONFIG_PACKAGE_kmod-gre=y
+# CONFIG_PACKAGE_kmod-i2c-mux-pca954x is not set
+CONFIG_PACKAGE_kmod-ifb=y
+CONFIG_PACKAGE_kmod-ikconfig=y
+CONFIG_PACKAGE_kmod-inet-diag=y
+CONFIG_PACKAGE_kmod-ip6tables=y
+CONFIG_PACKAGE_kmod-ipsec=y
+CONFIG_PACKAGE_kmod-ipt-checksum=y
+CONFIG_PACKAGE_kmod-ipt-conntrack=y
+CONFIG_PACKAGE_kmod-ipt-core=y
+CONFIG_PACKAGE_kmod-ipt-extra=y
+CONFIG_PACKAGE_kmod-ipt-ipopt=y
+CONFIG_PACKAGE_kmod-ipt-ipset=y
+CONFIG_PACKAGE_kmod-ipt-nat=y
+CONFIG_PACKAGE_kmod-ipt-nat6=y
+CONFIG_PACKAGE_kmod-ipt-physdev=y
+CONFIG_PACKAGE_kmod-iptunnel=y
+CONFIG_PACKAGE_kmod-keys-encrypted=y
+CONFIG_PACKAGE_kmod-keys-trusted=y
+CONFIG_PACKAGE_kmod-l2tp=y
+# CONFIG_PACKAGE_kmod-leds-ws2812b is not set
+CONFIG_PACKAGE_kmod-lib-crc16=y
+CONFIG_PACKAGE_kmod-lib-lzo=y
+CONFIG_PACKAGE_kmod-lib-raid6=y
+CONFIG_PACKAGE_kmod-lib-textsearch=y
+CONFIG_PACKAGE_kmod-lib-xor=y
+CONFIG_PACKAGE_kmod-lib-xxhash=y
+CONFIG_PACKAGE_kmod-lib-zlib-deflate=y
+CONFIG_PACKAGE_kmod-lib-zlib-inflate=y
+CONFIG_PACKAGE_kmod-lib-zstd=y
+CONFIG_PACKAGE_kmod-mac80211=y
+CONFIG_PACKAGE_kmod-macvlan=y
+CONFIG_PACKAGE_kmod-md-linear=y
+CONFIG_PACKAGE_kmod-md-mod=y
+CONFIG_PACKAGE_kmod-md-raid0=y
+CONFIG_PACKAGE_kmod-md-raid1=y
+CONFIG_PACKAGE_kmod-md-raid10=y
+CONFIG_PACKAGE_kmod-md-raid456=y
+CONFIG_PACKAGE_kmod-mdio-devres=y
+CONFIG_PACKAGE_kmod-mii=y
+CONFIG_PACKAGE_kmod-mppe=y
+CONFIG_PACKAGE_kmod-mt76-connac=y
+CONFIG_PACKAGE_kmod-mt76-core=y
+CONFIG_PACKAGE_kmod-mt76-usb=y
+CONFIG_PACKAGE_kmod-mt76x02-common=y
+CONFIG_PACKAGE_kmod-mt76x02-usb=y
+CONFIG_PACKAGE_kmod-mt76x2-common=y
+CONFIG_PACKAGE_kmod-mt76x2u=y
+# CONFIG_PACKAGE_kmod-mt7915-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7916-firmware is not set
+CONFIG_PACKAGE_kmod-mt7921-common=y
+CONFIG_PACKAGE_kmod-mt7921-firmware=y
+CONFIG_PACKAGE_kmod-mt7921e=y
+CONFIG_PACKAGE_kmod-mt7921u=y
+CONFIG_PACKAGE_kmod-mt7922-firmware=y
+CONFIG_PACKAGE_kmod-mt792x-common=y
+CONFIG_PACKAGE_kmod-mt792x-usb=y
+# CONFIG_PACKAGE_kmod-mt7981-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7996-firmware is not set
+CONFIG_PACKAGE_kmod-netlink-diag=y
+CONFIG_PACKAGE_kmod-nf-ipt=y
+CONFIG_PACKAGE_kmod-nf-ipt6=y
+CONFIG_PACKAGE_kmod-nf-ipvs=y
+CONFIG_PACKAGE_kmod-nf-nat6=y
+CONFIG_PACKAGE_kmod-nf-nathelper=y
+CONFIG_PACKAGE_kmod-nf-nathelper-extra=y
+CONFIG_PACKAGE_kmod-nfnetlink-queue=y
+CONFIG_PACKAGE_kmod-nft-bridge=y
+CONFIG_PACKAGE_kmod-nft-compat=y
+CONFIG_PACKAGE_kmod-nft-queue=y
+CONFIG_PACKAGE_kmod-nls-base=y
+CONFIG_PACKAGE_kmod-nls-cp437=y
+CONFIG_PACKAGE_kmod-nls-cp932=y
+CONFIG_PACKAGE_kmod-nls-cp936=y
+CONFIG_PACKAGE_kmod-nls-cp950=y
+CONFIG_PACKAGE_kmod-nls-iso8859-1=y
+CONFIG_PACKAGE_kmod-nls-ucs2-utils=y
+CONFIG_PACKAGE_kmod-nls-utf8=y
+CONFIG_PACKAGE_kmod-nvme=y
+CONFIG_PACKAGE_kmod-oid-registry=y
+CONFIG_PACKAGE_kmod-packet-diag=y
+# CONFIG_PACKAGE_kmod-phy-airoha-en8811h is not set
+CONFIG_PACKAGE_kmod-phy-realtek=y
+CONFIG_PACKAGE_kmod-pppol2tp=y
+CONFIG_PACKAGE_kmod-pptp=y
+CONFIG_PACKAGE_kmod-r8169=y
+CONFIG_PACKAGE_kmod-random-core=y
+# CONFIG_PACKAGE_kmod-rtc-pcf8563 is not set
+CONFIG_PACKAGE_kmod-rtw88=y
+CONFIG_PACKAGE_kmod-rtw88-8812a=y
+CONFIG_PACKAGE_kmod-rtw88-8812au=y
+CONFIG_PACKAGE_kmod-rtw88-8814a=y
+CONFIG_PACKAGE_kmod-rtw88-8814ae=y
+CONFIG_PACKAGE_kmod-rtw88-8814au=y
+CONFIG_PACKAGE_kmod-rtw88-8821a=y
+CONFIG_PACKAGE_kmod-rtw88-8821au=y
+CONFIG_PACKAGE_kmod-rtw88-88xxa=y
+CONFIG_PACKAGE_kmod-rtw88-pci=y
+CONFIG_PACKAGE_kmod-rtw88-usb=y
+CONFIG_PACKAGE_kmod-sched-act-vlan=y
+CONFIG_PACKAGE_kmod-sched-bpf=y
+CONFIG_PACKAGE_kmod-sched-cake=y
+CONFIG_PACKAGE_kmod-sched-core=y
+CONFIG_PACKAGE_kmod-sched-flower=y
+CONFIG_PACKAGE_kmod-scsi-core=y
+CONFIG_PACKAGE_kmod-tpm=y
+CONFIG_PACKAGE_kmod-tun=y
+# CONFIG_PACKAGE_kmod-ubootenv-nvram is not set
+CONFIG_PACKAGE_kmod-udptunnel4=y
+CONFIG_PACKAGE_kmod-udptunnel6=y
+CONFIG_PACKAGE_kmod-unix-diag=y
+CONFIG_PACKAGE_kmod-usb-core=y
+CONFIG_PACKAGE_kmod-usb-net=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-ether=y
+CONFIG_PACKAGE_kmod-usb-net-cdc-ncm=y
+CONFIG_PACKAGE_kmod-usb-net-rndis=y
+CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
+CONFIG_PACKAGE_kmod-usb-storage=y
+CONFIG_PACKAGE_kmod-usb-storage-extras=y
+CONFIG_PACKAGE_kmod-usb-storage-uas=y
+CONFIG_PACKAGE_kmod-usb-uhci=y
+CONFIG_PACKAGE_kmod-usb-xhci-hcd=y
+CONFIG_PACKAGE_kmod-usb-xhci-mtk=y
+CONFIG_PACKAGE_kmod-usb3=y
+CONFIG_PACKAGE_kmod-veth=y
+CONFIG_PACKAGE_kmod-vxlan=y
+CONFIG_PACKAGE_kmod-wireguard=y
+CONFIG_PACKAGE_ksmbd-server=y
+CONFIG_PACKAGE_libacl=y
+CONFIG_PACKAGE_libatomic=y
+CONFIG_PACKAGE_libattr=y
+CONFIG_PACKAGE_libbfd=m
+CONFIG_PACKAGE_libblkid=y
+CONFIG_PACKAGE_libbpf=y
+CONFIG_PACKAGE_libbz2=y
+CONFIG_PACKAGE_libcap=y
+CONFIG_PACKAGE_libcap-ng=y
+CONFIG_PACKAGE_libcgroup=y
+CONFIG_PACKAGE_libcomerr=y
+CONFIG_PACKAGE_libctf=m
+CONFIG_PACKAGE_libcurl=y
+CONFIG_PACKAGE_libdbus=y
+CONFIG_PACKAGE_libdevmapper=y
+CONFIG_PACKAGE_libdw=m
+CONFIG_PACKAGE_libe2p=y
+CONFIG_PACKAGE_libelf=y
+CONFIG_PACKAGE_libevdev=y
+CONFIG_PACKAGE_libext2fs=y
+CONFIG_PACKAGE_libfdisk=y
+CONFIG_PACKAGE_libffi=y
+CONFIG_PACKAGE_libgcrypt=y
+CONFIG_PACKAGE_libgnutls=y
+CONFIG_PACKAGE_libgpg-error=y
+CONFIG_PACKAGE_libipset=y
+CONFIG_PACKAGE_libiptext=y
+CONFIG_PACKAGE_libiptext-nft=y
+CONFIG_PACKAGE_libiptext6=y
+CONFIG_PACKAGE_libkmod=y
+CONFIG_PACKAGE_libltdl=y
+CONFIG_PACKAGE_liblua=y
+CONFIG_PACKAGE_liblucihttp=y
+CONFIG_PACKAGE_liblucihttp-lua=y
+CONFIG_PACKAGE_liblucihttp-ucode=y
+CONFIG_PACKAGE_liblxc=y
+CONFIG_PACKAGE_liblz4=y
+CONFIG_PACKAGE_liblzma=y
+CONFIG_PACKAGE_liblzo=y
+CONFIG_PACKAGE_libmount=y
+CONFIG_PACKAGE_libncurses=y
+CONFIG_PACKAGE_libnghttp2=y
+CONFIG_PACKAGE_libnl-core=y
+CONFIG_PACKAGE_libnl-genl=y
+CONFIG_PACKAGE_libnvme=y
+CONFIG_PACKAGE_libopcodes=m
+CONFIG_PACKAGE_libopenssl=y
+CONFIG_PACKAGE_libopenssl-conf=y
+CONFIG_PACKAGE_libparted=y
+CONFIG_PACKAGE_libpcap=y
+CONFIG_PACKAGE_libpci=y
+CONFIG_PACKAGE_libpcre2=y
+CONFIG_PACKAGE_libpopt=y
+CONFIG_PACKAGE_libpthread=y
+CONFIG_PACKAGE_libqrencode=y
+CONFIG_PACKAGE_libreadline=y
+CONFIG_PACKAGE_librrd1=y
+CONFIG_PACKAGE_librt=y
+CONFIG_PACKAGE_libseccomp=y
+CONFIG_PACKAGE_libsensors=y
+CONFIG_PACKAGE_libsmartcols=y
+CONFIG_PACKAGE_libss=y
+CONFIG_PACKAGE_libstdcpp=y
+CONFIG_PACKAGE_libsysfs=y
+CONFIG_PACKAGE_libtraceevent=m
+CONFIG_PACKAGE_libubus-lua=y
+CONFIG_PACKAGE_libudev-zero=y
+CONFIG_PACKAGE_liburing=y
+CONFIG_PACKAGE_libusb-1.0=y
+CONFIG_PACKAGE_libuuid=y
+CONFIG_PACKAGE_libuv=y
+CONFIG_PACKAGE_libwebsockets-full=y
+CONFIG_PACKAGE_libxtables=y
+CONFIG_PACKAGE_libzstd=y
+CONFIG_PACKAGE_lm-sensors=y
+CONFIG_PACKAGE_lsblk=y
+CONFIG_PACKAGE_lua=y
+CONFIG_PACKAGE_luci=y
+CONFIG_PACKAGE_luci-app-nextdns=y
+CONFIG_PACKAGE_luci-app-commands=y
+CONFIG_PACKAGE_luci-app-diskman=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_btrfs_progs=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_linears=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_kmod_md_raid456=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_lsblk=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_mdadm=y
+CONFIG_PACKAGE_luci-app-diskman_INCLUDE_ntfs_3g_utils=y
+CONFIG_PACKAGE_luci-app-dockerman=y
+CONFIG_PACKAGE_luci-app-filemanager=y
+CONFIG_PACKAGE_luci-app-firewall=y
+CONFIG_PACKAGE_luci-app-ksmbd=y
+CONFIG_PACKAGE_luci-app-lxc=y
+CONFIG_PACKAGE_luci-app-nlbwmon=y
+CONFIG_PACKAGE_luci-app-openvpn=y
+CONFIG_PACKAGE_luci-app-package-manager=y
+CONFIG_PACKAGE_luci-app-pbr=y
+CONFIG_PACKAGE_luci-app-smartdns=y
+CONFIG_PACKAGE_luci-app-sqm=y
+CONFIG_PACKAGE_luci-app-statistics=y
+CONFIG_PACKAGE_luci-app-ttyd=y
+CONFIG_PACKAGE_luci-app-upnp=y
+CONFIG_PACKAGE_luci-base=y
+CONFIG_PACKAGE_luci-compat=y
+CONFIG_PACKAGE_luci-lib-base=y
+CONFIG_PACKAGE_luci-lib-chartjs=y
+CONFIG_PACKAGE_luci-lib-docker=y
+CONFIG_PACKAGE_luci-lib-ip=y
+CONFIG_PACKAGE_luci-lib-ipkg=y
+CONFIG_PACKAGE_luci-lib-jsonc=y
+CONFIG_PACKAGE_luci-lib-nixio=y
+CONFIG_PACKAGE_luci-lib-uqr=y
+CONFIG_PACKAGE_luci-light=y
+CONFIG_PACKAGE_luci-lua-runtime=y
+CONFIG_PACKAGE_luci-mod-admin-full=y
+CONFIG_PACKAGE_luci-mod-network=y
+CONFIG_PACKAGE_luci-mod-status=y
+CONFIG_PACKAGE_luci-mod-system=y
+CONFIG_PACKAGE_luci-proto-ipv6=y
+CONFIG_PACKAGE_luci-proto-ppp=y
+CONFIG_PACKAGE_luci-proto-relay=y
+CONFIG_PACKAGE_luci-proto-wireguard=y
+CONFIG_PACKAGE_luci-theme-bootstrap=y
+CONFIG_PACKAGE_lxc=y
+CONFIG_PACKAGE_lxc-attach=y
+CONFIG_PACKAGE_lxc-auto=y
+CONFIG_PACKAGE_lxc-autostart=y
+CONFIG_PACKAGE_lxc-cgroup=y
+CONFIG_PACKAGE_lxc-checkconfig=y
+CONFIG_PACKAGE_lxc-common=y
+CONFIG_PACKAGE_lxc-config=y
+CONFIG_PACKAGE_lxc-configs=y
+CONFIG_PACKAGE_lxc-console=y
+CONFIG_PACKAGE_lxc-copy=y
+CONFIG_PACKAGE_lxc-create=y
+CONFIG_PACKAGE_lxc-destroy=y
+CONFIG_PACKAGE_lxc-device=y
+CONFIG_PACKAGE_lxc-execute=y
+CONFIG_PACKAGE_lxc-freeze=y
+CONFIG_PACKAGE_lxc-hooks=y
+CONFIG_PACKAGE_lxc-info=y
+CONFIG_PACKAGE_lxc-init=y
+CONFIG_PACKAGE_lxc-ls=y
+CONFIG_PACKAGE_lxc-monitor=y
+CONFIG_PACKAGE_lxc-monitord=y
+CONFIG_PACKAGE_lxc-snapshot=y
+CONFIG_PACKAGE_lxc-start=y
+CONFIG_PACKAGE_lxc-stop=y
+CONFIG_PACKAGE_lxc-templates=y
+CONFIG_PACKAGE_lxc-top=y
+CONFIG_PACKAGE_lxc-unfreeze=y
+CONFIG_PACKAGE_lxc-unprivileged=y
+CONFIG_PACKAGE_lxc-unshare=y
+CONFIG_PACKAGE_lxc-user-nic=y
+CONFIG_PACKAGE_lxc-usernsexec=y
+CONFIG_PACKAGE_lxc-wait=y
+CONFIG_PACKAGE_mdadm=y
+CONFIG_PACKAGE_miniupnpd-nftables=y
+CONFIG_PACKAGE_mount-utils=y
+CONFIG_PACKAGE_mtools=y
+CONFIG_PACKAGE_musl-fts=y
+CONFIG_PACKAGE_nano-full=y
+CONFIG_PACKAGE_nlbwmon=y
+CONFIG_PACKAGE_ntfs-3g=y
+CONFIG_PACKAGE_ntfs-3g-utils=y
+CONFIG_PACKAGE_nvme-cli=y
+CONFIG_PACKAGE_objdump=m
+CONFIG_PACKAGE_openssl-util=y
+CONFIG_PACKAGE_openvpn-easy-rsa=y
+CONFIG_PACKAGE_openvpn-openssl=y
+CONFIG_PACKAGE_parted=y
+CONFIG_PACKAGE_partx-utils=y
+CONFIG_PACKAGE_pbr=y
+CONFIG_PACKAGE_pciids=y
+CONFIG_PACKAGE_pciutils=y
+CONFIG_PACKAGE_perf=m
+CONFIG_PACKAGE_ppp-mod-pppol2tp=y
+CONFIG_PACKAGE_ppp-mod-pptp=y
+CONFIG_PACKAGE_pptpd=y
+CONFIG_PACKAGE_qosify=y
+CONFIG_PACKAGE_qrencode=y
+CONFIG_PACKAGE_r8152-firmware=y
+CONFIG_PACKAGE_r8169-firmware=y
+CONFIG_PACKAGE_relayd=y
+CONFIG_PACKAGE_resize2fs=y
+CONFIG_PACKAGE_resolveip=y
+CONFIG_PACKAGE_rpcd=y
+CONFIG_PACKAGE_rpcd-mod-file=y
+CONFIG_PACKAGE_rpcd-mod-iwinfo=y
+CONFIG_PACKAGE_rpcd-mod-luci=y
+CONFIG_PACKAGE_rpcd-mod-lxc=y
+CONFIG_PACKAGE_rpcd-mod-rpcsys=y
+CONFIG_PACKAGE_rpcd-mod-rrdns=y
+CONFIG_PACKAGE_rpcd-mod-ucode=y
+CONFIG_PACKAGE_rrdtool1=y
+CONFIG_PACKAGE_rtl8812a-firmware=y
+CONFIG_PACKAGE_rtl8814au-firmware=y
+CONFIG_PACKAGE_rtl8821a-firmware=y
+CONFIG_PACKAGE_runc=y
+CONFIG_PACKAGE_sfdisk=y
+CONFIG_PACKAGE_sgdisk=y
+CONFIG_PACKAGE_shadow=y
+CONFIG_PACKAGE_shadow-chage=y
+CONFIG_PACKAGE_shadow-chfn=y
+CONFIG_PACKAGE_shadow-chgpasswd=y
+CONFIG_PACKAGE_shadow-chpasswd=y
+CONFIG_PACKAGE_shadow-chsh=y
+CONFIG_PACKAGE_shadow-common=y
+CONFIG_PACKAGE_shadow-expiry=y
+CONFIG_PACKAGE_shadow-faillog=y
+CONFIG_PACKAGE_shadow-gpasswd=y
+CONFIG_PACKAGE_shadow-groupadd=y
+CONFIG_PACKAGE_shadow-groupdel=y
+CONFIG_PACKAGE_shadow-groupmems=y
+CONFIG_PACKAGE_shadow-groupmod=y
+CONFIG_PACKAGE_shadow-groups=y
+CONFIG_PACKAGE_shadow-grpck=y
+CONFIG_PACKAGE_shadow-grpconv=y
+CONFIG_PACKAGE_shadow-grpunconv=y
+CONFIG_PACKAGE_shadow-lastlog=y
+CONFIG_PACKAGE_shadow-login=y
+CONFIG_PACKAGE_shadow-logoutd=y
+CONFIG_PACKAGE_shadow-newgidmap=y
+CONFIG_PACKAGE_shadow-newgrp=y
+CONFIG_PACKAGE_shadow-newuidmap=y
+CONFIG_PACKAGE_shadow-newusers=y
+CONFIG_PACKAGE_shadow-nologin=y
+CONFIG_PACKAGE_shadow-passwd=y
+CONFIG_PACKAGE_shadow-pwck=y
+CONFIG_PACKAGE_shadow-pwconv=y
+CONFIG_PACKAGE_shadow-pwunconv=y
+CONFIG_PACKAGE_shadow-su=y
+CONFIG_PACKAGE_shadow-useradd=y
+CONFIG_PACKAGE_shadow-userdel=y
+CONFIG_PACKAGE_shadow-usermod=y
+CONFIG_PACKAGE_shadow-utils=y
+CONFIG_PACKAGE_shadow-vipw=y
+CONFIG_PACKAGE_smartdns=y
+CONFIG_PACKAGE_smartmontools=y
+CONFIG_PACKAGE_smartmontools-drivedb=y
+CONFIG_PACKAGE_sqm-scripts=y
+CONFIG_PACKAGE_sysfsutils=y
+CONFIG_PACKAGE_tar=y
+CONFIG_PACKAGE_tc-tiny=y
+CONFIG_PACKAGE_tcpdump-mini=y
+CONFIG_PACKAGE_terminfo=y
+CONFIG_PACKAGE_tini=y
+CONFIG_PACKAGE_ttyd=y
+CONFIG_PACKAGE_ucert-full=y
+CONFIG_PACKAGE_ucode-mod-digest=y
+CONFIG_PACKAGE_ucode-mod-html=y
+CONFIG_PACKAGE_ucode-mod-lua=y
+CONFIG_PACKAGE_ucode-mod-math=y
+CONFIG_PACKAGE_uhttpd=y
+CONFIG_PACKAGE_uhttpd-mod-ubus=y
+CONFIG_PACKAGE_usb-modeswitch=y
+CONFIG_PACKAGE_usbids=y
+CONFIG_PACKAGE_usbutils=y
+CONFIG_PACKAGE_uuidd=y
+CONFIG_PACKAGE_uvol=y
+CONFIG_PACKAGE_vsftpd-tls=y
+CONFIG_PACKAGE_wget-ssl=y
+CONFIG_PACKAGE_wifi-scripts=y
+CONFIG_PACKAGE_wipefs=y
+CONFIG_PACKAGE_wireguard-tools=y
+CONFIG_PACKAGE_wireless-regdb=y
+CONFIG_PACKAGE_wsdd2=y
+CONFIG_PACKAGE_xl2tpd=y
+CONFIG_PACKAGE_xtables-nft=y
+CONFIG_PACKAGE_xz=y
+CONFIG_PACKAGE_xz-utils=y
+CONFIG_PARTED_READLINE=y
+CONFIG_REPRODUCIBLE_DEBUG_INFO=y
+CONFIG_TARGET_ALL_PROFILES=y
+# CONFIG_TARGET_ROOTFS_INITRAMFS is not set
+CONFIG_ZSTD_OPTIMIZE_O3=y
+CONFIG_shadow-all=y
+# CONFIG_CGROUPFS_MOUNT_KERNEL_CGROUPS is not set
+# CONFIG_MAKE_TOOLCHAIN is not set
+# CONFIG_OPENVPN_openssl_ENABLE_SMALL is not set
+# CONFIG_PACKAGE_airoha-en8811h-firmware is not set
+# CONFIG_PACKAGE_kmod-eeprom-at24 is not set
+# CONFIG_PACKAGE_kmod-i2c-mux-pca954x is not set
+# CONFIG_PACKAGE_kmod-leds-ws2812b is not set
+# CONFIG_PACKAGE_kmod-mt7915-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7916-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7981-firmware is not set
+# CONFIG_PACKAGE_kmod-mt7996-firmware is not set
+# CONFIG_PACKAGE_kmod-phy-airoha-en8811h is not set
+# CONFIG_PACKAGE_kmod-rtc-pcf8563 is not set
+# CONFIG_PACKAGE_kmod-ubootenv-nvram is not set
+# CONFIG_PACKAGE_mt7981-wo-firmware is not set
+# CONFIG_PACKAGE_mt7988-2p5g-phy-firmware is not set
+# CONFIG_PACKAGE_mt7988-wo-firmware is not set
+# CONFIG_PACKAGE_zyxel-bootconfig is not set
+# CONFIG_SDK is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_abt_asr3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acelink_ew-7886cax is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acer_predator-w6 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acer_predator-w6d is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acer_vero-w6m is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_arcadyan_mozart is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_rt-ax52 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_rt-ax59u is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_tuf-ax4200 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_tuf-ax6000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_zenwifi-bt8 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_zenwifi-bt8-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bananapi_bpi-r3-mini is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bananapi_bpi-r4 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bananapi_bpi-r4-poe is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cetron_ct3003 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_a10-stock is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_a10-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cmcc_rax3000m is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_comfast_cf-e393ax is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_confiabits_mt7981 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_ap3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_ap3000outdoor-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_m3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_re3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_tr3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000h-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000s-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_dlink_aquila-pro-ai-m30-a1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_dlink_aquila-pro-ai-m60-a1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_edgecore_eap111 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_gatonetworks_gdsp is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-mt2500 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-mt3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-mt6000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-x3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-xe3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_h3c_magic-nx30-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_huasifei_wh3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_jcg_q30-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_jdcloud_re-cp-03 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_keenetic_kn-3811 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_keenetic_kn-3911 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mediatek_mt7981-rfb is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mediatek_mt7986a-rfb-nand is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mediatek_mt7986b-rfb is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mediatek_mt7988a-rfb is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mercusys_mr80x-v3 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mercusys_mr90x-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mercusys_mr90x-v1-ubi is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netcore_n60 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netcore_n60-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netgear_wax220 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netis_nx31 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_nokia_ea0326gmp is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_nradio_c8-668gl is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_openembed_som7981 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_openwrt_one is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_qihoo_360t7 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_routerich_ax3000 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_routerich_ax3000-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_routerich_ax3000-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ruijie_rg-x60-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8612 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8614 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8622 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8632 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8733 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8733a is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_smartrg_sdg-8734 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tenbay_wr3000k is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_re6000xd is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_tl-xdr4288 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_tl-xdr6086 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_tl-xdr6088 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_tl-xtr8488 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ubnt_unifi-6-plus is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_unielec_u7981-01-emmc is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_unielec_u7981-01-nand is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wn573hx3 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wn586x3 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-ax3000t-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-wr30u-stock is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_mi-router-wr30u-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_redmi-router-ax6000-stock is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_xiaomi_redmi-router-ax6000-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_yuncore_ax835 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zbtlink_zbt-z8102ax is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zbtlink_zbt-z8103ax is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_ex5601-t0-stock is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_ex5601-t0-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_ex5700-telenor is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_nwa50ax-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_tr3000-v1-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_snr_snr-cpe-ax2 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000e-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-mt2500-airoha is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_archer-ax80-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zbtlink_zbt-z8102ax-v2 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_tr3000-256mb-v1 is not set
+CONFIG_PACKAGE_losetup=y
+CONFIG_PACKAGE_adblock-fast=y
+CONFIG_PACKAGE_luci-app-adblock-fast=y
+CONFIG_PACKAGE_grep=y
+CONFIG_PACKAGE_sed=y
+CONFIG_PACKAGE_nftset=y
+CONFIG_PACKAGE_swap-utils=y

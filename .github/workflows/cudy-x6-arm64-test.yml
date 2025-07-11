@@ -1,0 +1,57 @@
+name: Cudy x6 images arm64 test
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Cudy x6 images
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: setup go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.23.5'
+                cache: false
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Build
+              run: |
+                go version | true
+                git clone https://github.com/openwrt/openwrt.git
+                cp -rf r3/* openwrt/
+                cd openwrt
+                git config --global user.email md@any.ccc
+                git config --global user.name 'M Z'
+                echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
+                git apply mt7621.patch
+                git apply 01-ip-addr.patch
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
+                mv cudy-x6 .config
+                echo "CONFIG_EXPERIMENTAL=y" >> .config
+                make defconfig
+                sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                make download -j32
+                rm -rf files
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/ramips/mt7621/logs.tar.gz logs
+                rm -rf bin/targets/ramips/mt7621/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: cudyx6-arm64-test
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@v1.14.0
+              with:
+                allowUpdates: true
+                name: Cudy X6 Test Images ARM64 ${{ env.D }}
+                tag: cudyx6-arm64-test
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/ramips/mt7621/*

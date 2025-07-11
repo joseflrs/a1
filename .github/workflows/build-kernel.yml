@@ -1,0 +1,30 @@
+name: Build Kernel
+
+on:
+  workflow_dispatch:
+jobs:
+  create_tar:
+    name: Create kernel tar
+    runs-on: ubuntu-24.04-arm
+
+    steps:
+      - name: Pack kernel
+        run: |
+             wget https://github.com/anon503/linux/archive/linux-6.15.tar.gz
+             tar -xf linux-6.15.tar.gz
+             mv linux-linux-6.15 linux-6.15.1
+             rm -rf linux-linux-6.15
+             tar -c linux-6.15.1 | xz -T0 > linux-6.15.1.tar.xz
+             sha256sum linux-6.15.1.tar.xz > linux-6.15.1.sha256sum
+
+      - name: Release build artifacts
+        uses: ncipollo/release-action@v1.14.0
+        with:
+          allowUpdates: true
+          prerelease: false
+          name: kernel 6.15.1
+          tag: v6.15
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: |
+                    *.xz
+                    *.sha256sum

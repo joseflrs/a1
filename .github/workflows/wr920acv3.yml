@@ -1,0 +1,52 @@
+name: TL-WR902AC V3 Images arm64
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: TL-WR902AC V3 Images
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Setup GO
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.23.5'
+                cache: false
+            - name: Build
+              run: |
+                go version | true
+                git clone https://github.com/openwrt/openwrt.git
+                cp -rf r3/* openwrt/
+                cd openwrt
+                
+                git apply mt76x8.patch
+                git apply 01-ip-addr.patch
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
+                mv wr920acv3 .config
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.23.5/arm64/bin"' >> .config
+                make defconfig
+                sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                make download -j32
+                rm -rf files
+                make -j$(nproc) 'IGNORE_ERRORS=n m'
+                rm -rf bin/targets/ramips/mt76x8/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: wr920acv3-arm64
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@v1.14.0
+              with:
+                allowUpdates: true
+                name: TL-WR902AC V3 Images ARM64 ${{ env.D }}
+                tag: wr920acv3-arm64
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/ramips/mt76x8/*

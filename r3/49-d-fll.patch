@@ -1,0 +1,12 @@
+diff --git a/package/utils/util-linux/Makefile b/package/utils/util-linux/Makefile
+index 083a60c9eb..dd231db0d5 100644
+--- a/package/utils/util-linux/Makefile
++++ b/package/utils/util-linux/Makefile
+@@ -601,7 +601,6 @@ MESON_ARGS += \
+ 	-Dbuild-zramctl=disabled \
+ 	-Dbuild-fsck=disabled \
+ 	-Dbuild-wipefs=disabled \
+-	-Dbuild-fallocate=disabled \
+ 	-Dbuild-setpriv=disabled \
+ 	-Dbuild-hardlink=disabled \
+ 	-Dbuild-cramfs=disabled \

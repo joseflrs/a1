@@ -1,0 +1,52 @@
+name: ipq40 ct images
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: ipq40 ct images
+        runs-on: ubuntu-latest
+        steps:
+            - name: Maximize build space
+              uses: easimon/maximize-build-space@master
+              with:
+                root-reserve-mb: 512
+                swap-size-mb: 1024
+                remove-dotnet: 'true'
+                overprovision-lvm: 'true'
+                remove-android: 'true'
+                remove-haskell: 'true'
+                remove-codeql: 'true'
+                remove-docker-images: 'true'
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Build
+              run: |
+                git clone https://github.com/openwrt/openwrt.git
+                cp -rf r3/* openwrt/
+                cd openwrt
+                git apply 40-ct.patch
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
+                mv ipq40-ct .config
+                make defconfig
+                make download -j32
+                make -j$(nproc) 'IGNORE_ERRORS=n m'
+                rm -rf bin/targets/ipq40xx/generic/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: ipq-40-ct
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@v1.14.0
+              with:
+                allowUpdates: true
+                name: IPQ40 ct Images ${{ env.D }}
+                tag: ipq-40-ct
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/ipq40xx/generic/*

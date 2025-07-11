@@ -1,0 +1,13 @@
+diff --git a/target/linux/rockchip/Makefile b/target/linux/rockchip/Makefile
+index 16cfc32a09..cc36ad6d97 100644
+--- a/target/linux/rockchip/Makefile
++++ b/target/linux/rockchip/Makefile
+@@ -16,7 +16,7 @@ endef
+ include $(INCLUDE_DIR)/target.mk
+ 
+ DEFAULT_PACKAGES += uboot-envtools partx-utils mkf2fs kmod-gpio-button-hotplug \
+-		    fdisk automount cpufreq
++		    fdisk cpufreq
+ 
+ KERNELNAME:=Image dtbs
+ 

@@ -1,0 +1,180 @@
+CONFIG_TARGET_ipq40xx=y
+CONFIG_TARGET_ipq40xx_generic=y
+CONFIG_TARGET_MULTI_PROFILE=y
+CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_ex6100v2=y
+CONFIG_TARGET_DEVICE_PACKAGES_ipq40xx_generic_DEVICE_netgear_ex6100v2=""
+CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_ex6150v2=y
+CONFIG_TARGET_DEVICE_PACKAGES_ipq40xx_generic_DEVICE_netgear_ex6150v2=""
+CONFIG_DEVEL=y
+CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+CONFIG_ATH10K-CT_LEDS=y
+CONFIG_ATH10K_THERMAL=y
+CONFIG_BUILD_LOG=y
+# CONFIG_KERNEL_WERROR is not set
+CONFIG_OPENSSL_OPTIMIZE_SPEED=y
+# CONFIG_OPENVPN_openssl_ENABLE_SMALL is not set
+CONFIG_PACKAGE_ar3k-firmware=m
+CONFIG_PACKAGE_ath10k-board-qca9887=m
+CONFIG_PACKAGE_ath10k-board-qca9888=m
+CONFIG_PACKAGE_ath10k-board-qca9984=m
+CONFIG_PACKAGE_ath10k-board-qca99x0=m
+CONFIG_PACKAGE_ath10k-firmware-qca9887-ct=m
+CONFIG_PACKAGE_ath10k-firmware-qca9888-ct=m
+CONFIG_PACKAGE_ath10k-firmware-qca9984-ct=m
+CONFIG_PACKAGE_ath10k-firmware-qca99x0-ct=m
+CONFIG_PACKAGE_br2684ctl=m
+CONFIG_PACKAGE_dsl_vr11_firmware_xdsl=m
+CONFIG_PACKAGE_e2fsprogs=m
+CONFIG_PACKAGE_fritz-caldata=m
+CONFIG_PACKAGE_fritz-tffs=m
+CONFIG_PACKAGE_fritz-tffs-nand=m
+CONFIG_PACKAGE_ipq-wifi-linksys_whw03=m
+CONFIG_PACKAGE_ipq-wifi-netgear_lbr20=m
+CONFIG_PACKAGE_ipq-wifi-wallys_dr40x9=m
+CONFIG_PACKAGE_ipq-wifi-yyets_le1=m
+CONFIG_PACKAGE_ipq-wifi-zte_mf287=m
+CONFIG_PACKAGE_ipq-wifi-zte_mf287plus=m
+CONFIG_PACKAGE_kmod-asn1-decoder=m
+CONFIG_PACKAGE_kmod-asn1-encoder=m
+CONFIG_PACKAGE_kmod-ath10k-ct-smallbuffers=m
+CONFIG_PACKAGE_kmod-ath3k=m
+CONFIG_PACKAGE_kmod-atm=m
+CONFIG_PACKAGE_kmod-bluetooth=m
+CONFIG_PACKAGE_kmod-crypto-crc32=m
+CONFIG_PACKAGE_kmod-crypto-ecb=m
+CONFIG_PACKAGE_kmod-crypto-ecdh=m
+CONFIG_PACKAGE_kmod-crypto-md5=m
+CONFIG_PACKAGE_kmod-eeprom-at24=m
+CONFIG_PACKAGE_kmod-fs-ext4=m
+CONFIG_PACKAGE_kmod-fs-f2fs=m
+CONFIG_PACKAGE_kmod-hid=m
+CONFIG_PACKAGE_kmod-hwmon-ad7418=m
+CONFIG_PACKAGE_kmod-hwmon-core=y
+CONFIG_PACKAGE_kmod-i2c-algo-bit=m
+CONFIG_PACKAGE_kmod-i2c-core=m
+CONFIG_PACKAGE_kmod-i2c-gpio=m
+CONFIG_PACKAGE_kmod-input-core=m
+CONFIG_PACKAGE_kmod-input-evdev=m
+CONFIG_PACKAGE_kmod-ipoa=m
+CONFIG_PACKAGE_kmod-leds-pca963x=m
+CONFIG_PACKAGE_kmod-lib-crc16=m
+CONFIG_PACKAGE_kmod-ltq-ifxos=m
+CONFIG_PACKAGE_kmod-ltq-vdsl-vr11=m
+CONFIG_PACKAGE_kmod-ltq-vdsl-vr11-mei=m
+CONFIG_PACKAGE_kmod-mii=m
+CONFIG_PACKAGE_kmod-mmc=m
+CONFIG_PACKAGE_kmod-oid-registry=m
+CONFIG_PACKAGE_kmod-random-core=m
+CONFIG_PACKAGE_kmod-regmap-core=m
+CONFIG_PACKAGE_kmod-regmap-i2c=m
+CONFIG_PACKAGE_kmod-spi-dev=m
+CONFIG_PACKAGE_kmod-thermal=y
+CONFIG_PACKAGE_kmod-tpm=m
+CONFIG_PACKAGE_kmod-tpm-i2c-atmel=m
+CONFIG_PACKAGE_kmod-usb-acm=m
+CONFIG_PACKAGE_kmod-usb-ledtrig-usbport=m
+CONFIG_PACKAGE_kmod-usb-net=m
+CONFIG_PACKAGE_kmod-usb-net-cdc-ether=m
+CONFIG_PACKAGE_kmod-usb-net-qmi-wwan=m
+CONFIG_PACKAGE_kmod-usb-net-rndis=m
+CONFIG_PACKAGE_kmod-usb-serial=m
+CONFIG_PACKAGE_kmod-usb-serial-option=m
+CONFIG_PACKAGE_kmod-usb-serial-wwan=m
+CONFIG_PACKAGE_kmod-usb-wdm=m
+CONFIG_PACKAGE_kmod-vrx518_ep=m
+CONFIG_PACKAGE_kmod-vrx518_tc=m
+CONFIG_PACKAGE_kmod-youtubeUnblock=m
+CONFIG_PACKAGE_youtubeUnblock=m
+CONFIG_PACKAGE_kmod-nft-queue=y
+CONFIG_PACKAGE_kmod-nf-conntrack=y
+CONFIG_PACKAGE_libblkid=m
+CONFIG_PACKAGE_libcomerr=m
+CONFIG_PACKAGE_libe2p=m
+CONFIG_PACKAGE_libext2fs=m
+CONFIG_PACKAGE_libf2fs=m
+CONFIG_PACKAGE_libsmartcols=m
+CONFIG_PACKAGE_libss=m
+CONFIG_PACKAGE_libuuid=m
+CONFIG_PACKAGE_linux-atm=m
+CONFIG_PACKAGE_losetup=m
+CONFIG_PACKAGE_ltq-dsl-base=m
+CONFIG_PACKAGE_ltq-vdsl-vr11-app=m
+CONFIG_PACKAGE_luci-app-filebrowser=y
+CONFIG_PACKAGE_luci-app-filemanager=y
+CONFIG_PACKAGE_mkf2fs=m
+CONFIG_PACKAGE_u-boot-fritz1200=y
+CONFIG_PACKAGE_u-boot-fritz3000=y
+CONFIG_PACKAGE_u-boot-fritz4040=y
+CONFIG_PACKAGE_u-boot-fritz7520=y
+CONFIG_PACKAGE_u-boot-fritz7530=y
+CONFIG_PACKAGE_uqmi=m
+CONFIG_PACKAGE_vrx518_aca_fw=m
+CONFIG_PACKAGE_vrx518_ppe_fw=m
+CONFIG_PACKAGE_wwan=m
+CONFIG_TARGET_ALL_PROFILES=y
+CONFIG_TARGET_OPTIONS=y
+# CONFIG_TARGET_ROOTFS_INITRAMFS is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_8dev_habanero-dvk is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_8dev_jalapeno is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_alfa-network_ap120c-ac is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_aruba_ap-303 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_aruba_ap-303h is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_aruba_ap-365 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_asus_map-ac2200 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_asus_rt-ac42u is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_asus_rt-ac58u is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_avm_fritzbox-4040 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_avm_fritzbox-7530 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_avm_fritzrepeater-1200 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_avm_fritzrepeater-3000 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_buffalo_wtr-m2133hp is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_cellc_rtl30vw is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_dlink_dap-2610 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_edgecore_ecw5211 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_engenius_eap1300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_extreme-networks_ws-ap3915i is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_extreme-networks_ws-ap391x is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_ezviz_cs-w3-wd1200g-eup is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_glinet_gl-a1300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_glinet_gl-ap1300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_glinet_gl-b1300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_glinet_gl-b2200 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_ea6350v3 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_ea8300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_mr8300 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_whw01 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_whw03 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_linksys_whw03v2 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_luma_wrtq-329acn is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_meraki_mr33 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_meraki_mr74 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_mobipromo_cm520-79f is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_lbr20 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_rbr40 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_rbr50 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_rbs40 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_rbs50 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_srr60 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_srs60 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_netgear_wac510 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_openmesh_a42 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_openmesh_a62 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_p2w_r619ac-128m is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_p2w_r619ac-64m is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_pakedge_wr-1 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_plasmacloud_pa1200 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_plasmacloud_pa2200 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_qxwlan_e2600ac-c1 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_qxwlan_e2600ac-c2 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_sony_ncp-hg100-cellular is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_teltonika_rutx50 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_wallys_dr40x9 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_yyets_le1 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf18a is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf282plus is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf286d is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf287 is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf287plus is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf287pro is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zte_mf289f is not set
+# CONFIG_TARGET_DEVICE_ipq40xx_generic_DEVICE_zyxel_nbg6617 is not set

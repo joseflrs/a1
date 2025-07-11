@@ -1,0 +1,334 @@
+From 4ae7c2ce2f9c503ec402ea233cb2b8d2e1436af0 Mon Sep 17 00:00:00 2001
+From: Marty <mj8263788@gmail.com>
+Date: Fri, 4 Jul 2025 11:04:33 -0400
+Subject: [PATCH 2/2] m4-2
+
+---
+ config/Config-images.in                       |   4 +-
+ include/rootfs.mk                             |   4 +
+ package/base-files/Makefile                   |   8 +-
+ package/base-files/files/bin/config_generate  |  13 +-
+ package/base-files/image-config.in            |   4 +-
+ .../patches/500-world-regd-5GHz.patch         |  17 +++
+ package/network/utils/iwinfo/patches/01.patch | 122 ++++++++++++++++++
+ 7 files changed, 154 insertions(+), 18 deletions(-)
+ create mode 100644 package/network/utils/iwinfo/patches/01.patch
+
+diff --git a/config/Config-images.in b/config/Config-images.in
+index 3aeed37795..779fd893ee 100644
+--- a/config/Config-images.in
++++ b/config/Config-images.in
+@@ -127,7 +127,6 @@ menu "Target Images"
+ 		config TARGET_EXT4_JOURNAL
+ 			bool "Create a journaling filesystem"
+ 			depends on TARGET_ROOTFS_EXT4FS
+-			default y
+ 			help
+ 			  Create an ext4 filesystem with a journal.
+ 
+@@ -329,8 +328,7 @@ menu "Target Images"
+ 	config TARGET_ROOTFS_PARTSIZE
+ 		int "Root filesystem partition size (in MiB)"
+ 		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS
+-		default 300 if BUILDBOT
+-		default 160
++		default 1040
+ 		help
+ 		  Select the root filesystem partition size.
+ 
+diff --git a/include/rootfs.mk b/include/rootfs.mk
+index 26f249d818..29d4fa8ef2 100644
+--- a/include/rootfs.mk
++++ b/include/rootfs.mk
+@@ -74,6 +74,7 @@ define prepare_rootfs
+ 	fi)
+ 	@mkdir -p $(1)/etc/rc.d
+ 	@mkdir -p $(1)/var/lock
++        @mkdir -p $(1)/www/repo
+ 	@( \
+ 		cd $(1); \
+ 		if [ -n "$(CONFIG_USE_APK)" ]; then \
+@@ -119,6 +120,9 @@ define prepare_rootfs
+ 		$(1)/usr/lib/opkg/info/*.postinst* \
+ 		$(1)/usr/lib/opkg/lists/* \
+ 		$(1)/var/lock/*.lock
++        @(      $(MAKE) package/index; \
++                $(CP) $(TOPDIR)/bin/targets/$(BOARD)/$(SUBTARGET)/packages $(1)/www/repo/packages; \
++        )
+ 	$(call clean_ipkg,$(1))
+ 	$(call mklibs,$(1))
+ 	$(if $(SOURCE_DATE_EPOCH),find $(1)/ -mindepth 1 -execdir touch -hcd "@$(SOURCE_DATE_EPOCH)" "{}" +)
+diff --git a/package/base-files/Makefile b/package/base-files/Makefile
+index 693d259ee4..4309b9c1e2 100644
+--- a/package/base-files/Makefile
++++ b/package/base-files/Makefile
+@@ -87,7 +87,7 @@ define ImageConfigOptions
+ 	echo 'pi_init_cmd=$(if $(CONFIG_TARGET_INIT_CMD),$(CONFIG_TARGET_INIT_CMD),"/sbin/init")' >>$(1)/lib/preinit/00_preinit.conf
+ 	echo 'pi_init_suppress_stderr="$(CONFIG_TARGET_INIT_SUPPRESS_STDERR)"' >>$(1)/lib/preinit/00_preinit.conf
+ 	echo 'pi_ifname=$(if $(CONFIG_TARGET_PREINIT_IFNAME),$(CONFIG_TARGET_PREINIT_IFNAME),"")' >>$(1)/lib/preinit/00_preinit.conf
+-	echo 'pi_ip=$(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.1.1")' >>$(1)/lib/preinit/00_preinit.conf
++	echo 'pi_ip=$(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.10.1")' >>$(1)/lib/preinit/00_preinit.conf
+ 	echo 'pi_netmask=$(if $(CONFIG_TARGET_PREINIT_NETMASK),$(CONFIG_TARGET_PREINIT_NETMASK),"255.255.255.0")' >>$(1)/lib/preinit/00_preinit.conf
+ 	echo 'pi_broadcast=$(if $(CONFIG_TARGET_PREINIT_BROADCAST),$(CONFIG_TARGET_PREINIT_BROADCAST),"192.168.1.255")' >>$(1)/lib/preinit/00_preinit.conf
+ 	echo 'pi_preinit_net_messages="$(CONFIG_TARGET_PREINIT_SHOW_NETMSG)"' >>$(1)/lib/preinit/00_preinit.conf
+@@ -100,7 +100,7 @@ ifeq ($(CONFIG_TARGET_DEFAULT_LAN_IP_FROM_PREINIT),y)
+ 	echo 'board_config_update' >>$(1)/etc/board.d/99-lan-ip
+ 	echo 'json_select network' >>$(1)/etc/board.d/99-lan-ip
+ 	echo 'json_select lan' >>$(1)/etc/board.d/99-lan-ip
+-	echo 'json_add_string ipaddr $(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.1.1")' >>$(1)/etc/board.d/99-lan-ip
++	echo 'json_add_string ipaddr $(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.10.1")' >>$(1)/etc/board.d/99-lan-ip
+ 	echo 'json_add_string netmask $(if $(CONFIG_TARGET_PREINIT_NETMASK),$(CONFIG_TARGET_PREINIT_NETMASK),"255.255.255.0")' >>$(1)/etc/board.d/99-lan-ip
+ 	echo 'json_select ..' >>$(1)/etc/board.d/99-lan-ip
+ 	echo 'json_select ..' >>$(1)/etc/board.d/99-lan-ip
+@@ -121,12 +121,10 @@ endef
+ Build/Compile = $(Build/Compile/Default)
+ 
+ ifneq ($(CONFIG_USE_APK),)
+-ifndef CONFIG_BUILDBOT
+   define Package/base-files/install-key
+ 	mkdir -p $(1)/etc/apk/keys
+ 	$(CP) $(BUILD_KEY_APK_PUB) $(1)/etc/apk/keys/
+   endef
+-endif
+ else
+ ifdef CONFIG_SIGNED_PACKAGES
+   define Build/Configure
+@@ -138,14 +136,12 @@ ifdef CONFIG_SIGNED_PACKAGES
+ 
+   endef
+ 
+-ifndef CONFIG_BUILDBOT
+   define Package/base-files/install-key
+ 	mkdir -p $(1)/etc/opkg/keys
+ 	$(CP) $(BUILD_KEY).pub $(1)/etc/opkg/keys/`$(STAGING_DIR_HOST)/bin/usign -F -p $(BUILD_KEY).pub`
+   endef
+ endif
+ endif
+-endif
+ 
+ ifeq ($(CONFIG_NAND_SUPPORT),)
+   define Package/base-files/nand-support
+diff --git a/package/base-files/files/bin/config_generate b/package/base-files/files/bin/config_generate
+index 013e9c8d36..425eaf98a1 100755
+--- a/package/base-files/files/bin/config_generate
++++ b/package/base-files/files/bin/config_generate
+@@ -3,7 +3,6 @@
+ CFG=/etc/board.json
+ 
+ . /usr/share/libubox/jshn.sh
+-. /lib/functions/ipv4.sh
+ 
+ [ -s $CFG ] || /bin/board_detect || exit 1
+ [ -s /etc/config/network -a -s /etc/config/system ] && exit 0
+@@ -43,7 +42,8 @@ generate_static_network() {
+ 		set network.loopback='interface'
+ 		set network.loopback.device='lo'
+ 		set network.loopback.proto='static'
+-		add_list network.loopback.ipaddr='127.0.0.1/8'
++		set network.loopback.ipaddr='127.0.0.1'
++		set network.loopback.netmask='255.0.0.0'
+ 	EOF
+ 		[ -e /proc/sys/net/ipv6 ] && {
+ 			uci -q batch <<-EOF
+@@ -160,19 +160,18 @@ generate_network() {
+ 
+ 	case "$protocol" in
+ 		static)
+-			local ipad netm prefix
++			local ipad
+ 			case "$1" in
+-				lan) ipad=${ipaddr:-"192.168.1.1"} ;;
++				lan) ipad=${ipaddr:-"192.168.10.1"} ;;
+ 				*) ipad=${ipaddr:-"192.168.$((addr_offset++)).1"} ;;
+ 			esac
+ 
+ 			netm=${netmask:-"255.255.255.0"}
+-			str2ip netm "$netm"
+-			netmask2prefix prefix "$netm"
+ 
+ 			uci -q batch <<-EOF
+ 				set network.$1.proto='static'
+-				add_list network.$1.ipaddr='$ipad/$prefix'
++				set network.$1.ipaddr='$ipad'
++				set network.$1.netmask='$netm'
+ 			EOF
+ 			[ -e /proc/sys/net/ipv6 ] && uci set network.$1.ip6assign='60'
+ 		;;
+diff --git a/package/base-files/image-config.in b/package/base-files/image-config.in
+index 4b27f3d60f..22db76fb57 100644
+--- a/package/base-files/image-config.in
++++ b/package/base-files/image-config.in
+@@ -83,7 +83,7 @@ config TARGET_PREINIT_IFNAME
+ config TARGET_PREINIT_IP
+ 	string
+ 	prompt "IP address for preinit network messages" if PREINITOPT
+-	default "192.168.1.1"
++	default "192.168.10.1"
+ 	help
+ 		IP address used to configure interface for preinit network
+ 		messages, including failsafe messages
+@@ -99,7 +99,7 @@ config TARGET_PREINIT_NETMASK
+ config TARGET_PREINIT_BROADCAST
+ 	string
+ 	prompt "Broadcast address for preinit network messages" if PREINITOPT
+-	default "192.168.1.255"
++	default "192.168.10.255"
+ 	help
+ 		Broadcast address to which to send preinit network messages, as
+ 		as failsafe messages
+diff --git a/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch b/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
+index 3f6d4c7e8d..adea43ce46 100644
+--- a/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
++++ b/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
+@@ -14,3 +14,20 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	# Channel 52 - 64
+  	(5250 - 5330 @ 80), (20), NO-IR, DFS, AUTO-BW
+  	# Channel 100 - 144
++@@ -98,12 +98,10 @@ country AN: DFS-ETSI
++ # Source:
++ # https://www.boletinoficial.gob.ar/detalleAviso/primera/287126/20230524
++ country AR: DFS-FCC
++-	(2402 - 2482 @ 40), (20)
++-	(5170 - 5250 @ 80), (17), AUTO-BW
++-	(5250 - 5330 @ 80), (24), DFS, AUTO-BW
++-	(5490 - 5730 @ 160), (24), DFS
++-	(5735 - 5835 @ 80), (30)
++-	(5925 - 7125 @ 320), (12), NO-OUTDOOR
+++	(2402 - 2482 @ 40), (30)
+++	(5170 - 5330 @ 160), (30)
+++	(5490 - 5835 @ 160), (30)
+++	(5925 - 7125 @ 320), (12), AUTO-BW
++ 
++ country AS: DFS-FCC
++ 	(2402 - 2472 @ 40), (30)
+diff --git a/package/network/utils/iwinfo/patches/01.patch b/package/network/utils/iwinfo/patches/01.patch
+new file mode 100644
+index 0000000000..496eda3421
+--- /dev/null
++++ b/package/network/utils/iwinfo/patches/01.patch
+@@ -0,0 +1,122 @@
++--- a/devices.txt
+++++ b/devices.txt
++@@ -246,6 +246,119 @@
++ # rtl8xxxu/rtl8xxxu_core.c
++ 0x0000 0x0000 0x0bda 0x8176    0      0  "Realtek" "RTL8188CU"
++ 0x0000 0x0000 0x0bda 0xf179    0      0  "Realtek" "RTL8188FTV"
+++# rtw88/rtw8723du.c
+++0x0000 0x0000 0x7392 0xd611    0      0  "Realtek" "RTL8723DU" /* Edimax EW-7611ULB V2 */
+++# rtw88/rtw8812au.c
+++0x0000 0x0000 0x0409 0x0408    0      0  "Realtek" "RTL8812AU" /* NEC */
+++0x0000 0x0000 0x0411 0x025d    0      0  "Realtek" "RTL8812AU" /* Buffalo */
+++0x0000 0x0000 0x04bb 0x0952    0      0  "Realtek" "RTL8812AU" /* I-O DATA */
+++0x0000 0x0000 0x050d 0x1106    0      0  "Realtek" "RTL8812AU" /* Belkin */
+++0x0000 0x0000 0x050d 0x1109    0      0  "Realtek" "RTL8812AU" /* Belkin */
+++0x0000 0x0000 0x0586 0x3426    0      0  "Realtek" "RTL8812AU" /* ZyXEL */
+++0x0000 0x0000 0x0789 0x016e    0      0  "Realtek" "RTL8812AU" /* Logitec */
+++0x0000 0x0000 0x07b8 0x8812    0      0  "Realtek" "RTL8812AU" /* Abocom */
+++0x0000 0x0000 0x0846 0x9051    0      0  "Realtek" "RTL8812AU" /* Netgear */
+++0x0000 0x0000 0x0b05 0x17d2    0      0  "Realtek" "RTL8812AU" /* ASUS */
+++0x0000 0x0000 0x0df6 0x0074    0      0  "Realtek" "RTL8812AU" /* Sitecom */
+++0x0000 0x0000 0x0e66 0x0022    0      0  "Realtek" "RTL8812AU" /* Hawking */
+++0x0000 0x0000 0x1058 0x0632    0      0  "Realtek" "RTL8812AU" /* WD */
+++0x0000 0x0000 0x13b1 0x003f    0      0  "Realtek" "RTL8812AU" /* Linksys */
+++0x0000 0x0000 0x148f 0x9097    0      0  "Realtek" "RTL8812AU" /* Amped Wireless */
+++0x0000 0x0000 0x1740 0x0100    0      0  "Realtek" "RTL8812AU" /* EnGenius */
+++0x0000 0x0000 0x2001 0x330e    0      0  "Realtek" "RTL8812AU" /* D-Link */
+++0x0000 0x0000 0x2001 0x3313    0      0  "Realtek" "RTL8812AU" /* D-Link */
+++0x0000 0x0000 0x2001 0x3315    0      0  "Realtek" "RTL8812AU" /* D-Link */
+++0x0000 0x0000 0x2001 0x3316    0      0  "Realtek" "RTL8812AU" /* D-Link */
+++0x0000 0x0000 0x2019 0xab30    0      0  "Realtek" "RTL8812AU" /* Planex */
+++0x0000 0x0000 0x20f4 0x805b    0      0  "Realtek" "RTL8812AU" /* TRENDnet */
+++0x0000 0x0000 0x2357 0x0101    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2357 0x0103    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2357 0x010d    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2357 0x010e    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2357 0x010f    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2357 0x0122    0      0  "Realtek" "RTL8812AU" /* TP-Link */
+++0x0000 0x0000 0x2604 0x0012    0      0  "Realtek" "RTL8812AU" /* Tenda */
+++0x0000 0x0000 0x7392 0xa822    0      0  "Realtek" "RTL8812AU" /* Edimax */
+++# rtw88/rtw8814au.c
+++0x0000 0x0000 0x056e 0x400b    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x056e 0x400d    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x0846 0x9054    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x0b05 0x1817    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x0b05 0x1852    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x0b05 0x1853    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x0e66 0x0026    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x2001 0x331a    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x20f4 0x809a    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x20f4 0x809b    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x2357 0x0106    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x7392 0xa834    0      0  "Realtek" "RTL8814AU"
+++0x0000 0x0000 0x7392 0xa833    0      0  "Realtek" "RTL8814AU"
+++# rtw88/rtw8821au.c
+++0x0000 0x0000 0x0411 0x0242    0      0  "Realtek" "RTL8821AU" /* Buffalo */
+++0x0000 0x0000 0x0411 0x029b    0      0  "Realtek" "RTL8821AU" /* Buffalo */
+++0x0000 0x0000 0x04bb 0x0953    0      0  "Realtek" "RTL8821AU" /* I-O DATA */
+++0x0000 0x0000 0x056e 0x4007    0      0  "Realtek" "RTL8821AU" /* ELECOM */
+++0x0000 0x0000 0x056e 0x400e    0      0  "Realtek" "RTL8821AU" /* ELECOM */
+++0x0000 0x0000 0x056e 0x400f    0      0  "Realtek" "RTL8821AU" /* ELECOM */
+++0x0000 0x0000 0x0846 0x9052    0      0  "Realtek" "RTL8821AU" /* Netgear */
+++0x0000 0x0000 0x0e66 0x0023    0      0  "Realtek" "RTL8821AU" /* HAWKING */
+++0x0000 0x0000 0x2001 0x3314    0      0  "Realtek" "RTL8821AU" /* D-Link */
+++0x0000 0x0000 0x2001 0x3318    0      0  "Realtek" "RTL8821AU" /* D-Link */
+++0x0000 0x0000 0x2019 0xab32    0      0  "Realtek" "RTL8821AU" /* Planex */
+++0x0000 0x0000 0x20f4 0x804b    0      0  "Realtek" "RTL8821AU" /* TRENDnet */
+++0x0000 0x0000 0x2357 0x011e    0      0  "Realtek" "RTL8821AU" /* TP Link */
+++0x0000 0x0000 0x2357 0x011f    0      0  "Realtek" "RTL8821AU" /* TP Link */
+++0x0000 0x0000 0x2357 0x0120    0      0  "Realtek" "RTL8821AU" /* TP Link */
+++0x0000 0x0000 0x3823 0x6249    0      0  "Realtek" "RTL8821AU" /* Obihai */
+++0x0000 0x0000 0x7392 0xa811    0      0  "Realtek" "RTL8821AU" /* Edimax */
+++0x0000 0x0000 0x7392 0xa812    0      0  "Realtek" "RTL8821AU" /* Edimax */
+++0x0000 0x0000 0x7392 0xa813    0      0  "Realtek" "RTL8821AU" /* Edimax */
+++0x0000 0x0000 0x7392 0xb611    0      0  "Realtek" "RTL8821AU" /* Edimax */
+++0x0000 0x0000 0x0bda 0x0811    0      0  "Realtek" "RTL8821AU" /* Alfa AWUS036ACS */
+++# rtw88/rtw8821cu.c
+++0x0000 0x0000 0x2001 0x331d    0      0  "Realtek" "RTL8821CU" /* D-Link */
+++0x0000 0x0000 0x7392 0xc811    0      0  "Realtek" "RTL8821CU" /* Edimax */
+++0x0000 0x0000 0x7392 0xd811    0      0  "Realtek" "RTL8821CU" /* Edimax */
+++0x0000 0x0000 0x0bda 0xc820    0      0  "Realtek" "RTL8821CU"
+++# rtw88/rtw8822bu.c
+++0x0000 0x0000 0x7392 0xb822    0      0  "Realtek" "RTL8822BU" /* Edimax EW-7822ULC */
+++0x0000 0x0000 0x7392 0xc822    0      0  "Realtek" "RTL8822BU" /* Edimax EW-7822UTC */
+++0x0000 0x0000 0x7392 0xd822    0      0  "Realtek" "RTL8822BU" /* Edimax */
+++0x0000 0x0000 0x7392 0xe822    0      0  "Realtek" "RTL8822BU" /* Edimax */
+++0x0000 0x0000 0x7392 0xf822    0      0  "Realtek" "RTL8822BU" /* Edimax EW-7822UAD */
+++0x0000 0x0000 0x0b05 0x1841    0      0  "Realtek" "RTL8822BU" /* ASUS AC1300 USB-AC55 B1 */
+++0x0000 0x0000 0x0b05 0x184c    0      0  "Realtek" "RTL8822BU" /* ASUS U2 */
+++0x0000 0x0000 0x0B05 0x19aa    0      0  "Realtek" "RTL8822BU" /* ASUS - USB-AC58 rev A1 */
+++0x0000 0x0000 0x0B05 0x1870    0      0  "Realtek" "RTL8822BU" /* ASUS */
+++0x0000 0x0000 0x0B05 0x1874    0      0  "Realtek" "RTL8822BU" /* ASUS */
+++0x0000 0x0000 0x2001 0x331e    0      0  "Realtek" "RTL8822BU" /* Dlink - DWA-181 */
+++0x0000 0x0000 0x2001 0x331c    0      0  "Realtek" "RTL8822BU" /* Dlink - DWA-182 - D1 */
+++0x0000 0x0000 0x2001 0x331f    0      0  "Realtek" "RTL8822BU" /* Dlink - DWA-183 D Ver */
+++0x0000 0x0000 0x13b1 0x0043    0      0  "Realtek" "RTL8822BU" /* Linksys WUSB6400M */
+++0x0000 0x0000 0x13b1 0x0045    0      0  "Realtek" "RTL8822BU" /* Linksys WUSB3600 v2 */
+++0x0000 0x0000 0x2357 0x012d    0      0  "Realtek" "RTL8822BU" /* TP-Link Archer T3U v1 */
+++0x0000 0x0000 0x2357 0x0138    0      0  "Realtek" "RTL8822BU" /* TP-Link Archer T3U Plus v1 */
+++0x0000 0x0000 0x2357 0x0115    0      0  "Realtek" "RTL8822BU" /* TP-Link Archer T4U V3 */
+++0x0000 0x0000 0x2357 0x012e    0      0  "Realtek" "RTL8822BU" /* TP-LINK */
+++0x0000 0x0000 0x2357 0x0116    0      0  "Realtek" "RTL8822BU" /* TP-LINK */
+++0x0000 0x0000 0x2357 0x0117    0      0  "Realtek" "RTL8822BU" /* TP-LINK */
+++0x0000 0x0000 0x0846 0x9055    0      0  "Realtek" "RTL8822BU" /* Netgear A6150 */
+++0x0000 0x0000 0x0e66 0x0025    0      0  "Realtek" "RTL8822BU" /* Hawking HW12ACU */
+++0x0000 0x0000 0x04ca 0x8602    0      0  "Realtek" "RTL8822BU" /* LiteOn */
+++0x0000 0x0000 0x20f4 0x808a    0      0  "Realtek" "RTL8822BU" /* TRENDnet TEW-808UBM */
+++0x0000 0x0000 0x20f4 0x805a    0      0  "Realtek" "RTL8822BU" /* TRENDnet TEW-805UBH */
+++0x0000 0x0000 0x056e 0x4011    0      0  "Realtek" "RTL8822BU" /* ELECOM WDB-867DU3S */
+++0x0000 0x0000 0x2c4e 0x0107    0      0  "Realtek" "RTL8822BU" /* Mercusys MA30H */
+++0x0000 0x0000 0x2c4e 0x010a    0      0  "Realtek" "RTL8822BU" /* Mercusys MA30N */
+++0x0000 0x0000 0x2001 0x3322    0      0  "Realtek" "RTL8822BU" /* D-Link DWA-T185 rev. A1 */
+++0x0000 0x0000 0x0411 0x03d1    0      0  "Realtek" "RTL8822BU" /* BUFFALO WI-U2-866DM */
+++# rtw88/rtw8822cu.c
+++0x0000 0x0000 0x13b1 0x0043    0      0  "Realtek" "RTL8822CU" /* Alpha - Alpha */
+++#####
+++0x02d0 0x4356 0x0000 0x0000    0      0  "Broadcom" "BCM4356"
+++0x02d0 0xa9bf 0x0000 0x0000    0      0  "Broadcom" "BCM43456"
+++0x14c3 0x7922 0x1A3B 0x5300    0      0  "MediaTek" "MT7922"
+++0x10ec 0x8852 0x1e26 0x007f    0      0  "Realtek" "RTL8852AE"
++ 
++ # FDT compatible strings
++ # "compatible" | txpower offset | frequency offset | ...
+-- 
+2.48.1
+

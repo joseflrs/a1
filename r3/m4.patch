@@ -1,0 +1,186 @@
+From af210ac95c9220c87cf267fca9452bd825a296a5 Mon Sep 17 00:00:00 2001
+From: Marty <mj8263788@gmail.com>
+Date: Fri, 4 Jul 2025 10:48:10 -0400
+Subject: [PATCH 1/2] m4
+
+---
+ package/boot/uboot-rockchip/Makefile          | 26 ++++++++++++
+ package/firmware/linux-firmware/broadcom.mk   | 41 +++++++++++++++++++
+ target/linux/rockchip/image/armv8.mk          | 38 +++++++++++++++++
+ .../rockchip/patches-6.12/130-m4-led.patch    | 22 ++++++++++
+ 4 files changed, 127 insertions(+)
+ create mode 100644 target/linux/rockchip/patches-6.12/130-m4-led.patch
+
+diff --git a/package/boot/uboot-rockchip/Makefile b/package/boot/uboot-rockchip/Makefile
+index a824638fe5..8bc25b89d3 100644
+--- a/package/boot/uboot-rockchip/Makefile
++++ b/package/boot/uboot-rockchip/Makefile
+@@ -124,6 +124,29 @@ define U-Boot/guangmiao-g4c-rk3399
+     huake_guangmiao-g4c
+ endef
+ 
++define U-Boot/nanopi-m4-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi M4
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4
++endef
++
++define U-Boot/nanopi-m4-2gb-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi M4 2GB
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4-2gb
++endef
++
++define U-Boot/nanopi-m4v2-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi m4v2
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4v2
++  UBOOT_DTS:=rk3399-nanopi-m4.dts
++  UBOOT_CONFIG:=roc-pc-rk3399
++endef
++
+ define U-Boot/nanopc-t4-rk3399
+   $(U-Boot/rk3399/Default)
+   NAME:=NanoPC T4
+@@ -400,6 +423,9 @@ endef
+ 
+ UBOOT_TARGETS := \
+   guangmiao-g4c-rk3399 \
++  nanopi-m4-rk3399 \
++  nanopi-m4-2gb-rk3399 \
++  nanopi-m4v2-rk3399 \
+   nanopc-t4-rk3399 \
+   nanopi-r4s-rk3399 \
+   nanopi-r4se-rk3399 \
+diff --git a/package/firmware/linux-firmware/broadcom.mk b/package/firmware/linux-firmware/broadcom.mk
+index 6cf57e1523..fd0de64aee 100644
+--- a/package/firmware/linux-firmware/broadcom.mk
++++ b/package/firmware/linux-firmware/broadcom.mk
+@@ -200,3 +200,44 @@ define Package/bnx2x-firmware/install
+ 		$(1)/lib/firmware/bnx2x/
+ endef
+ $(eval $(call BuildPackage,bnx2x-firmware))
++
++## Broadcom NanoPi M4 firmware
++
++BRCMFMAC_4356_URL:=https://raw.githubusercontent.com/armbian/firmware/master/brcm/
++
++define Download/brcmfmac4356-sdio.bin
++  FILE:=brcmfmac4356-sdio.bin
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=cc689fc1b39bd3d1655eff9fcfac60a3bf73fb6a45e77fdbab1e762aeeecf34e
++endef
++
++define Download/brcmfmac4356-sdio.clm_blob
++  FILE:=brcmfmac4356-sdio.clm_blob
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=e048470d674de8865c30521138af248e5f96a9878ac73b707d834698cbf9a08a
++endef
++
++define Download/brcmfmac4356-sdio.txt
++  FILE:=brcmfmac4356-sdio.txt
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=81efd86f47fac54596d3c614872b2997ed0079303136e4c675a8eaa1a39db120
++endef
++
++$(eval $(call Download,brcmfmac4356-sdio.bin))
++$(eval $(call Download,brcmfmac4356-sdio.clm_blob))
++$(eval $(call Download,brcmfmac4356-sdio.txt))
++
++Package/brcmfmac-firmware-4356-nanopi-m4 = $(call Package/firmware-default,Broadcom NanoPi M4 firmware)
++define Package/brcmfmac-firmware-4356-nanopi-m4/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac4356-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.bin
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac4356-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.clm_blob
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac4356-sdio.txt \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-4356-nanopi-m4))
+diff --git a/target/linux/rockchip/image/armv8.mk b/target/linux/rockchip/image/armv8.mk
+index ad7084b08d..02a35fc1d0 100644
+--- a/target/linux/rockchip/image/armv8.mk
++++ b/target/linux/rockchip/image/armv8.mk
+@@ -89,6 +89,44 @@ define Device/firefly_roc-rk3568-pc
+ endef
+ TARGET_DEVICES += firefly_roc-rk3568-pc
+ 
++define Device/friendlyarm_nanopi-m4
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4
++  SOC := rk3399
++  BOOT_FLOW := pine64-bin
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-openssl
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4
++
++define Device/friendlyarm_nanopi-m4-2gb
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4 2GB
++  DEVICE_VARIANT := DDR3
++  SUPPORTED_DEVICES := friendlyarm,nanopi-m4
++  DEVICE_DTS := rockchip/rk3399-nanopi-m4
++  SOC := rk3399
++  BOOT_FLOW := pine64-bin
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-openssl
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4-2gb
++
++define Device/friendlyarm_nanopi-m4v2
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4v2
++  SUPPORTED_DEVICES := friendlyarm,nanopi-m4
++  DEVICE_DTS := rockchip/rk3399-nanopi-m4
++  SOC := rk3399
++  BOOT_FLOW := pine64-bin
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-openssl
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4v2
++
+ define Device/friendlyarm_nanopc-t4
+   DEVICE_VENDOR := FriendlyARM
+   DEVICE_MODEL := NanoPC T4
+diff --git a/target/linux/rockchip/patches-6.12/130-m4-led.patch b/target/linux/rockchip/patches-6.12/130-m4-led.patch
+new file mode 100644
+index 0000000000..8699b5d50c
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/130-m4-led.patch
+@@ -0,0 +1,22 @@
++--- a/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
+++++ b/arch/arm64/boot/dts/rockchip/rk3399-nanopi4.dtsi
++@@ -21,6 +21,10 @@
++ 		mmc0 = &sdio0;
++ 		mmc1 = &sdmmc;
++ 		mmc2 = &sdhci;
+++		led-boot = &status_led;
+++		led-failsafe = &status_led;
+++		led-running = &status_led;
+++		led-upgrade = &status_led;
++ 	};
++ 
++ 	chosen {
++@@ -128,7 +132,7 @@
++ 		status_led: led-0 {
++ 			gpios = <&gpio0 RK_PB5 GPIO_ACTIVE_HIGH>;
++ 			label = "status_led";
++-			linux,default-trigger = "heartbeat";
+++			default-state = "on";
++ 		};
++ 	};
++ 
+-- 
+2.48.1
+

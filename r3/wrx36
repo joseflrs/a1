@@ -1,0 +1,71 @@
+CONFIG_TARGET_qualcommax=y
+CONFIG_TARGET_qualcommax_ipq807x=y
+CONFIG_TARGET_MULTI_PROFILE=y
+CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_dynalink_dl-wrx36=y
+CONFIG_TARGET_DEVICE_PACKAGES_qualcommax_ipq807x_DEVICE_dynalink_dl-wrx36=""
+CONFIG_ALL_KMODS=y
+CONFIG_ALL_NONSHARED=y
+CONFIG_DEVEL=y
+CONFIG_TARGET_PER_DEVICE_ROOTFS=y
+CONFIG_AUTOREMOVE=y
+CONFIG_BUILDBOT=y
+CONFIG_BUILD_LOG=y
+CONFIG_HTOP_LMSENSORS=y
+CONFIG_KERNEL_BUILD_DOMAIN="buildhost"
+CONFIG_KERNEL_BUILD_USER="builder"
+CONFIG_PACKAGE_adblock=y
+CONFIG_PACKAGE_ath10k-board-qca9887=m
+CONFIG_PACKAGE_ath10k-board-qca9984=m
+CONFIG_PACKAGE_ath10k-firmware-qca9887-ct=m
+CONFIG_PACKAGE_ath10k-firmware-qca9984-ct=m
+CONFIG_PACKAGE_ath11k-firmware-qcn9074=m
+CONFIG_PACKAGE_coreutils=y
+CONFIG_PACKAGE_coreutils-sort=y
+CONFIG_PACKAGE_dnsmasq=m
+CONFIG_PACKAGE_f2fsck=m
+CONFIG_PACKAGE_kmod-sched-bpf=y
+CONFIG_PACKAGE_libf2fs=m
+CONFIG_PACKAGE_luci-app-adblock=y
+CONFIG_PACKAGE_luci-app-filebrowser=y
+CONFIG_PACKAGE_mkf2fs=m
+CONFIG_PACKAGE_qosify=y
+CONFIG_TARGET_ALL_PROFILES=y
+CONFIG_TARGET_OPTIONS=y
+# CONFIG_TARGET_ROOTFS_INITRAMFS is not set
+# CONFIG_BPF_TOOLCHAIN_BUILD_LLVM is not set
+CONFIG_BPF_TOOLCHAIN_PREBUILT=y
+# CONFIG_COLLECT_KERNEL_DEBUG is not set
+# CONFIG_IB is not set
+# CONFIG_JSON_CYCLONEDX_SBOM is not set
+# CONFIG_KERNEL_WERROR is not set
+# CONFIG_MAKE_TOOLCHAIN is not set
+# CONFIG_REPRODUCIBLE_DEBUG_INFO is not set
+# CONFIG_SDK is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_arcadyan_aw1000 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_asus_rt-ax89x is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_buffalo_wxr-5950ax12 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_cmcc_rm2-6 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_compex_wpq873 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_edgecore_eap102 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_edimax_cax1800 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx4200v1 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx4200v2 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx5300 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_rax120v2 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_wax218 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_wax620 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_wax630 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_prpl_haze is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_qnap_301w is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_redmi_ax6 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax3600 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_xiaomi_ax9000 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_yuncore_ax880 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_zte_mf269 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_zyxel_nbg7815 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_zbtlink_zbt-z800ax is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_spectrum_sax1v1k is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_linksys_mx8500 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_sxr80 is not set
+# CONFIG_TARGET_DEVICE_qualcommax_ipq807x_DEVICE_netgear_sxs80 is not set
+CONFIG_USE_LLVM_PREBUILT=y
