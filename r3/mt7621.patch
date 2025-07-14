@@ -83,19 +83,6 @@ index 0000000000..8eb7b4db5a
 + 	# 60g band
 + 	# reference: section IV-D https://docs.fcc.gov/public/attachments/FCC-16-89A1.pdf
 + 	# channels 1-6 EIRP=40dBm(43dBm peak)
-diff --git a/target/linux/generic/config-6.6 b/target/linux/generic/config-6.6
-index 9eec780b53..bf21156cc3 100644
---- a/target/linux/generic/config-6.6
-+++ b/target/linux/generic/config-6.6
-@@ -3126,7 +3126,7 @@ CONFIG_LINEAR_RANGES=y
- # CONFIG_LIQUIDIO is not set
- # CONFIG_LIQUIDIO_VF is not set
- # CONFIG_LIRC is not set
--CONFIG_LIST_HARDENED=y
-+# CONFIG_LIST_HARDENED is not set
- # CONFIG_LITEX_LITEETH is not set
- # CONFIG_LITEX_SOC_CONTROLLER is not set
- # CONFIG_LIVEPATCH is not set
 -- 
 2.46.0
 
