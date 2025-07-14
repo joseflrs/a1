@@ -25,6 +25,8 @@ jobs:
                 cp -rf r3/* openwrt/
                 cd openwrt
                 git apply pm.patch
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19411.patch
+                git apply 19411.patch
                 wget https://github.com/mj22226/openwrt/commit/4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
                 git apply 4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
