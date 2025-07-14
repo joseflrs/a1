@@ -1,9 +1,9 @@
-name: Build rockchip main snapshot
+name: Build pr snapshot
 on:
    workflow_dispatch:
 jobs:
     build:
-        name: Build rockchip main
+        name: Build rockchip pr
         runs-on: ubuntu-24.04-arm
         steps:
             - name: Setup Ubuntu
