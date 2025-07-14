@@ -1,0 +1,73 @@
+name: Build rockchip main snapshot
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Build rockchip main
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                go-version: '1.23.5'
+            - name: Go Version
+              run: go version
+            - name: checkout
+              uses: actions/checkout@v4
+            - name: Build
+              run: |
+                git clone https://github.com/openwrt/openwrt.git
+                cd openwrt
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                wget https://mirror-03.infra.openwrt.org/snapshots/targets/rockchip/armv8/config.buildinfo -O .config
+                echo "CONFIG_PACKAGE_luci=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
+                echo "CONFIG_BUILD_LOG=y" >> .config
+                echo "CONFIG_USE_LLVM_PREBUILT=y" >> .config
+                echo "# CONFIG_BPF_TOOLCHAIN_BUILD_LLVM is not set" >> .config
+                echo "CONFIG_BPF_TOOLCHAIN_PREBUILT=y" >> .config
+                echo "# CONFIG_COLLECT_KERNEL_DEBUG is not set" >> .config
+                echo "# CONFIG_MAKE_TOOLCHAIN is not set" >> .config
+                echo "# CONFIG_SDK is not set" >> .config
+                echo "CONFIG_TARGET_ROOTFS_PARTSIZE=1040" >> .config
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.23.5/arm64/bin"' >> .config
+                make defconfig
+                wget https://gist.githubusercontent.com/mj22226/9a69bb754a83e8a5cf03fcc60d62d473/raw/cc6f36831d6098de4a7fccf04a312d36a0dbc999/01-key.patch
+                git apply 01-key.patch
+                rm 01-key.patch
+                mkdir -p files/www/repo
+                wget https://gist.githubusercontent.com/mj22226/2ce53b7a5e5742be6f9052a4e4d3203d/raw/674531914187c1afa92427ef51e6fa01f95aae3f/feeds-rk.patch
+                git apply feeds-rk.patch
+                make download -j32
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                cp -R bin/targets/rockchip/armv8/packages/ files/www/repo/
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/rockchip/armv8/packages.tar.gz bin/targets/rockchip/armv8/packages || true
+                tar -czvf bin/targets/rockchip/armv8/logs.tar.gz logs
+                rm -rf bin/targets/rockchip/armv8/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: rockchip-main
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@v1.14.0
+              with:
+                allowUpdates: true
+                name: Rockchip Main Firmware Images ${{ env.D }}
+                tag: rockchip-main
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/rockchip/armv8/*
+
