@@ -30,7 +30,6 @@ jobs:
                 ./scripts/feeds install -a -f
                 mv cudy-x6 .config
                 make defconfig
-                git apply kernel.patch
                 git apply pm.patch
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
                 make download -j32
