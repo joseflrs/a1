@@ -25,6 +25,7 @@ jobs:
                 git apply 19411.patch
                 git apply mt7621.patch
                 git apply 01-ip-addr.patch
+                sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 mv cudy-x6 .config
