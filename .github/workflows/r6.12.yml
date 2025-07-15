@@ -70,6 +70,7 @@ jobs:
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
                 tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
                 mv rk-snapshot .config
+                sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.24.4/arm64/bin"' >> .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
                 echo "# CONFIG_DRM_WERROR is not set" >> target/linux/generic/config-6.12
