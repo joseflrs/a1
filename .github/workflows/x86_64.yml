@@ -20,8 +20,8 @@ jobs:
               run: |
                 git clone https://github.com/openwrt/openwrt.git
                 cd openwrt
-                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19411.patch
-                git apply 19411.patch
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19388.patch
+                git apply 19388.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 wget https://downloads.openwrt.org/snapshots/targets/x86/64/config.buildinfo -O .config
