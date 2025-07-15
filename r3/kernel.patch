@@ -1,2327 +1,301 @@
-From c70395f5602fe00f403e8ab611b7088b878b49f5 Mon Sep 17 00:00:00 2001
-From: Marty Jones <mj8263788@gmail.com>
-Date: Sat, 5 Jul 2025 11:06:27 -0400
-Subject: [PATCH 1/4] kernel: Linux 6.6.96
+From 8c1d4ac7197e6dd1935521db8a1a1c3c2ea445f2 Mon Sep 17 00:00:00 2001
+From: Leo Barsky <leobrsky@proton.me>
+Date: Tue, 15 Jul 2025 11:45:29 -0400
+Subject: [PATCH 1/2] kernel: bump 6.6 to 6.6.99
 
-https://lore.kernel.org/all/20250703143941.182414597@linuxfoundation.org
+Changelog: https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.6.99
 
-Signed-off-by: Marty Jones <mj8263788@gmail.com>
+All patches auto refreshed.
+
+Signed-off-by: Leo Barsky <leobrsky@proton.me>
 ---
- ...t7530-Enable-Rx-sptag-for-EN7581-SoC.patch |  2 +-
- target/linux/generic/kernel-6.6               |  4 +-
- ...50-Revert-ipv6-save-dontfrag-in-cork.patch | 72 -------------------
- 3 files changed, 3 insertions(+), 75 deletions(-)
- delete mode 100644 target/linux/generic/pending-6.6/650-Revert-ipv6-save-dontfrag-in-cork.patch
+ target/linux/generic/hack-6.6/902-debloat_proc.patch          | 2 +-
+ target/linux/generic/kernel-6.6                               | 4 ++--
+ .../806-v6.9-pwm-mediatek-add-support-for-MT7988.patch        | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/target/linux/airoha/patches-6.6/048-06-v6.15-net-dsa-mt7530-Enable-Rx-sptag-for-EN7581-SoC.patch b/target/linux/airoha/patches-6.6/048-06-v6.15-net-dsa-mt7530-Enable-Rx-sptag-for-EN7581-SoC.patch
-index fdf12c250c..27956d553a 100644
---- a/target/linux/airoha/patches-6.6/048-06-v6.15-net-dsa-mt7530-Enable-Rx-sptag-for-EN7581-SoC.patch
-+++ b/target/linux/airoha/patches-6.6/048-06-v6.15-net-dsa-mt7530-Enable-Rx-sptag-for-EN7581-SoC.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
- 
- --- a/drivers/net/dsa/mt7530.c
- +++ b/drivers/net/dsa/mt7530.c
--@@ -2585,6 +2585,11 @@ mt7531_setup_common(struct dsa_switch *d
-+@@ -2588,6 +2588,11 @@ mt7531_setup_common(struct dsa_switch *d
-  	/* Allow mirroring frames received on the local port (monitor port). */
-  	mt7530_set(priv, MT753X_AGC, LOCAL_EN);
-  
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index d2d952e254..88d972d66a 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .95
--LINUX_KERNEL_HASH-6.6.95 = 18640ae9a2c952f8f8868324378df1a9e138ad29e6b93a9c38155764ea67ea85
-+LINUX_VERSION-6.6 = .96
-+LINUX_KERNEL_HASH-6.6.96 = 9ee45843d43adb2e2ac5f6a8cb10a334e39e3e3384af8a0ce383a37f78221bdd
-diff --git a/target/linux/generic/pending-6.6/650-Revert-ipv6-save-dontfrag-in-cork.patch b/target/linux/generic/pending-6.6/650-Revert-ipv6-save-dontfrag-in-cork.patch
-deleted file mode 100644
-index 18ef72ef58..0000000000
---- a/target/linux/generic/pending-6.6/650-Revert-ipv6-save-dontfrag-in-cork.patch
-+++ /dev/null
-@@ -1,72 +0,0 @@
--From 988e05f0c036c9c64f211b8b91a4a33c34db216a Mon Sep 17 00:00:00 2001
--From: Hauke Mehrtens <hauke@hauke-m.de>
--Date: Sat, 21 Jun 2025 19:08:30 +0200
--Subject: [PATCH] Revert "ipv6: save dontfrag in cork"
--
--This reverts commit 8ebf2709fe4dcd0a1b7b95bf61e529ddcd3cdf51.
--
--This change breaks IPv6 UDP packet fragmentation.
--See discussion: https://lore.kernel.org/stable/aFGl-mb--GOMY8ZQ@karahi.gladserv.com/
--
--Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
-----
-- include/linux/ipv6.h  | 1 -
-- net/ipv6/ip6_output.c | 9 ++++-----
-- 2 files changed, 4 insertions(+), 6 deletions(-)
--
----- a/include/linux/ipv6.h
--+++ b/include/linux/ipv6.h
--@@ -199,7 +199,6 @@ struct inet6_cork {
-- 	struct ipv6_txoptions *opt;
-- 	u8 hop_limit;
-- 	u8 tclass;
---	u8 dontfrag:1;
-- };
-- 
-- /* struct ipv6_pinfo - ipv6 private area */
----- a/net/ipv6/ip6_output.c
--+++ b/net/ipv6/ip6_output.c
--@@ -1452,7 +1452,6 @@ static int ip6_setup_cork(struct sock *s
-- 	}
-- 	v6_cork->hop_limit = ipc6->hlimit;
-- 	v6_cork->tclass = ipc6->tclass;
---	v6_cork->dontfrag = ipc6->dontfrag;
-- 	if (rt->dst.flags & DST_XFRM_TUNNEL)
-- 		mtu = np->pmtudisc >= IPV6_PMTUDISC_PROBE ?
-- 		      READ_ONCE(rt->dst.dev->mtu) : dst_mtu(&rt->dst);
--@@ -1486,7 +1485,7 @@ static int __ip6_append_data(struct sock
-- 			     int getfrag(void *from, char *to, int offset,
-- 					 int len, int odd, struct sk_buff *skb),
-- 			     void *from, size_t length, int transhdrlen,
---			     unsigned int flags)
--+			     unsigned int flags, struct ipcm6_cookie *ipc6)
-- {
-- 	struct sk_buff *skb, *skb_prev = NULL;
-- 	struct inet_cork *cork = &cork_full->base;
--@@ -1542,7 +1541,7 @@ static int __ip6_append_data(struct sock
-- 	if (headersize + transhdrlen > mtu)
-- 		goto emsgsize;
-- 
---	if (cork->length + length > mtu - headersize && v6_cork->dontfrag &&
--+	if (cork->length + length > mtu - headersize && ipc6->dontfrag &&
-- 	    (sk->sk_protocol == IPPROTO_UDP ||
-- 	     sk->sk_protocol == IPPROTO_ICMPV6 ||
-- 	     sk->sk_protocol == IPPROTO_RAW)) {
--@@ -1914,7 +1913,7 @@ int ip6_append_data(struct sock *sk,
-- 
-- 	return __ip6_append_data(sk, &sk->sk_write_queue, &inet->cork,
-- 				 &np->cork, sk_page_frag(sk), getfrag,
---				 from, length, transhdrlen, flags);
--+				 from, length, transhdrlen, flags, ipc6);
-- }
-- EXPORT_SYMBOL_GPL(ip6_append_data);
-- 
--@@ -2119,7 +2118,7 @@ struct sk_buff *ip6_make_skb(struct sock
-- 	err = __ip6_append_data(sk, &queue, cork, &v6_cork,
-- 				&current->task_frag, getfrag, from,
-- 				length + exthdrlen, transhdrlen + exthdrlen,
---				flags);
--+				flags, ipc6);
-- 	if (err) {
-- 		__ip6_flush_pending_frames(sk, &queue, cork, &v6_cork);
-- 		return ERR_PTR(err);
--- 
-2.48.1
-
-
-From def6dadba760bd4f6e6020cae05c4324d9ec28a4 Mon Sep 17 00:00:00 2001
-From: Marty Jones <mj8263788@gmail.com>
-Date: Thu, 3 Jul 2025 14:47:47 -0400
-Subject: [PATCH 2/4] kernel: Linux 6.12.36
-
-https://lore.kernel.org/all/20250703143955.956569535@linuxfoundation.org
-
-Signed-off-by: Marty Jones <mj8263788@gmail.com>
----
- ...-for-all-the-downstream-rpi-sound-ca.patch |   2 +-
- ...ginal-workaround-for-RTL8125-broken-.patch |   2 +-
- ...TSO-on-selected-chip-versions-per-de.patch |   4 +-
- ...plement-additional-ethtool-stats-ops.patch |   2 +-
- ...169-don-t-take-RTNL-lock-in-rtl_task.patch |   6 +-
- ...-custom-flag-with-disable_work-et-al.patch |  16 +-
- ...9-remove-rtl_dash_loop_wait_high-low.patch |   6 +-
- ...v6.13-r8169-add-support-for-RTL8125D.patch | 143 ------------------
- ...read-duplex-and-gbit-master-from-PHY.patch |   8 +-
- ...change-order-of-calls-in-C22-read_st.patch |   2 +-
- ...clear-1000Base-T-link-partner-advert.patch |   2 +-
- ...merge-the-drivers-for-internal-NBase.patch | 136 -----------------
- ...hy-realtek-add-RTL8125D-internal-PHY.patch |  29 ----
- target/linux/generic/kernel-6.12              |   4 +-
- ..._F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch |   2 +-
- ...nk-up-workaround-for-newer-platforms.patch |  12 +-
- ...reset-toggle-in-_core_reset-function.patch |   6 +-
- .../330-snand-mtk-bmt-support.patch           |   6 +-
- ...ers-spi-mem-Add-spi-calibration-hook.patch |   4 +-
- ...and-Add-calibration-support-for-spin.patch |   2 +-
- ...960-asus-hack-u-boot-ignore-mtdparts.patch |   4 +-
- ...or-support-mtd-name-from-device-tree.patch |   4 +-
- .../1011-net-stmmac-use-GFP_DMA32.patch       |   2 +-
- 23 files changed, 48 insertions(+), 356 deletions(-)
- delete mode 100644 target/linux/generic/backport-6.12/780-09-v6.13-r8169-add-support-for-RTL8125D.patch
- delete mode 100644 target/linux/generic/backport-6.12/781-04-v6.13-net-phy-realtek-merge-the-drivers-for-internal-NBase.patch
- delete mode 100644 target/linux/generic/backport-6.12/781-05-v6.13-net-phy-realtek-add-RTL8125D-internal-PHY.patch
-
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch b/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
-index 1a508a1125..2da70b23d8 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
-@@ -18626,7 +18626,7 @@ Signed-off-by: j-schambacher <joerg@hifiberry.com>
-  	 * For devices with more than one control interface, we assume the
- --- a/sound/usb/quirks.c
- +++ b/sound/usb/quirks.c
--@@ -2358,6 +2358,8 @@ static const struct usb_audio_quirk_flag
-+@@ -2360,6 +2360,8 @@ static const struct usb_audio_quirk_flag
-  		   QUIRK_FLAG_ALIGN_TRANSFER),
-  	DEVICE_FLG(0x534d, 0x2109, /* MacroSilicon MS2109 */
-  		   QUIRK_FLAG_ALIGN_TRANSFER),
-diff --git a/target/linux/generic/backport-6.12/780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch b/target/linux/generic/backport-6.12/780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch
-index 080dae31e6..ed79d3914e 100644
---- a/target/linux/generic/backport-6.12/780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch
-+++ b/target/linux/generic/backport-6.12/780-01-v6.13-r8169-remove-original-workaround-for-RTL8125-broken-.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
- 
- --- a/drivers/net/ethernet/realtek/r8169_main.c
- +++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -4804,11 +4804,7 @@ static void r8169_phylink_handler(struct
-+@@ -4813,11 +4813,7 @@ static void r8169_phylink_handler(struct
-  	if (netif_carrier_ok(ndev)) {
-  		rtl_link_chg_patch(tp);
-  		pm_request_resume(d);
-diff --git a/target/linux/generic/backport-6.12/780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch b/target/linux/generic/backport-6.12/780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch
-index f7d2d23c2a..67823d4363 100644
---- a/target/linux/generic/backport-6.12/780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch
-+++ b/target/linux/generic/backport-6.12/780-02-v6.13-r8169-enable-SG-TSO-on-selected-chip-versions-per-de.patch
-@@ -20,7 +20,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
- 
- --- a/drivers/net/ethernet/realtek/r8169_main.c
- +++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -5517,11 +5517,6 @@ static int rtl_init_one(struct pci_dev *
-+@@ -5526,11 +5526,6 @@ static int rtl_init_one(struct pci_dev *
-  
-  	dev->features |= dev->hw_features;
-  
-@@ -32,7 +32,7 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
-  	if (rtl_chip_supports_csum_v2(tp)) {
-  		dev->hw_features |= NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6;
-  		netif_set_tso_max_size(dev, RTL_GSO_MAX_SIZE_V2);
--@@ -5532,6 +5527,17 @@ static int rtl_init_one(struct pci_dev *
-+@@ -5541,6 +5536,17 @@ static int rtl_init_one(struct pci_dev *
-  		netif_set_tso_max_segs(dev, RTL_GSO_MAX_SEGS_V1);
-  	}
-  
-diff --git a/target/linux/generic/backport-6.12/780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch b/target/linux/generic/backport-6.12/780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch
-index cef8e1e471..8ecb5c794c 100644
---- a/target/linux/generic/backport-6.12/780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch
-+++ b/target/linux/generic/backport-6.12/780-03-v6.13-r8169-implement-additional-ethtool-stats-ops.patch
-@@ -118,7 +118,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  };
-  
-  static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
--@@ -3920,6 +3999,9 @@ static void rtl_hw_start_8125(struct rtl
-+@@ -3929,6 +4008,9 @@ static void rtl_hw_start_8125(struct rtl
-  		break;
-  	}
-  
-diff --git a/target/linux/generic/backport-6.12/780-04-v6.13-r8169-don-t-take-RTNL-lock-in-rtl_task.patch b/target/linux/generic/backport-6.12/780-04-v6.13-r8169-don-t-take-RTNL-lock-in-rtl_task.patch
-index ef360d062a..dd42817b99 100644
---- a/target/linux/generic/backport-6.12/780-04-v6.13-r8169-don-t-take-RTNL-lock-in-rtl_task.patch
-+++ b/target/linux/generic/backport-6.12/780-04-v6.13-r8169-don-t-take-RTNL-lock-in-rtl_task.patch
-@@ -18,7 +18,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
- 
- --- a/drivers/net/ethernet/realtek/r8169_main.c
- +++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -4827,10 +4827,8 @@ static void rtl_task(struct work_struct
-+@@ -4836,10 +4836,8 @@ static void rtl_task(struct work_struct
-  		container_of(work, struct rtl8169_private, wk.work);
-  	int ret;
-  
-@@ -30,7 +30,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  
-  	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
-  		/* if chip isn't accessible, reset bus to revive it */
--@@ -4839,7 +4837,7 @@ static void rtl_task(struct work_struct
-+@@ -4848,7 +4846,7 @@ static void rtl_task(struct work_struct
-  			if (ret < 0) {
-  				netdev_err(tp->dev, "Can't reset secondary PCI bus, detach NIC\n");
-  				netif_device_detach(tp->dev);
-@@ -39,7 +39,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  			}
-  		}
-  
--@@ -4858,8 +4856,6 @@ reset:
-+@@ -4867,8 +4865,6 @@ reset:
-  	} else if (test_and_clear_bit(RTL_FLAG_TASK_RESET_NO_QUEUE_WAKE, tp->wk.flags)) {
-  		rtl_reset_work(tp);
-  	}
-diff --git a/target/linux/generic/backport-6.12/780-05-v6.13-replace-custom-flag-with-disable_work-et-al.patch b/target/linux/generic/backport-6.12/780-05-v6.13-replace-custom-flag-with-disable_work-et-al.patch
-index 304515fe81..ae4bc15e30 100644
---- a/target/linux/generic/backport-6.12/780-05-v6.13-replace-custom-flag-with-disable_work-et-al.patch
-+++ b/target/linux/generic/backport-6.12/780-05-v6.13-replace-custom-flag-with-disable_work-et-al.patch
-@@ -17,7 +17,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
- 
- --- a/drivers/net/ethernet/realtek/r8169_main.c
- +++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -617,7 +617,6 @@ struct rtl8169_tc_offsets {
-+@@ -619,7 +619,6 @@ struct rtl8169_tc_offsets {
-  };
-  
-  enum rtl_flag {
-@@ -25,7 +25,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  	RTL_FLAG_TASK_RESET_PENDING,
-  	RTL_FLAG_TASK_RESET_NO_QUEUE_WAKE,
-  	RTL_FLAG_TASK_TX_TIMEOUT,
--@@ -2502,11 +2501,9 @@ u16 rtl8168h_2_get_adc_bias_ioffset(stru
-+@@ -2505,11 +2504,9 @@ u16 rtl8168h_2_get_adc_bias_ioffset(stru
-  
-  static void rtl_schedule_task(struct rtl8169_private *tp, enum rtl_flag flag)
-  {
-@@ -39,7 +39,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  }
-  
-  static void rtl8169_init_phy(struct rtl8169_private *tp)
--@@ -4827,9 +4824,6 @@ static void rtl_task(struct work_struct
-+@@ -4836,9 +4833,6 @@ static void rtl_task(struct work_struct
-  		container_of(work, struct rtl8169_private, wk.work);
-  	int ret;
-  
-@@ -49,7 +49,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  	if (test_and_clear_bit(RTL_FLAG_TASK_TX_TIMEOUT, tp->wk.flags)) {
-  		/* if chip isn't accessible, reset bus to revive it */
-  		if (RTL_R32(tp, TxConfig) == ~0) {
--@@ -4913,6 +4907,7 @@ static int r8169_phy_connect(struct rtl8
-+@@ -4922,6 +4916,7 @@ static int r8169_phy_connect(struct rtl8
-  
-  static void rtl8169_down(struct rtl8169_private *tp)
-  {
-@@ -57,7 +57,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  	/* Clear all task flags */
-  	bitmap_zero(tp->wk.flags, RTL_FLAG_MAX);
-  
--@@ -4941,7 +4936,7 @@ static void rtl8169_up(struct rtl8169_pr
-+@@ -4950,7 +4945,7 @@ static void rtl8169_up(struct rtl8169_pr
-  	phy_resume(tp->phydev);
-  	rtl8169_init_phy(tp);
-  	napi_enable(&tp->napi);
-@@ -66,7 +66,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  	rtl_reset_work(tp);
-  
-  	phy_start(tp->phydev);
--@@ -4958,8 +4953,6 @@ static int rtl8169_close(struct net_devi
-+@@ -4967,8 +4962,6 @@ static int rtl8169_close(struct net_devi
-  	rtl8169_down(tp);
-  	rtl8169_rx_clear(tp);
-  
-@@ -75,7 +75,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  	free_irq(tp->irq, tp);
-  
-  	phy_disconnect(tp->phydev);
--@@ -5192,7 +5185,7 @@ static void rtl_remove_one(struct pci_de
-+@@ -5201,7 +5194,7 @@ static void rtl_remove_one(struct pci_de
-  	if (pci_dev_run_wake(pdev))
-  		pm_runtime_get_noresume(&pdev->dev);
-  
-@@ -84,7 +84,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  
-  	if (IS_ENABLED(CONFIG_R8169_LEDS))
-  		r8169_remove_leds(tp->leds);
--@@ -5570,6 +5563,7 @@ static int rtl_init_one(struct pci_dev *
-+@@ -5579,6 +5572,7 @@ static int rtl_init_one(struct pci_dev *
-  	tp->irq = pci_irq_vector(pdev, 0);
-  
-  	INIT_WORK(&tp->wk.work, rtl_task);
-diff --git a/target/linux/generic/backport-6.12/780-07-v6.13-r8169-remove-rtl_dash_loop_wait_high-low.patch b/target/linux/generic/backport-6.12/780-07-v6.13-r8169-remove-rtl_dash_loop_wait_high-low.patch
-index 1e3c47f089..bc8f979c20 100644
---- a/target/linux/generic/backport-6.12/780-07-v6.13-r8169-remove-rtl_dash_loop_wait_high-low.patch
-+++ b/target/linux/generic/backport-6.12/780-07-v6.13-r8169-remove-rtl_dash_loop_wait_high-low.patch
-@@ -15,7 +15,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
- 
- --- a/drivers/net/ethernet/realtek/r8169_main.c
- +++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -1345,40 +1345,19 @@ static void rtl8168ep_stop_cmac(struct r
-+@@ -1348,40 +1348,19 @@ static void rtl8168ep_stop_cmac(struct r
-  	RTL_W8(tp, IBCR0, RTL_R8(tp, IBCR0) & ~0x01);
-  }
-  
-@@ -60,7 +60,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  }
-  
-  static void rtl8168_driver_start(struct rtl8169_private *tp)
--@@ -1392,7 +1371,8 @@ static void rtl8168_driver_start(struct
-+@@ -1395,7 +1374,8 @@ static void rtl8168_driver_start(struct
-  static void rtl8168dp_driver_stop(struct rtl8169_private *tp)
-  {
-  	r8168dp_oob_notify(tp, OOB_CMD_DRIVER_STOP);
-@@ -70,7 +70,7 @@ Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-  }
-  
-  static void rtl8168ep_driver_stop(struct rtl8169_private *tp)
--@@ -1400,7 +1380,8 @@ static void rtl8168ep_driver_stop(struct
-+@@ -1403,7 +1383,8 @@ static void rtl8168ep_driver_stop(struct
-  	rtl8168ep_stop_cmac(tp);
-  	r8168ep_ocp_write(tp, 0x01, 0x180, OOB_CMD_DRIVER_STOP);
-  	r8168ep_ocp_write(tp, 0x01, 0x30, r8168ep_ocp_read(tp, 0x30) | 0x01);
-diff --git a/target/linux/generic/backport-6.12/780-09-v6.13-r8169-add-support-for-RTL8125D.patch b/target/linux/generic/backport-6.12/780-09-v6.13-r8169-add-support-for-RTL8125D.patch
-deleted file mode 100644
-index 627c2befdd..0000000000
---- a/target/linux/generic/backport-6.12/780-09-v6.13-r8169-add-support-for-RTL8125D.patch
-+++ /dev/null
-@@ -1,143 +0,0 @@
--From f75d1fbe7809bc5ed134204b920fd9e2fc5db1df Mon Sep 17 00:00:00 2001
--From: Heiner Kallweit <hkallweit1@gmail.com>
--Date: Thu, 24 Oct 2024 22:42:33 +0200
--Subject: [PATCH] r8169: add support for RTL8125D
--
--This adds support for new chip version RTL8125D, which can be found on
--boards like Gigabyte X870E AORUS ELITE WIFI7. Firmware rtl8125d-1.fw
--for this chip version is available in linux-firmware already.
--
--Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
--Reviewed-by: Simon Horman <horms@kernel.org>
--Link: https://patch.msgid.link/d0306912-e88e-4c25-8b5d-545ae8834c0c@gmail.com
--Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-----
-- drivers/net/ethernet/realtek/r8169.h          |  1 +
-- drivers/net/ethernet/realtek/r8169_main.c     | 23 +++++++++++++------
-- .../net/ethernet/realtek/r8169_phy_config.c   | 10 ++++++++
-- 3 files changed, 27 insertions(+), 7 deletions(-)
--
----- a/drivers/net/ethernet/realtek/r8169.h
--+++ b/drivers/net/ethernet/realtek/r8169.h
--@@ -68,6 +68,7 @@ enum mac_version {
-- 	/* support for RTL_GIGA_MAC_VER_60 has been removed */
-- 	RTL_GIGA_MAC_VER_61,
-- 	RTL_GIGA_MAC_VER_63,
--+	RTL_GIGA_MAC_VER_64,
-- 	RTL_GIGA_MAC_VER_65,
-- 	RTL_GIGA_MAC_VER_66,
-- 	RTL_GIGA_MAC_NONE
----- a/drivers/net/ethernet/realtek/r8169_main.c
--+++ b/drivers/net/ethernet/realtek/r8169_main.c
--@@ -55,6 +55,7 @@
-- #define FIRMWARE_8107E_2	"rtl_nic/rtl8107e-2.fw"
-- #define FIRMWARE_8125A_3	"rtl_nic/rtl8125a-3.fw"
-- #define FIRMWARE_8125B_2	"rtl_nic/rtl8125b-2.fw"
--+#define FIRMWARE_8125D_1	"rtl_nic/rtl8125d-1.fw"
-- #define FIRMWARE_8126A_2	"rtl_nic/rtl8126a-2.fw"
-- #define FIRMWARE_8126A_3	"rtl_nic/rtl8126a-3.fw"
-- 
--@@ -138,6 +139,7 @@ static const struct {
-- 	[RTL_GIGA_MAC_VER_61] = {"RTL8125A",		FIRMWARE_8125A_3},
-- 	/* reserve 62 for CFG_METHOD_4 in the vendor driver */
-- 	[RTL_GIGA_MAC_VER_63] = {"RTL8125B",		FIRMWARE_8125B_2},
--+	[RTL_GIGA_MAC_VER_64] = {"RTL8125D",		FIRMWARE_8125D_1},
-- 	[RTL_GIGA_MAC_VER_65] = {"RTL8126A",		FIRMWARE_8126A_2},
-- 	[RTL_GIGA_MAC_VER_66] = {"RTL8126A",		FIRMWARE_8126A_3},
-- };
--@@ -706,6 +708,7 @@ MODULE_FIRMWARE(FIRMWARE_8168FP_3);
-- MODULE_FIRMWARE(FIRMWARE_8107E_2);
-- MODULE_FIRMWARE(FIRMWARE_8125A_3);
-- MODULE_FIRMWARE(FIRMWARE_8125B_2);
--+MODULE_FIRMWARE(FIRMWARE_8125D_1);
-- MODULE_FIRMWARE(FIRMWARE_8126A_2);
-- MODULE_FIRMWARE(FIRMWARE_8126A_3);
-- 
--@@ -2078,10 +2081,7 @@ static void rtl_set_eee_txidle_timer(str
-- 		tp->tx_lpi_timer = timer_val;
-- 		r8168_mac_ocp_write(tp, 0xe048, timer_val);
-- 		break;
---	case RTL_GIGA_MAC_VER_61:
---	case RTL_GIGA_MAC_VER_63:
---	case RTL_GIGA_MAC_VER_65:
---	case RTL_GIGA_MAC_VER_66:
--+	case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_66:
-- 		tp->tx_lpi_timer = timer_val;
-- 		RTL_W16(tp, EEE_TXIDLE_TIMER_8125, timer_val);
-- 		break;
--@@ -2292,6 +2292,9 @@ static enum mac_version rtl8169_get_mac_
-- 		{ 0x7cf, 0x64a,	RTL_GIGA_MAC_VER_66 },
-- 		{ 0x7cf, 0x649,	RTL_GIGA_MAC_VER_65 },
-- 
--+		/* 8125D family. */
--+		{ 0x7cf, 0x688,	RTL_GIGA_MAC_VER_64 },
--+
-- 		/* 8125B family. */
-- 		{ 0x7cf, 0x641,	RTL_GIGA_MAC_VER_63 },
-- 
--@@ -2557,9 +2560,7 @@ static void rtl_init_rxcfg(struct rtl816
-- 	case RTL_GIGA_MAC_VER_61:
-- 		RTL_W32(tp, RxConfig, RX_FETCH_DFLT_8125 | RX_DMA_BURST);
-- 		break;
---	case RTL_GIGA_MAC_VER_63:
---	case RTL_GIGA_MAC_VER_65:
---	case RTL_GIGA_MAC_VER_66:
--+	case RTL_GIGA_MAC_VER_63 ... RTL_GIGA_MAC_VER_66:
-- 		RTL_W32(tp, RxConfig, RX_FETCH_DFLT_8125 | RX_DMA_BURST |
-- 			RX_PAUSE_SLOT_ON);
-- 		break;
--@@ -3897,6 +3898,12 @@ static void rtl_hw_start_8125b(struct rt
-- 	rtl_hw_start_8125_common(tp);
-- }
-- 
--+static void rtl_hw_start_8125d(struct rtl8169_private *tp)
--+{
--+	rtl_set_def_aspm_entry_latency(tp);
--+	rtl_hw_start_8125_common(tp);
--+}
--+
-- static void rtl_hw_start_8126a(struct rtl8169_private *tp)
-- {
-- 	rtl_disable_zrxdc_timeout(tp);
--@@ -3946,6 +3953,7 @@ static void rtl_hw_config(struct rtl8169
-- 		[RTL_GIGA_MAC_VER_53] = rtl_hw_start_8117,
-- 		[RTL_GIGA_MAC_VER_61] = rtl_hw_start_8125a_2,
-- 		[RTL_GIGA_MAC_VER_63] = rtl_hw_start_8125b,
--+		[RTL_GIGA_MAC_VER_64] = rtl_hw_start_8125d,
-- 		[RTL_GIGA_MAC_VER_65] = rtl_hw_start_8126a,
-- 		[RTL_GIGA_MAC_VER_66] = rtl_hw_start_8126a,
-- 	};
--@@ -3963,6 +3971,7 @@ static void rtl_hw_start_8125(struct rtl
-- 	/* disable interrupt coalescing */
-- 	switch (tp->mac_version) {
-- 	case RTL_GIGA_MAC_VER_61:
--+	case RTL_GIGA_MAC_VER_64:
-- 		for (i = 0xa00; i < 0xb00; i += 4)
-- 			RTL_W32(tp, i, 0);
-- 		break;
----- a/drivers/net/ethernet/realtek/r8169_phy_config.c
--+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
--@@ -1103,6 +1103,15 @@ static void rtl8125b_hw_phy_config(struc
-- 	rtl8125b_config_eee_phy(phydev);
-- }
-- 
--+static void rtl8125d_hw_phy_config(struct rtl8169_private *tp,
--+				   struct phy_device *phydev)
--+{
--+	r8169_apply_firmware(tp);
--+	rtl8125_legacy_force_mode(phydev);
--+	rtl8168g_disable_aldps(phydev);
--+	rtl8125b_config_eee_phy(phydev);
--+}
--+
-- static void rtl8126a_hw_phy_config(struct rtl8169_private *tp,
-- 				   struct phy_device *phydev)
-- {
--@@ -1159,6 +1168,7 @@ void r8169_hw_phy_config(struct rtl8169_
-- 		[RTL_GIGA_MAC_VER_53] = rtl8117_hw_phy_config,
-- 		[RTL_GIGA_MAC_VER_61] = rtl8125a_2_hw_phy_config,
-- 		[RTL_GIGA_MAC_VER_63] = rtl8125b_hw_phy_config,
--+		[RTL_GIGA_MAC_VER_64] = rtl8125d_hw_phy_config,
-- 		[RTL_GIGA_MAC_VER_65] = rtl8126a_hw_phy_config,
-- 		[RTL_GIGA_MAC_VER_66] = rtl8126a_hw_phy_config,
-- 	};
-diff --git a/target/linux/generic/backport-6.12/781-01-v6.13-net-phy-realtek-read-duplex-and-gbit-master-from-PHY.patch b/target/linux/generic/backport-6.12/781-01-v6.13-net-phy-realtek-read-duplex-and-gbit-master-from-PHY.patch
-index 2a1726ac80..31b8aabf7a 100644
---- a/target/linux/generic/backport-6.12/781-01-v6.13-net-phy-realtek-read-duplex-and-gbit-master-from-PHY.patch
-+++ b/target/linux/generic/backport-6.12/781-01-v6.13-net-phy-realtek-read-duplex-and-gbit-master-from-PHY.patch
-@@ -40,7 +40,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  
-  #define RTL_GENERIC_PHYID			0x001cc800
-  #define RTL_8211FVD_PHYID			0x001cc878
--@@ -660,9 +663,18 @@ static int rtl8366rb_config_init(struct
-+@@ -661,9 +664,18 @@ static int rtl8366rb_config_init(struct
-  }
-  
-  /* get actual speed to cover the downshift case */
-@@ -61,7 +61,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  	case 0x0000:
-  		phydev->speed = SPEED_10;
-  		break;
--@@ -684,6 +696,19 @@ static void rtlgen_decode_speed(struct p
-+@@ -685,6 +697,19 @@ static void rtlgen_decode_speed(struct p
-  	default:
-  		break;
-  	}
-@@ -81,7 +81,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  }
-  
-  static int rtlgen_read_status(struct phy_device *phydev)
--@@ -701,7 +726,7 @@ static int rtlgen_read_status(struct phy
-+@@ -702,7 +727,7 @@ static int rtlgen_read_status(struct phy
-  	if (val < 0)
-  		return val;
-  
-@@ -90,7 +90,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  
-  	return 0;
-  }
--@@ -1007,11 +1032,11 @@ static int rtl822x_c45_read_status(struc
-+@@ -1008,11 +1033,11 @@ static int rtl822x_c45_read_status(struc
-  		return 0;
-  
-  	/* Read actual speed from vendor register. */
-diff --git a/target/linux/generic/backport-6.12/781-02-v6.13-net-phy-realtek-change-order-of-calls-in-C22-read_st.patch b/target/linux/generic/backport-6.12/781-02-v6.13-net-phy-realtek-change-order-of-calls-in-C22-read_st.patch
-index 4341adb878..2e5d7bb3b4 100644
---- a/target/linux/generic/backport-6.12/781-02-v6.13-net-phy-realtek-change-order-of-calls-in-C22-read_st.patch
-+++ b/target/linux/generic/backport-6.12/781-02-v6.13-net-phy-realtek-change-order-of-calls-in-C22-read_st.patch
-@@ -18,7 +18,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
- 
- --- a/drivers/net/phy/realtek.c
- +++ b/drivers/net/phy/realtek.c
--@@ -949,17 +949,25 @@ static void rtl822xb_update_interface(st
-+@@ -950,17 +950,25 @@ static void rtl822xb_update_interface(st
-  
-  static int rtl822x_read_status(struct phy_device *phydev)
-  {
-diff --git a/target/linux/generic/backport-6.12/781-03-v6.13-net-phy-realtek-clear-1000Base-T-link-partner-advert.patch b/target/linux/generic/backport-6.12/781-03-v6.13-net-phy-realtek-clear-1000Base-T-link-partner-advert.patch
-index 60cd125a22..f7d8a5aa16 100644
---- a/target/linux/generic/backport-6.12/781-03-v6.13-net-phy-realtek-clear-1000Base-T-link-partner-advert.patch
-+++ b/target/linux/generic/backport-6.12/781-03-v6.13-net-phy-realtek-clear-1000Base-T-link-partner-advert.patch
-@@ -17,7 +17,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
- 
- --- a/drivers/net/phy/realtek.c
- +++ b/drivers/net/phy/realtek.c
--@@ -1026,6 +1026,10 @@ static int rtl822x_c45_read_status(struc
-+@@ -1027,6 +1027,10 @@ static int rtl822x_c45_read_status(struc
-  	if (ret < 0)
-  		return ret;
-  
-diff --git a/target/linux/generic/backport-6.12/781-04-v6.13-net-phy-realtek-merge-the-drivers-for-internal-NBase.patch b/target/linux/generic/backport-6.12/781-04-v6.13-net-phy-realtek-merge-the-drivers-for-internal-NBase.patch
-deleted file mode 100644
-index 771f60df91..0000000000
---- a/target/linux/generic/backport-6.12/781-04-v6.13-net-phy-realtek-merge-the-drivers-for-internal-NBase.patch
-+++ /dev/null
-@@ -1,136 +0,0 @@
--From f87a17ed3b51fba4dfdd8f8b643b5423a85fc551 Mon Sep 17 00:00:00 2001
--From: Heiner Kallweit <hkallweit1@gmail.com>
--Date: Tue, 15 Oct 2024 07:47:14 +0200
--Subject: [PATCH] net: phy: realtek: merge the drivers for internal NBase-T
-- PHY's
--
--The Realtek RTL8125/RTL8126 NBase-T MAC/PHY chips have internal PHY's
--which are register-compatible, at least for the registers we use here.
--So let's use just one PHY driver to support all of them.
--These internal PHY's exist also as external C45 PHY's, but on the
--internal PHY's no access to MMD registers is possible. This can be
--used to differentiate between the internal and external version.
--
--As a side effect the drivers for two now external-only drivers don't
--require read_mmd/write_mmd hooks any longer.
--
--Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
--Link: https://patch.msgid.link/c57081a6-811f-4571-ab35-34f4ca6de9af@gmail.com
--Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-----
-- drivers/net/phy/realtek.c | 53 +++++++++++++++++++++++++++++++--------
-- 1 file changed, 43 insertions(+), 10 deletions(-)
--
----- a/drivers/net/phy/realtek.c
--+++ b/drivers/net/phy/realtek.c
--@@ -95,6 +95,7 @@
-- 
-- #define RTL_GENERIC_PHYID			0x001cc800
-- #define RTL_8211FVD_PHYID			0x001cc878
--+#define RTL_8221B				0x001cc840
-- #define RTL_8221B_VB_CG				0x001cc849
-- #define RTL_8221B_VN_CG				0x001cc84a
-- #define RTL_8251B				0x001cc862
--@@ -1077,6 +1078,23 @@ static bool rtlgen_supports_2_5gbps(stru
-- 	return val >= 0 && val & MDIO_PMA_SPEED_2_5G;
-- }
-- 
--+/* On internal PHY's MMD reads over C22 always return 0.
--+ * Check a MMD register which is known to be non-zero.
--+ */
--+static bool rtlgen_supports_mmd(struct phy_device *phydev)
--+{
--+	int val;
--+
--+	phy_lock_mdio_bus(phydev);
--+	__phy_write(phydev, MII_MMD_CTRL, MDIO_MMD_PCS);
--+	__phy_write(phydev, MII_MMD_DATA, MDIO_PCS_EEE_ABLE);
--+	__phy_write(phydev, MII_MMD_CTRL, MDIO_MMD_PCS | MII_MMD_CTRL_NOINCR);
--+	val = __phy_read(phydev, MII_MMD_DATA);
--+	phy_unlock_mdio_bus(phydev);
--+
--+	return val > 0;
--+}
--+
-- static int rtlgen_match_phy_device(struct phy_device *phydev)
-- {
-- 	return phydev->phy_id == RTL_GENERIC_PHYID &&
--@@ -1086,7 +1104,8 @@ static int rtlgen_match_phy_device(struc
-- static int rtl8226_match_phy_device(struct phy_device *phydev)
-- {
-- 	return phydev->phy_id == RTL_GENERIC_PHYID &&
---	       rtlgen_supports_2_5gbps(phydev);
--+	       rtlgen_supports_2_5gbps(phydev) &&
--+	       rtlgen_supports_mmd(phydev);
-- }
-- 
-- static int rtlgen_is_c45_match(struct phy_device *phydev, unsigned int id,
--@@ -1098,6 +1117,11 @@ static int rtlgen_is_c45_match(struct ph
-- 		return !is_c45 && (id == phydev->phy_id);
-- }
-- 
--+static int rtl8221b_match_phy_device(struct phy_device *phydev)
--+{
--+	return phydev->phy_id == RTL_8221B && rtlgen_supports_mmd(phydev);
--+}
--+
-- static int rtl8221b_vb_cg_c22_match_phy_device(struct phy_device *phydev)
-- {
-- 	return rtlgen_is_c45_match(phydev, RTL_8221B_VB_CG, false);
--@@ -1118,9 +1142,21 @@ static int rtl8221b_vn_cg_c45_match_phy_
-- 	return rtlgen_is_c45_match(phydev, RTL_8221B_VN_CG, true);
-- }
-- 
---static int rtl8251b_c22_match_phy_device(struct phy_device *phydev)
--+static int rtl_internal_nbaset_match_phy_device(struct phy_device *phydev)
-- {
---	return rtlgen_is_c45_match(phydev, RTL_8251B, false);
--+	if (phydev->is_c45)
--+		return false;
--+
--+	switch (phydev->phy_id) {
--+	case RTL_GENERIC_PHYID:
--+	case RTL_8221B:
--+	case RTL_8251B:
--+		break;
--+	default:
--+		return false;
--+	}
--+
--+	return rtlgen_supports_2_5gbps(phydev) && !rtlgen_supports_mmd(phydev);
-- }
-- 
-- static int rtl8251b_c45_match_phy_device(struct phy_device *phydev)
--@@ -1382,10 +1418,8 @@ static struct phy_driver realtek_drvs[]
-- 		.resume		= rtlgen_resume,
-- 		.read_page	= rtl821x_read_page,
-- 		.write_page	= rtl821x_write_page,
---		.read_mmd	= rtl822x_read_mmd,
---		.write_mmd	= rtl822x_write_mmd,
-- 	}, {
---		PHY_ID_MATCH_EXACT(0x001cc840),
--+		.match_phy_device = rtl8221b_match_phy_device,
-- 		.name		= "RTL8226B_RTL8221B 2.5Gbps PHY",
-- 		.get_features	= rtl822x_get_features,
-- 		.config_aneg	= rtl822x_config_aneg,
--@@ -1396,8 +1430,6 @@ static struct phy_driver realtek_drvs[]
-- 		.resume		= rtlgen_resume,
-- 		.read_page	= rtl821x_read_page,
-- 		.write_page	= rtl821x_write_page,
---		.read_mmd	= rtl822x_read_mmd,
---		.write_mmd	= rtl822x_write_mmd,
-- 	}, {
-- 		PHY_ID_MATCH_EXACT(0x001cc838),
-- 		.name           = "RTL8226-CG 2.5Gbps PHY",
--@@ -1475,8 +1507,9 @@ static struct phy_driver realtek_drvs[]
-- 		.read_page      = rtl821x_read_page,
-- 		.write_page     = rtl821x_write_page,
-- 	}, {
---		.match_phy_device = rtl8251b_c22_match_phy_device,
---		.name           = "RTL8126A-internal 5Gbps PHY",
--+		.match_phy_device = rtl_internal_nbaset_match_phy_device,
--+		.name           = "Realtek Internal NBASE-T PHY",
--+		.flags		= PHY_IS_INTERNAL,
-- 		.get_features   = rtl822x_get_features,
-- 		.config_aneg    = rtl822x_config_aneg,
-- 		.read_status    = rtl822x_read_status,
-diff --git a/target/linux/generic/backport-6.12/781-05-v6.13-net-phy-realtek-add-RTL8125D-internal-PHY.patch b/target/linux/generic/backport-6.12/781-05-v6.13-net-phy-realtek-add-RTL8125D-internal-PHY.patch
-deleted file mode 100644
-index 4b9b9e8d48..0000000000
---- a/target/linux/generic/backport-6.12/781-05-v6.13-net-phy-realtek-add-RTL8125D-internal-PHY.patch
-+++ /dev/null
-@@ -1,29 +0,0 @@
--From 8989bad541133c43550bff2b80edbe37b8fb9659 Mon Sep 17 00:00:00 2001
--From: Heiner Kallweit <hkallweit1@gmail.com>
--Date: Thu, 17 Oct 2024 18:01:13 +0200
--Subject: [PATCH] net: phy: realtek: add RTL8125D-internal PHY
--
--The first boards show up with Realtek's RTL8125D. This MAC/PHY chip
--comes with an integrated 2.5Gbps PHY with ID 0x001cc841. It's not
--clear yet whether there's an external version of this PHY and how
--Realtek calls it, therefore use the numeric id for now.
--
--Link: https://lore.kernel.org/netdev/2ada65e1-5dfa-456c-9334-2bc51272e9da@gmail.com/T/
--Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
--Message-ID: <7d2924de-053b-44d2-a479-870dc3878170@gmail.com>
--Reviewed-by: Andrew Lunn <andrew@lunn.ch>
--Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-----
-- drivers/net/phy/realtek.c | 1 +
-- 1 file changed, 1 insertion(+)
--
----- a/drivers/net/phy/realtek.c
--+++ b/drivers/net/phy/realtek.c
--@@ -1151,6 +1151,7 @@ static int rtl_internal_nbaset_match_phy
-- 	case RTL_GENERIC_PHYID:
-- 	case RTL_8221B:
-- 	case RTL_8251B:
--+	case 0x001cc841:
-- 		break;
-- 	default:
-- 		return false;
-diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 91260b8a1c..536c404c2e 100644
---- a/target/linux/generic/kernel-6.12
-+++ b/target/linux/generic/kernel-6.12
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .35
--LINUX_KERNEL_HASH-6.12.35 = 05f4e0b01dde578c3328eb539d305cccec7b84e939f6dd5f21fdaf5f313da748
-+LINUX_VERSION-6.12 = .36
-+LINUX_KERNEL_HASH-6.12.36 = 4a168aed2de5a81aadd90ba2b153860a98d99bfc34651936e17f18e54f01ba8c
-diff --git a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-index 9788ded24c..34e7a44beb 100644
---- a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-+++ b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-@@ -107,7 +107,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (sk_can_gso(sk)) {
- --- a/net/mac80211/ieee80211_i.h
- +++ b/net/mac80211/ieee80211_i.h
--@@ -2012,7 +2012,7 @@ void ieee80211_color_collision_detection
-+@@ -2021,7 +2021,7 @@ void ieee80211_color_collision_detection
-  /* interface handling */
-  #define MAC80211_SUPPORTED_FEATURES_TX	(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
-  					 NETIF_F_HW_CSUM | NETIF_F_SG | \
-diff --git a/target/linux/imx/patches-6.12/506-6.16-PCI-imx6-Skip-link-up-workaround-for-newer-platforms.patch b/target/linux/imx/patches-6.12/506-6.16-PCI-imx6-Skip-link-up-workaround-for-newer-platforms.patch
-index 675da3e2d9..11275a2ffd 100644
---- a/target/linux/imx/patches-6.12/506-6.16-PCI-imx6-Skip-link-up-workaround-for-newer-platforms.patch
-+++ b/target/linux/imx/patches-6.12/506-6.16-PCI-imx6-Skip-link-up-workaround-for-newer-platforms.patch
-@@ -23,7 +23,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
- 
- --- a/drivers/pci/controller/dwc/pci-imx6.c
- +++ b/drivers/pci/controller/dwc/pci-imx6.c
--@@ -74,7 +74,7 @@ enum imx_pcie_variants {
-+@@ -76,7 +76,7 @@ enum imx_pcie_variants {
-  };
-  
-  #define IMX_PCIE_FLAG_IMX_PHY			BIT(0)
-@@ -32,7 +32,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
-  #define IMX_PCIE_FLAG_SUPPORTS_SUSPEND		BIT(2)
-  #define IMX_PCIE_FLAG_HAS_PHYDRV		BIT(3)
-  #define IMX_PCIE_FLAG_HAS_APP_RESET		BIT(4)
--@@ -847,6 +847,12 @@ static int imx_pcie_start_link(struct dw
-+@@ -862,6 +862,12 @@ static int imx_pcie_start_link(struct dw
-  	u32 tmp;
-  	int ret;
-  
-@@ -45,7 +45,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
-  	/*
-  	 * Force Gen1 operation when starting the link.  In case the link is
-  	 * started in Gen2 mode, there is a possibility the devices on the
--@@ -883,22 +889,10 @@ static int imx_pcie_start_link(struct dw
-+@@ -898,22 +904,10 @@ static int imx_pcie_start_link(struct dw
-  		dw_pcie_writel_dbi(pci, PCIE_LINK_WIDTH_SPEED_CONTROL, tmp);
-  		dw_pcie_dbi_ro_wr_dis(pci);
-  
-@@ -72,7 +72,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
-  		}
-  
-  		/* Make sure link training is finished as well! */
--@@ -1520,7 +1514,7 @@ static const struct imx_pcie_drvdata drv
-+@@ -1535,7 +1529,7 @@ static const struct imx_pcie_drvdata drv
-  	[IMX6Q] = {
-  		.variant = IMX6Q,
-  		.flags = IMX_PCIE_FLAG_IMX_PHY |
-@@ -81,7 +81,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
-  			 IMX_PCIE_FLAG_BROKEN_SUSPEND |
-  			 IMX_PCIE_FLAG_SUPPORTS_SUSPEND,
-  		.dbi_length = 0x200,
--@@ -1538,7 +1532,7 @@ static const struct imx_pcie_drvdata drv
-+@@ -1553,7 +1547,7 @@ static const struct imx_pcie_drvdata drv
-  	[IMX6SX] = {
-  		.variant = IMX6SX,
-  		.flags = IMX_PCIE_FLAG_IMX_PHY |
-@@ -90,7 +90,7 @@ Link: https://patch.msgid.link/20250416081314.3929794-2-hongxing.zhu@nxp.com
-  			 IMX_PCIE_FLAG_SUPPORTS_SUSPEND,
-  		.gpr = "fsl,imx6q-iomuxc-gpr",
-  		.clk_names = imx6sx_clks,
--@@ -1554,7 +1548,7 @@ static const struct imx_pcie_drvdata drv
-+@@ -1569,7 +1563,7 @@ static const struct imx_pcie_drvdata drv
-  	[IMX6QP] = {
-  		.variant = IMX6QP,
-  		.flags = IMX_PCIE_FLAG_IMX_PHY |
-diff --git a/target/linux/imx/patches-6.12/506-pending-PCI-imx6-Remove-apps_reset-toggle-in-_core_reset-function.patch b/target/linux/imx/patches-6.12/506-pending-PCI-imx6-Remove-apps_reset-toggle-in-_core_reset-function.patch
-index 711bf67774..234a028c4f 100644
---- a/target/linux/imx/patches-6.12/506-pending-PCI-imx6-Remove-apps_reset-toggle-in-_core_reset-function.patch
-+++ b/target/linux/imx/patches-6.12/506-pending-PCI-imx6-Remove-apps_reset-toggle-in-_core_reset-function.patch
-@@ -24,7 +24,7 @@ Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
- 
- --- a/drivers/pci/controller/dwc/pci-imx6.c
- +++ b/drivers/pci/controller/dwc/pci-imx6.c
--@@ -763,7 +763,6 @@ static int imx7d_pcie_core_reset(struct
-+@@ -778,7 +778,6 @@ static int imx7d_pcie_core_reset(struct
-  static void imx_pcie_assert_core_reset(struct imx_pcie *imx_pcie)
-  {
-  	reset_control_assert(imx_pcie->pciephy_reset);
-@@ -32,7 +32,7 @@ Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-  
-  	if (imx_pcie->drvdata->core_reset)
-  		imx_pcie->drvdata->core_reset(imx_pcie, true);
--@@ -775,7 +774,6 @@ static void imx_pcie_assert_core_reset(s
-+@@ -790,7 +789,6 @@ static void imx_pcie_assert_core_reset(s
-  static int imx_pcie_deassert_core_reset(struct imx_pcie *imx_pcie)
-  {
-  	reset_control_deassert(imx_pcie->pciephy_reset);
-@@ -40,7 +40,7 @@ Signed-off-by: Richard Zhu <hongxing.zhu@nxp.com>
-  
-  	if (imx_pcie->drvdata->core_reset)
-  		imx_pcie->drvdata->core_reset(imx_pcie, false);
--@@ -976,6 +974,9 @@ static int imx_pcie_host_init(struct dw_
-+@@ -991,6 +989,9 @@ static int imx_pcie_host_init(struct dw_
-  		}
-  	}
-  
-diff --git a/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch b/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-index 270e447a81..7713981f00 100644
---- a/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-+++ b/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-@@ -8,7 +8,7 @@
-  
-  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
-  {
--@@ -1525,6 +1526,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1527,6 +1528,7 @@ static int spinand_probe(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-@@ -16,7 +16,7 @@
-  	ret = mtd_device_register(mtd, NULL, 0);
-  	if (ret)
-  		goto err_spinand_cleanup;
--@@ -1532,6 +1534,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1534,6 +1536,7 @@ static int spinand_probe(struct spi_mem
-  	return 0;
-  
-  err_spinand_cleanup:
-@@ -24,7 +24,7 @@
-  	spinand_cleanup(spinand);
-  
-  	return ret;
--@@ -1550,6 +1553,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1552,6 +1555,7 @@ static int spinand_remove(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch b/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-index e8377f5c4c..37496f4486 100644
---- a/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-+++ b/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-@@ -11,7 +11,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
- 
- --- a/drivers/spi/spi-mem.c
- +++ b/drivers/spi/spi-mem.c
--@@ -466,6 +466,14 @@ int spi_mem_exec_op(struct spi_mem *mem,
-+@@ -483,6 +483,14 @@ int spi_mem_exec_op(struct spi_mem *mem,
-  }
-  EXPORT_SYMBOL_GPL(spi_mem_exec_op);
-  
-@@ -28,7 +28,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
-   *			upper layer if necessary
- --- a/include/linux/spi/spi-mem.h
- +++ b/include/linux/spi/spi-mem.h
--@@ -372,6 +372,10 @@ bool spi_mem_supports_op(struct spi_mem
-+@@ -384,6 +384,10 @@ bool spi_mem_supports_op(struct spi_mem
-  int spi_mem_exec_op(struct spi_mem *mem,
-  		    const struct spi_mem_op *op);
-  
-diff --git a/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch b/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-index eda2d8366a..a94d98a76e 100644
---- a/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-+++ b/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-@@ -68,7 +68,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
-  static int spinand_id_detect(struct spinand_device *spinand)
-  {
-  	u8 *id = spinand->id.data;
--@@ -1403,6 +1453,10 @@ static int spinand_init(struct spinand_d
-+@@ -1405,6 +1455,10 @@ static int spinand_init(struct spinand_d
-  	if (!spinand->scratchbuf)
-  		return -ENOMEM;
-  
-diff --git a/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch b/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-index 40e5fd0589..50c35dd913 100644
---- a/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-+++ b/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-@@ -29,7 +29,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
- 
- --- a/drivers/mtd/nand/spi/core.c
- +++ b/drivers/mtd/nand/spi/core.c
--@@ -1619,6 +1619,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1621,6 +1621,7 @@ static int spinand_remove(struct spi_mem
-  
-  static const struct spi_device_id spinand_ids[] = {
-  	{ .name = "spi-nand" },
-@@ -37,7 +37,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-  	{ /* sentinel */ },
-  };
-  MODULE_DEVICE_TABLE(spi, spinand_ids);
--@@ -1626,6 +1627,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-+@@ -1628,6 +1629,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-  #ifdef CONFIG_OF
-  static const struct of_device_id spinand_of_ids[] = {
-  	{ .compatible = "spi-nand" },
-diff --git a/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch b/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-index ff686e03a7..1f83d73282 100644
---- a/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-+++ b/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-@@ -10,7 +10,7 @@ Signed-off-by: Abhimanyu Vishwakarma <Abhimanyu.Vishwakarma@imgtec.com>
- 
- --- a/drivers/spi/spi-mem.c
- +++ b/drivers/spi/spi-mem.c
--@@ -893,7 +893,9 @@ static int spi_mem_probe(struct spi_devi
-+@@ -927,7 +927,9 @@ static int spi_mem_probe(struct spi_devi
-  {
-  	struct spi_mem_driver *memdrv = to_spi_mem_drv(spi->dev.driver);
-  	struct spi_controller *ctlr = spi->controller;
-@@ -20,7 +20,7 @@ Signed-off-by: Abhimanyu Vishwakarma <Abhimanyu.Vishwakarma@imgtec.com>
-  
-  	mem = devm_kzalloc(&spi->dev, sizeof(*mem), GFP_KERNEL);
-  	if (!mem)
--@@ -901,10 +903,15 @@ static int spi_mem_probe(struct spi_devi
-+@@ -935,10 +937,15 @@ static int spi_mem_probe(struct spi_devi
-  
-  	mem->spi = spi;
-  
-diff --git a/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch b/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-index b40a7e9e58..8f9a082266 100644
---- a/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-+++ b/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Matteo Croce <mcroce@microsoft.com>
-  
-  	if (priv->dma_cap.host_dma_width <= 32)
-  		gfp |= GFP_DMA32;
--@@ -4792,7 +4792,7 @@ static inline void stmmac_rx_refill(stru
-+@@ -4789,7 +4789,7 @@ static inline void stmmac_rx_refill(stru
-  	struct stmmac_rx_queue *rx_q = &priv->dma_conf.rx_queue[queue];
-  	int dirty = stmmac_rx_dirty(priv, queue);
-  	unsigned int entry = rx_q->dirty_rx;
--- 
-2.48.1
-
-
-From f4cfd29e44a03f5337a487c41c2c4a8ab22012ce Mon Sep 17 00:00:00 2001
-From: Marty Jones <mj8263788@gmail.com>
-Date: Tue, 8 Jul 2025 20:29:38 -0400
-Subject: [PATCH 3/4] kernel: Linux 6.6.97-rc2
-
-https://lore.kernel.org/all/20250708183253.753837521@linuxfoundation.org
-
-Signed-off-by: Marty Jones <mj8263788@gmail.com>
----
- .../901-snand-mtk-bmt-support.patch           |  6 +--
- ...support-for-performing-fake-doorbell.patch |  4 +-
- ...c-kernel-Fix-pcc_save_regs-inclusion.patch | 42 -------------------
- ...x_cpus_namespace_collision_shadowing.patch |  2 +-
- ...an-tag-insertion-stripping-by-defaul.patch |  2 +-
- ...0-xhci-pci-Use-PCI_VENDOR_ID_RENESAS.patch |  2 +-
- ...-pci-renesas-a-proper-modular-driver.patch | 12 +++---
- target/linux/generic/kernel-6.6               |  4 +-
- ..._F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch |  2 +-
- .../330-snand-mtk-bmt-support.patch           |  6 +--
- ...960-asus-hack-u-boot-ignore-mtdparts.patch |  4 +-
- 11 files changed, 22 insertions(+), 64 deletions(-)
- delete mode 100644 target/linux/generic/backport-6.6/001-powerpc-kernel-Fix-pcc_save_regs-inclusion.patch
-
-diff --git a/target/linux/airoha/patches-6.6/901-snand-mtk-bmt-support.patch b/target/linux/airoha/patches-6.6/901-snand-mtk-bmt-support.patch
-index 939ec04855..06026f375e 100644
---- a/target/linux/airoha/patches-6.6/901-snand-mtk-bmt-support.patch
-+++ b/target/linux/airoha/patches-6.6/901-snand-mtk-bmt-support.patch
-@@ -8,7 +8,7 @@
-  
-  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
-  {
--@@ -1347,6 +1348,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1348,6 +1349,7 @@ static int spinand_probe(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-@@ -16,7 +16,7 @@
-  	ret = mtd_device_register(mtd, NULL, 0);
-  	if (ret)
-  		goto err_spinand_cleanup;
--@@ -1354,6 +1356,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1355,6 +1357,7 @@ static int spinand_probe(struct spi_mem
-  	return 0;
-  
-  err_spinand_cleanup:
-@@ -24,7 +24,7 @@
-  	spinand_cleanup(spinand);
-  
-  	return ret;
--@@ -1372,6 +1375,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1373,6 +1376,7 @@ static int spinand_remove(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch b/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-index 5886cef55a..ddfb048568 100644
---- a/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-+++ b/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-@@ -103,10 +103,10 @@ it on BCM4708 family.
-  	if (xhci->quirks & XHCI_NEC_HOST)
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1659,6 +1659,7 @@ struct xhci_hcd {
-- #define XHCI_WRITE_64_HI_LO	BIT_ULL(47)
-+@@ -1660,6 +1660,7 @@ struct xhci_hcd {
-  #define XHCI_CDNS_SCTX_QUIRK	BIT_ULL(48)
-  #define XHCI_ETRON_HOST	BIT_ULL(49)
-+ #define XHCI_LIMIT_ENDPOINT_INTERVAL_9 BIT_ULL(50)
- +#define XHCI_FAKE_DOORBELL	BIT_ULL(50)
-  
-  	unsigned int		num_active_eps;
-diff --git a/target/linux/generic/backport-6.6/001-powerpc-kernel-Fix-pcc_save_regs-inclusion.patch b/target/linux/generic/backport-6.6/001-powerpc-kernel-Fix-pcc_save_regs-inclusion.patch
-deleted file mode 100644
-index 3d3515f5ab..0000000000
---- a/target/linux/generic/backport-6.6/001-powerpc-kernel-Fix-pcc_save_regs-inclusion.patch
-+++ /dev/null
-@@ -1,42 +0,0 @@
--From 93bd4a80efeb521314485a06d8c21157240497bb Mon Sep 17 00:00:00 2001
--From: Madhavan Srinivasan <maddy@linux.ibm.com>
--Date: Sun, 11 May 2025 09:41:11 +0530
--Subject: powerpc/kernel: Fix ppc_save_regs inclusion in build
--
--Recent patch fixed an old commit
--'fc2a5a6161a2 ("powerpc/64s: ppc_save_regs is now needed for all 64s builds")'
--which is to include building of ppc_save_reg.c only when XMON
--and KEXEC_CORE and PPC_BOOK3S are enabled. This was valid, since
--ppc_save_regs was called only in replay_system_reset() of old
--irq.c which was under BOOK3S.
--
--But there has been multiple refactoring of irq.c and have
--added call to ppc_save_regs() from __replay_soft_interrupts
---> replay_soft_interrupts which is part of irq_64.c included
--under CONFIG_PPC64. And since ppc_save_regs is called in
--CRASH_DUMP path as part of crash_setup_regs in kexec.h,
--CONFIG_PPC32 also needs it.
--
--So with this recent patch which enabled the building of
--ppc_save_regs.c caused a build break when none of these
--(XMON, KEXEC_CORE, BOOK3S) where enabled as part of config.
--Patch to enable building of ppc_save_regs.c by defaults.
--
--Signed-off-by: Madhavan Srinivasan <maddy@linux.ibm.com>
--Link: https://patch.msgid.link/20250511041111.841158-1-maddy@linux.ibm.com
-----
-- arch/powerpc/kernel/Makefile | 2 --
-- 1 file changed, 2 deletions(-)
--
----- a/arch/powerpc/kernel/Makefile
--+++ b/arch/powerpc/kernel/Makefile
--@@ -165,9 +165,7 @@ endif
-- 
-- obj64-$(CONFIG_PPC_TRANSACTIONAL_MEM)	+= tm.o
-- 
---ifneq ($(CONFIG_XMON)$(CONFIG_KEXEC_CORE)$(CONFIG_PPC_BOOK3S),)
-- obj-y				+= ppc_save_regs.o
---endif
-- 
-- obj-$(CONFIG_EPAPR_PARAVIRT)	+= epapr_paravirt.o epapr_hcalls.o
-- obj-$(CONFIG_KVM_GUEST)		+= kvm.o kvm_emul.o
-diff --git a/target/linux/generic/backport-6.6/0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch b/target/linux/generic/backport-6.6/0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch
-index c8cef08935..f5459aaccd 100644
---- a/target/linux/generic/backport-6.6/0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch
-+++ b/target/linux/generic/backport-6.6/0080-v6.9-smp-Avoid-setup_max_cpus_namespace_collision_shadowing.patch
-@@ -21,7 +21,7 @@ Cc: linux-kernel@vger.kernel.org
- 
- --- a/include/linux/cpu.h
- +++ b/include/linux/cpu.h
--@@ -111,7 +111,7 @@ void notify_cpu_starting(unsigned int cp
-+@@ -112,7 +112,7 @@ void notify_cpu_starting(unsigned int cp
-  extern void cpu_maps_update_begin(void);
-  extern void cpu_maps_update_done(void);
-  int bringup_hibernate_cpu(unsigned int sleep_cpu);
-diff --git a/target/linux/generic/backport-6.6/792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch b/target/linux/generic/backport-6.6/792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-index 0ca219457c..5be2e83cce 100644
---- a/target/linux/generic/backport-6.6/792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-+++ b/target/linux/generic/backport-6.6/792-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-@@ -20,7 +20,7 @@ Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
- 
- --- a/drivers/net/ethernet/intel/igc/igc_main.c
- +++ b/drivers/net/ethernet/intel/igc/igc_main.c
--@@ -6850,6 +6850,9 @@ static int igc_probe(struct pci_dev *pde
-+@@ -6854,6 +6854,9 @@ static int igc_probe(struct pci_dev *pde
-  	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-  			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-  
-diff --git a/target/linux/generic/backport-6.6/806-01-v6.10-xhci-pci-Use-PCI_VENDOR_ID_RENESAS.patch b/target/linux/generic/backport-6.6/806-01-v6.10-xhci-pci-Use-PCI_VENDOR_ID_RENESAS.patch
-index f8edb5f3ed..7479d06371 100644
---- a/target/linux/generic/backport-6.6/806-01-v6.10-xhci-pci-Use-PCI_VENDOR_ID_RENESAS.patch
-+++ b/target/linux/generic/backport-6.6/806-01-v6.10-xhci-pci-Use-PCI_VENDOR_ID_RENESAS.patch
-@@ -15,7 +15,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- 
- --- a/drivers/usb/host/xhci-pci.c
- +++ b/drivers/usb/host/xhci-pci.c
--@@ -966,10 +966,10 @@ static const struct xhci_driver_data ren
-+@@ -991,10 +991,10 @@ static const struct xhci_driver_data ren
-  
-  /* PCI driver selection metadata; PCI hotplugging uses this */
-  static const struct pci_device_id pci_ids[] = {
-diff --git a/target/linux/generic/backport-6.6/806-03-v6.12-xhci-pci-Make-xhci-pci-renesas-a-proper-modular-driver.patch b/target/linux/generic/backport-6.6/806-03-v6.12-xhci-pci-Make-xhci-pci-renesas-a-proper-modular-driver.patch
-index 50fe87a983..dfab7200e1 100644
---- a/target/linux/generic/backport-6.6/806-03-v6.12-xhci-pci-Make-xhci-pci-renesas-a-proper-modular-driver.patch
-+++ b/target/linux/generic/backport-6.6/806-03-v6.12-xhci-pci-Make-xhci-pci-renesas-a-proper-modular-driver.patch
-@@ -134,7 +134,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  MODULE_LICENSE("GPL v2");
- --- a/drivers/usb/host/xhci-pci.c
- +++ b/drivers/usb/host/xhci-pci.c
--@@ -300,15 +300,6 @@ static int xhci_pci_reinit(struct xhci_h
-+@@ -310,15 +310,6 @@ static int xhci_pci_reinit(struct xhci_h
-  static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
-  {
-  	struct pci_dev                  *pdev = to_pci_dev(dev);
-@@ -150,7 +150,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  
-  	/* Look for vendor-specific quirks */
-  	if (pdev->vendor == PCI_VENDOR_ID_FRESCO_LOGIC &&
--@@ -643,21 +634,13 @@ static int xhci_pci_update_hub_device(st
-+@@ -668,21 +659,13 @@ static int xhci_pci_update_hub_device(st
-   * We need to register our own PCI probe function (instead of the USB core's
-   * function) in order to create a second roothub under xHCI.
-   */
-@@ -173,7 +173,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  	reset = devm_reset_control_get_optional_exclusive(&dev->dev, NULL);
-  	if (IS_ERR(reset))
-  		return PTR_ERR(reset);
--@@ -722,8 +705,24 @@ put_runtime_pm:
-+@@ -747,8 +730,24 @@ put_runtime_pm:
-  	pm_runtime_put_noidle(&dev->dev);
-  	return retval;
-  }
-@@ -199,7 +199,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  {
-  	struct xhci_hcd *xhci;
-  	bool set_power_d3;
--@@ -750,6 +749,7 @@ static void xhci_pci_remove(struct pci_d
-+@@ -775,6 +774,7 @@ static void xhci_pci_remove(struct pci_d
-  	if (set_power_d3)
-  		pci_set_power_state(dev, PCI_D3hot);
-  }
-@@ -207,7 +207,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  
-  /*
-   * In some Intel xHCI controllers, in order to get D3 working,
--@@ -959,19 +959,8 @@ static void xhci_pci_shutdown(struct usb
-+@@ -984,19 +984,8 @@ static void xhci_pci_shutdown(struct usb
-  
-  /*-------------------------------------------------------------------------*/
-  
-@@ -227,7 +227,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  	/* handle any USB 3.0 xHCI controller */
-  	{ PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_USB_XHCI, ~0),
-  	},
--@@ -979,14 +968,6 @@ static const struct pci_device_id pci_id
-+@@ -1004,14 +993,6 @@ static const struct pci_device_id pci_id
-  };
-  MODULE_DEVICE_TABLE(pci, pci_ids);
-  
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 88d972d66a..4c02e07559 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .96
--LINUX_KERNEL_HASH-6.6.96 = 9ee45843d43adb2e2ac5f6a8cb10a334e39e3e3384af8a0ce383a37f78221bdd
-+LINUX_VERSION-6.6 = .97
-+LINUX_KERNEL_HASH-6.6.97 = 3b67c170638142da56b7a9c3295f2483b88e8c4d3bc26b2bda63b6cf0cb9ee3b
-diff --git a/target/linux/generic/pending-6.6/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch b/target/linux/generic/pending-6.6/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-index ff0a9ca5ae..fffb6cbb54 100644
---- a/target/linux/generic/pending-6.6/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-+++ b/target/linux/generic/pending-6.6/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-@@ -107,7 +107,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (sk_can_gso(sk)) {
- --- a/net/mac80211/ieee80211_i.h
- +++ b/net/mac80211/ieee80211_i.h
--@@ -1996,7 +1996,7 @@ void ieee80211_color_collision_detection
-+@@ -2005,7 +2005,7 @@ void ieee80211_color_collision_detection
-  /* interface handling */
-  #define MAC80211_SUPPORTED_FEATURES_TX	(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | \
-  					 NETIF_F_HW_CSUM | NETIF_F_SG | \
-diff --git a/target/linux/mediatek/patches-6.6/330-snand-mtk-bmt-support.patch b/target/linux/mediatek/patches-6.6/330-snand-mtk-bmt-support.patch
-index 939ec04855..06026f375e 100644
---- a/target/linux/mediatek/patches-6.6/330-snand-mtk-bmt-support.patch
-+++ b/target/linux/mediatek/patches-6.6/330-snand-mtk-bmt-support.patch
-@@ -8,7 +8,7 @@
-  
-  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
-  {
--@@ -1347,6 +1348,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1348,6 +1349,7 @@ static int spinand_probe(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-@@ -16,7 +16,7 @@
-  	ret = mtd_device_register(mtd, NULL, 0);
-  	if (ret)
-  		goto err_spinand_cleanup;
--@@ -1354,6 +1356,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1355,6 +1357,7 @@ static int spinand_probe(struct spi_mem
-  	return 0;
-  
-  err_spinand_cleanup:
-@@ -24,7 +24,7 @@
-  	spinand_cleanup(spinand);
-  
-  	return ret;
--@@ -1372,6 +1375,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1373,6 +1376,7 @@ static int spinand_remove(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/mediatek/patches-6.6/960-asus-hack-u-boot-ignore-mtdparts.patch b/target/linux/mediatek/patches-6.6/960-asus-hack-u-boot-ignore-mtdparts.patch
-index 0fe2b95e8a..9b503527ce 100644
---- a/target/linux/mediatek/patches-6.6/960-asus-hack-u-boot-ignore-mtdparts.patch
-+++ b/target/linux/mediatek/patches-6.6/960-asus-hack-u-boot-ignore-mtdparts.patch
-@@ -29,7 +29,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
- 
- --- a/drivers/mtd/nand/spi/core.c
- +++ b/drivers/mtd/nand/spi/core.c
--@@ -1441,6 +1441,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1442,6 +1442,7 @@ static int spinand_remove(struct spi_mem
-  
-  static const struct spi_device_id spinand_ids[] = {
-  	{ .name = "spi-nand" },
-@@ -37,7 +37,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-  	{ /* sentinel */ },
-  };
-  MODULE_DEVICE_TABLE(spi, spinand_ids);
--@@ -1448,6 +1449,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-+@@ -1449,6 +1450,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-  #ifdef CONFIG_OF
-  static const struct of_device_id spinand_of_ids[] = {
-  	{ .compatible = "spi-nand" },
--- 
-2.48.1
-
-
-From e146551f5528426916fdd5e8b0c8f578628ca790 Mon Sep 17 00:00:00 2001
-From: Marty Jones <mj8263788@gmail.com>
-Date: Tue, 8 Jul 2025 19:28:18 -0400
-Subject: [PATCH 4/4] kernel: Linux 6.12.37-rc1
-
-https://lore.kernel.org/all/20250708162241.426806072@linuxfoundation.org
-
-Signed-off-by: Marty Jones <mj8263788@gmail.com>
----
- ...k-for-host-controllers-that-don-t-updat.patch |  6 +++---
- .../950-0054-Add-dwc_otg-driver.patch            |  2 +-
- ...0-0057-MMC-added-alternative-MMC-driver.patch |  6 +++---
- ...unce-link-events-to-minimize-poll-storm.patch |  2 +-
- ...ing-for-updating-interrupt-endpoint-int.patch |  2 +-
- ...t-xhci_fixup_endpoint-for-interval-adju.patch |  4 ++--
- ...around-for-bogus-SET_DEQ_PENDING-endpoi.patch |  2 +-
- ...-and-add-the-endpoint-context-in-xhci_f.patch |  2 +-
- ...-drm-v3d-Clock-V3D-down-when-not-in-use.patch |  6 +++---
- ...h-hci_sync-Add-fallback-bd-address-prop.patch |  4 ++--
- ...hci-quirks-add-link-TRB-quirk-for-VL805.patch |  8 ++++----
- ...-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch |  6 +++---
- ...0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch | 12 ++++++------
- .../950-0344-sdhci-Add-SD-Express-hook.patch     |  6 +++---
- ...ignware-Add-SMBUS-quick-command-support.patch |  4 ++--
- ...s-mmc-sdhci-add-SPURIOUS_INT_RESP-quirk.patch |  2 +-
- ...end-maximum-ADMA-transfer-length-to-4Mi.patch |  2 +-
- ...isable-write-caching-on-Samsung-2023-mo.patch |  6 +++---
- ...sable-cache-on-more-known-bad-Sandisk-c.patch |  2 +-
- ...d-MMC_QUIRK_BROKEN_ERASE-for-Phison-Int.patch |  4 ++--
- ...nware-Add-support-for-bus-clear-feature.patch |  4 ++--
- ...tooth-hci_sync-Fix-crash-on-NULL-parent.patch |  2 +-
- ...hci-prevent-a-theoretical-race-on-non-c.patch |  2 +-
- ...UIRK_KNOWN_WORKING_SD_CQ-on-Raspberry-P.patch |  2 +-
- ...eturn-if-scheduler-initialization-fails.patch |  2 +-
- .../950-0768-drm-v3d-Introduce-gemfs.patch       |  8 ++++----
- ...odparam-for-turning-off-Big-Super-Pages.patch |  2 +-
- ...3d-Add-DRM_IOCTL_V3D_PERFMON_SET_GLOBAL.patch |  4 ++--
- .../950-0777-drm-v3d-Remove-v3d-cpu_job.patch    |  2 +-
- ...iate-a-V3D-tech-revision-to-all-support.patch | 10 +++++-----
- ...3D_SMS-registers-for-power-on-off-and-r.patch | 10 +++++-----
- ...ult-to-Intel-scheme-for-calculating-U1-.patch |  4 ++--
- ...-vlan-tag-insertion-stripping-by-defaul.patch |  2 +-
- .../generic/hack-6.12/902-debloat_proc.patch     |  8 ++++----
- target/linux/generic/kernel-6.12                 |  4 ++--
- .../patches-6.12/330-snand-mtk-bmt-support.patch |  6 +++---
- ...rivers-spi-mem-Add-spi-calibration-hook.patch |  4 ++--
- ...pinand-Add-calibration-support-for-spin.patch |  2 +-
- .../960-asus-hack-u-boot-ignore-mtdparts.patch   |  4 ++--
- ...d-nor-support-mtd-name-from-device-tree.patch |  4 ++--
- ...-Implement-Host-Software-Queue-for-eMMC.patch | 16 ++++++++--------
- ...d-tuning-parameters-for-legacy-MIPS-MT7.patch |  4 ++--
- ...d-disable-auto-CMD23-support-for-mt7620.patch |  2 +-
- ...e-default-PATCH_BIT1-2-values-for-mt762.patch |  2 +-
- 44 files changed, 99 insertions(+), 99 deletions(-)
-
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0006-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch b/target/linux/bcm27xx/patches-6.12/950-0006-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
-index fd413a2191..c7de0e6029 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0006-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0006-xhci-add-quirk-for-host-controllers-that-don-t-updat.patch
-@@ -31,7 +31,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- 
- --- a/drivers/usb/host/xhci-pci.c
- +++ b/drivers/usb/host/xhci-pci.c
--@@ -429,6 +429,7 @@ static void xhci_pci_quirks(struct devic
-+@@ -454,6 +454,7 @@ static void xhci_pci_quirks(struct devic
-  	if (pdev->vendor == PCI_VENDOR_ID_VIA && pdev->device == PCI_DEVICE_ID_VIA_VL805) {
-  		xhci->quirks |= XHCI_LPM_SUPPORT;
-  		xhci->quirks |= XHCI_TRB_OVERFETCH;
-@@ -41,7 +41,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
- --- a/drivers/usb/host/xhci-ring.c
- +++ b/drivers/usb/host/xhci-ring.c
--@@ -638,8 +638,11 @@ static int xhci_move_dequeue_past_td(str
-+@@ -637,8 +637,11 @@ static int xhci_move_dequeue_past_td(str
-  	struct xhci_ring *ep_ring;
-  	struct xhci_command *cmd;
-  	struct xhci_segment *new_seg;
-@@ -53,7 +53,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-  	dma_addr_t addr;
-  	u64 hw_dequeue;
-  	bool cycle_found = false;
--@@ -658,7 +661,25 @@ static int xhci_move_dequeue_past_td(str
-+@@ -657,7 +660,25 @@ static int xhci_move_dequeue_past_td(str
-  	hw_dequeue = xhci_get_hw_deq(xhci, dev, ep_index, stream_id);
-  	new_seg = ep_ring->deq_seg;
-  	new_deq = ep_ring->dequeue;
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-index 2a5ebf7583..ad0b6cf7dd 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-@@ -1248,7 +1248,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  }
- --- a/drivers/usb/core/hub.c
- +++ b/drivers/usb/core/hub.c
--@@ -5754,7 +5754,7 @@ static void port_event(struct usb_hub *h
-+@@ -5757,7 +5757,7 @@ static void port_event(struct usb_hub *h
-  		port_dev->over_current_count++;
-  		port_over_current_notify(port_dev);
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0057-MMC-added-alternative-MMC-driver.patch b/target/linux/bcm27xx/patches-6.12/950-0057-MMC-added-alternative-MMC-driver.patch
-index 8535111890..e522ad3f95 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0057-MMC-added-alternative-MMC-driver.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0057-MMC-added-alternative-MMC-driver.patch
-@@ -344,7 +344,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  }
- --- a/drivers/mmc/core/quirks.h
- +++ b/drivers/mmc/core/quirks.h
--@@ -153,6 +153,14 @@ static const struct mmc_fixup __maybe_un
-+@@ -50,6 +50,14 @@ static const struct mmc_fixup __maybe_un
-  	MMC_FIXUP(CID_NAME_ANY, CID_MANFID_SANDISK_SD, 0x5344, add_quirk_sd,
-  		  MMC_QUIRK_BROKEN_SD_DISCARD),
-  
-@@ -1991,7 +1991,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  
-  #define MAX_TUNING_LOOP 40
-  
--@@ -3199,7 +3199,7 @@ static void sdhci_timeout_timer(struct t
-+@@ -3194,7 +3194,7 @@ static void sdhci_timeout_timer(struct t
-  	spin_lock_irqsave(&host->lock, flags);
-  
-  	if (host->cmd && !sdhci_data_line_cmd(host->cmd)) {
-@@ -2000,7 +2000,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  		       mmc_hostname(host->mmc));
-  		sdhci_err_stats_inc(host, REQ_TIMEOUT);
-  		sdhci_dumpregs(host);
--@@ -3222,7 +3222,7 @@ static void sdhci_timeout_data_timer(str
-+@@ -3217,7 +3217,7 @@ static void sdhci_timeout_data_timer(str
-  
-  	if (host->data || host->data_cmd ||
-  	    (host->cmd && sdhci_data_line_cmd(host->cmd))) {
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0096-lan78xx-Debounce-link-events-to-minimize-poll-storm.patch b/target/linux/bcm27xx/patches-6.12/950-0096-lan78xx-Debounce-link-events-to-minimize-poll-storm.patch
-index ab17b87020..9eb0f87332 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0096-lan78xx-Debounce-link-events-to-minimize-poll-storm.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0096-lan78xx-Debounce-link-events-to-minimize-poll-storm.patch
-@@ -28,7 +28,7 @@ See: https://github.com/raspberrypi/linux/issues/2447
-  static int lan78xx_read_reg(struct lan78xx_net *dev, u32 index, u32 *data)
-  {
-  	u32 *buf;
--@@ -4430,7 +4435,13 @@ static int lan78xx_probe(struct usb_inte
-+@@ -4428,7 +4433,13 @@ static int lan78xx_probe(struct usb_inte
-  	if (ret < 0)
-  		goto out4;
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0124-usb-add-plumbing-for-updating-interrupt-endpoint-int.patch b/target/linux/bcm27xx/patches-6.12/950-0124-usb-add-plumbing-for-updating-interrupt-endpoint-int.patch
-index ef6f5d56a8..bbe32f254c 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0124-usb-add-plumbing-for-updating-interrupt-endpoint-int.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0124-usb-add-plumbing-for-updating-interrupt-endpoint-int.patch
-@@ -70,7 +70,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-   * @dev: the device whose endpoint is being disabled
- --- a/include/linux/usb.h
- +++ b/include/linux/usb.h
--@@ -1873,6 +1873,8 @@ extern int usb_clear_halt(struct usb_dev
-+@@ -1875,6 +1875,8 @@ extern int usb_clear_halt(struct usb_dev
-  extern int usb_reset_configuration(struct usb_device *dev);
-  extern int usb_set_interface(struct usb_device *dev, int ifnum, int alternate);
-  extern void usb_reset_endpoint(struct usb_device *dev, unsigned int epaddr);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch b/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-index eefb2472b6..041d364b89 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-@@ -14,7 +14,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
- 
- --- a/drivers/usb/host/xhci.c
- +++ b/drivers/usb/host/xhci.c
--@@ -1538,6 +1538,109 @@ static int xhci_check_ep0_maxpacket(stru
-+@@ -1517,6 +1517,109 @@ static int xhci_check_ep0_maxpacket(stru
-  }
-  
-  /*
-@@ -124,7 +124,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-   * non-error returns are a promise to giveback() the urb later
-   * we drop ownership so next owner (or urb unlink) can get it
-   */
--@@ -5402,6 +5505,7 @@ static const struct hc_driver xhci_hc_dr
-+@@ -5381,6 +5484,7 @@ static const struct hc_driver xhci_hc_dr
-  	.endpoint_reset =	xhci_endpoint_reset,
-  	.check_bandwidth =	xhci_check_bandwidth,
-  	.reset_bandwidth =	xhci_reset_bandwidth,
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0126-usb-xhci-workaround-for-bogus-SET_DEQ_PENDING-endpoi.patch b/target/linux/bcm27xx/patches-6.12/950-0126-usb-xhci-workaround-for-bogus-SET_DEQ_PENDING-endpoi.patch
-index b1674234bd..4f3acb3ab2 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0126-usb-xhci-workaround-for-bogus-SET_DEQ_PENDING-endpoi.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0126-usb-xhci-workaround-for-bogus-SET_DEQ_PENDING-endpoi.patch
-@@ -26,7 +26,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/usb/host/xhci-ring.c
- +++ b/drivers/usb/host/xhci-ring.c
--@@ -720,9 +720,9 @@ static int xhci_move_dequeue_past_td(str
-+@@ -719,9 +719,9 @@ static int xhci_move_dequeue_past_td(str
-  	}
-  
-  	if ((ep->ep_state & SET_DEQ_PENDING)) {
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch b/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-index 7d9bdaa202..c6f2196c32 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/usb/host/xhci.c
- +++ b/drivers/usb/host/xhci.c
--@@ -1627,7 +1627,7 @@ static void xhci_fixup_endpoint(struct u
-+@@ -1606,7 +1606,7 @@ static void xhci_fixup_endpoint(struct u
-  		return;
-  	}
-  	ctrl_ctx->add_flags = xhci_get_endpoint_flag_from_index(ep_index);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0130-drm-v3d-Clock-V3D-down-when-not-in-use.patch b/target/linux/bcm27xx/patches-6.12/950-0130-drm-v3d-Clock-V3D-down-when-not-in-use.patch
-index 71284d9f7e..bedd6f52a6 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0130-drm-v3d-Clock-V3D-down-when-not-in-use.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0130-drm-v3d-Clock-V3D-down-when-not-in-use.patch
-@@ -70,7 +70,7 @@ Signed-off-by: popcornmix <popcornmix@gmail.com>
-  
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -113,6 +113,12 @@ struct v3d_dev {
-+@@ -121,6 +121,12 @@ struct v3d_dev {
-  	void __iomem *bridge_regs;
-  	void __iomem *gca_regs;
-  	struct clk *clk;
-@@ -83,7 +83,7 @@ Signed-off-by: popcornmix <popcornmix@gmail.com>
-  	struct reset_control *reset;
-  
-  	/* Virtual and DMA addresses of the single shared page table. */
--@@ -589,3 +595,4 @@ int v3d_perfmon_get_counter_ioctl(struct
-+@@ -597,3 +603,4 @@ int v3d_perfmon_get_counter_ioctl(struct
-  /* v3d_sysfs.c */
-  int v3d_sysfs_init(struct device *dev);
-  void v3d_sysfs_destroy(struct device *dev);
-@@ -98,7 +98,7 @@ Signed-off-by: popcornmix <popcornmix@gmail.com>
-  #include <linux/module.h>
-  #include <linux/platform_device.h>
-  #include <linux/reset.h>
--@@ -269,6 +270,8 @@ v3d_gem_init(struct drm_device *dev)
-+@@ -271,6 +272,8 @@ v3d_gem_init(struct drm_device *dev)
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
-index 731e4c71df..d5a21169bd 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
-@@ -20,7 +20,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
- 
- --- a/net/bluetooth/hci_sync.c
- +++ b/net/bluetooth/hci_sync.c
--@@ -4877,6 +4877,7 @@ static const struct {
-+@@ -4921,6 +4921,7 @@ static const struct {
-   */
-  static int hci_dev_setup_sync(struct hci_dev *hdev)
-  {
-@@ -28,7 +28,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	int ret = 0;
-  	bool invalid_bdaddr;
-  	size_t i;
--@@ -4905,7 +4906,8 @@ static int hci_dev_setup_sync(struct hci
-+@@ -4949,7 +4950,8 @@ static int hci_dev_setup_sync(struct hci
-  			 test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
-  	if (!ret) {
-  		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks) &&
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch b/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-index f2cef1fbcc..f283308934 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-@@ -24,7 +24,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/usb/host/xhci-pci.c
- +++ b/drivers/usb/host/xhci-pci.c
--@@ -430,6 +430,7 @@ static void xhci_pci_quirks(struct devic
-+@@ -455,6 +455,7 @@ static void xhci_pci_quirks(struct devic
-  		xhci->quirks |= XHCI_LPM_SUPPORT;
-  		xhci->quirks |= XHCI_TRB_OVERFETCH;
-  		xhci->quirks |= XHCI_EP_CTX_BROKEN_DCS;
-@@ -34,7 +34,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
- --- a/drivers/usb/host/xhci-ring.c
- +++ b/drivers/usb/host/xhci-ring.c
--@@ -711,6 +711,16 @@ static int xhci_move_dequeue_past_td(str
-+@@ -710,6 +710,16 @@ static int xhci_move_dequeue_past_td(str
-  
-  	} while (!cycle_found || !td_last_trb_found);
-  
-@@ -53,9 +53,9 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (addr == 0) {
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1627,6 +1627,9 @@ struct xhci_hcd {
-- #define XHCI_CDNS_SCTX_QUIRK	BIT_ULL(48)
-+@@ -1628,6 +1628,9 @@ struct xhci_hcd {
-  #define XHCI_ETRON_HOST	BIT_ULL(49)
-+ #define XHCI_LIMIT_ENDPOINT_INTERVAL_9 BIT_ULL(50)
-  
- +/* Downstream VLI fixes */
- +#define XHCI_AVOID_DQ_ON_LINK	BIT_ULL(56)
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch b/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
-index 892c1df5b2..8fec64dcc1 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
-@@ -51,7 +51,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  
-  	ep_index = xhci_get_endpoint_index(&ep->desc);
-  	ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, ep_index);
--@@ -1435,9 +1438,35 @@ int xhci_endpoint_init(struct xhci_hcd *
-+@@ -1439,9 +1442,35 @@ int xhci_endpoint_init(struct xhci_hcd *
-  
-  	mult = xhci_get_endpoint_mult(udev, ep);
-  	max_packet = usb_endpoint_maxp(&ep->desc);
-@@ -90,7 +90,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	/* Allow 3 retries for everything but isoc, set CErr = 3 */
- --- a/drivers/usb/host/xhci-pci.c
- +++ b/drivers/usb/host/xhci-pci.c
--@@ -431,6 +431,7 @@ static void xhci_pci_quirks(struct devic
-+@@ -456,6 +456,7 @@ static void xhci_pci_quirks(struct devic
-  		xhci->quirks |= XHCI_TRB_OVERFETCH;
-  		xhci->quirks |= XHCI_EP_CTX_BROKEN_DCS;
-  		xhci->quirks |= XHCI_AVOID_DQ_ON_LINK;
-@@ -100,7 +100,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1629,6 +1629,7 @@ struct xhci_hcd {
-+@@ -1630,6 +1630,7 @@ struct xhci_hcd {
-  
-  /* Downstream VLI fixes */
-  #define XHCI_AVOID_DQ_ON_LINK	BIT_ULL(56)
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-index 47b58116b5..37f9e20e3f 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-@@ -47,7 +47,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  /* Device for a quirk */
-  #define PCI_VENDOR_ID_FRESCO_LOGIC		0x1b73
-  #define PCI_DEVICE_ID_FRESCO_LOGIC_PDK		0x1000
--@@ -244,6 +246,16 @@ static int xhci_pci_reinit(struct xhci_h
-+@@ -254,6 +256,16 @@ static int xhci_pci_reinit(struct xhci_h
-  	return 0;
-  }
-  
-@@ -64,7 +64,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  static void xhci_pci_quirks(struct device *dev, struct xhci_hcd *xhci)
-  {
-  	struct pci_dev                  *pdev = to_pci_dev(dev);
--@@ -432,6 +444,8 @@ static void xhci_pci_quirks(struct devic
-+@@ -457,6 +469,8 @@ static void xhci_pci_quirks(struct devic
-  		xhci->quirks |= XHCI_EP_CTX_BROKEN_DCS;
-  		xhci->quirks |= XHCI_AVOID_DQ_ON_LINK;
-  		xhci->quirks |= XHCI_VLI_SS_BULK_OUT_BUG;
-@@ -75,7 +75,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
- --- a/drivers/usb/host/xhci-ring.c
- +++ b/drivers/usb/host/xhci-ring.c
--@@ -3657,6 +3657,48 @@ static int xhci_align_td(struct xhci_hcd
-+@@ -3656,6 +3656,48 @@ static int xhci_align_td(struct xhci_hcd
-  	return 1;
-  }
-  
-@@ -124,7 +124,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  /* This is very similar to what ehci-q.c qtd_fill() does */
-  int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
-  		struct urb *urb, int slot_id, unsigned int ep_index)
--@@ -3811,6 +3853,8 @@ int xhci_queue_bulk_tx(struct xhci_hcd *
-+@@ -3810,6 +3852,8 @@ int xhci_queue_bulk_tx(struct xhci_hcd *
-  	}
-  
-  	check_trb_math(urb, enqd_len);
-@@ -133,7 +133,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	giveback_first_trb(xhci, slot_id, ep_index, urb->stream_id,
-  			start_cycle, start_trb);
-  	return 0;
--@@ -3959,6 +4003,8 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *
-+@@ -3958,6 +4002,8 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *
-  			/* Event on completion */
-  			field | TRB_IOC | TRB_TYPE(TRB_STATUS) | ep_ring->cycle_state);
-  
-@@ -144,7 +144,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	return 0;
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1630,6 +1630,7 @@ struct xhci_hcd {
-+@@ -1631,6 +1631,7 @@ struct xhci_hcd {
-  /* Downstream VLI fixes */
-  #define XHCI_AVOID_DQ_ON_LINK	BIT_ULL(56)
-  #define XHCI_VLI_SS_BULK_OUT_BUG	BIT_ULL(57)
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0344-sdhci-Add-SD-Express-hook.patch b/target/linux/bcm27xx/patches-6.12/950-0344-sdhci-Add-SD-Express-hook.patch
-index 287f01ecc3..7fe2856c9f 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0344-sdhci-Add-SD-Express-hook.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0344-sdhci-Add-SD-Express-hook.patch
-@@ -27,7 +27,7 @@ sdhci: remove PYA0_INTR_BUG quirk. Add quirks to disable some of the higher SDR
-  	.postinit = dwcmshc_rk35xx_postinit,
- --- a/drivers/mmc/host/sdhci.c
- +++ b/drivers/mmc/host/sdhci.c
--@@ -3037,6 +3037,15 @@ static void sdhci_card_event(struct mmc_
-+@@ -3032,6 +3032,15 @@ static void sdhci_card_event(struct mmc_
-  	spin_unlock_irqrestore(&host->lock, flags);
-  }
-  
-@@ -43,7 +43,7 @@ sdhci: remove PYA0_INTR_BUG quirk. Add quirks to disable some of the higher SDR
-  static const struct mmc_host_ops sdhci_ops = {
-  	.request	= sdhci_request,
-  	.post_req	= sdhci_post_req,
--@@ -3052,6 +3061,7 @@ static const struct mmc_host_ops sdhci_o
-+@@ -3047,6 +3056,7 @@ static const struct mmc_host_ops sdhci_o
-  	.execute_tuning			= sdhci_execute_tuning,
-  	.card_event			= sdhci_card_event,
-  	.card_busy	= sdhci_card_busy,
-@@ -51,7 +51,7 @@ sdhci: remove PYA0_INTR_BUG quirk. Add quirks to disable some of the higher SDR
-  };
-  
-  /*****************************************************************************\
--@@ -4570,6 +4580,15 @@ int sdhci_setup_host(struct sdhci_host *
-+@@ -4565,6 +4575,15 @@ int sdhci_setup_host(struct sdhci_host *
-  	    !(host->quirks2 & SDHCI_QUIRK2_BROKEN_DDR50))
-  		mmc->caps |= MMC_CAP_UHS_DDR50;
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0360-i2c-designware-Add-SMBUS-quick-command-support.patch b/target/linux/bcm27xx/patches-6.12/950-0360-i2c-designware-Add-SMBUS-quick-command-support.patch
-index d38f0e9520..79be03dd06 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0360-i2c-designware-Add-SMBUS-quick-command-support.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0360-i2c-designware-Add-SMBUS-quick-command-support.patch
-@@ -40,7 +40,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	regmap_update_bits(dev->map, DW_IC_CON, DW_IC_CON_10BITADDR_MASTER,
-  			   ic_con);
-  
--@@ -456,6 +460,14 @@ i2c_dw_xfer_msg(struct dw_i2c_dev *dev)
-+@@ -457,6 +461,14 @@ i2c_dw_xfer_msg(struct dw_i2c_dev *dev)
-  		regmap_read(dev->map, DW_IC_RXFLR, &flr);
-  		rx_limit = dev->rx_fifo_depth - flr;
-  
-@@ -55,7 +55,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  		while (buf_len > 0 && tx_limit > 0 && rx_limit > 0) {
-  			u32 cmd = 0;
-  
--@@ -894,14 +906,15 @@ static const struct i2c_algorithm i2c_dw
-+@@ -895,14 +907,15 @@ static const struct i2c_algorithm i2c_dw
-  };
-  
-  static const struct i2c_adapter_quirks i2c_dw_quirks = {
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0396-drivers-mmc-sdhci-add-SPURIOUS_INT_RESP-quirk.patch b/target/linux/bcm27xx/patches-6.12/950-0396-drivers-mmc-sdhci-add-SPURIOUS_INT_RESP-quirk.patch
-index e79dbb75d6..93a9205f4a 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0396-drivers-mmc-sdhci-add-SPURIOUS_INT_RESP-quirk.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0396-drivers-mmc-sdhci-add-SPURIOUS_INT_RESP-quirk.patch
-@@ -36,7 +36,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	sdhci_writew(host, SDHCI_MAKE_CMD(cmd->opcode, flags), SDHCI_COMMAND);
-  
-  	return true;
--@@ -3296,6 +3302,11 @@ static void sdhci_cmd_irq(struct sdhci_h
-+@@ -3291,6 +3297,11 @@ static void sdhci_cmd_irq(struct sdhci_h
-  		if (intmask & SDHCI_INT_TIMEOUT) {
-  			host->cmd->error = -ETIMEDOUT;
-  			sdhci_err_stats_inc(host, CMD_TIMEOUT);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0437-mmc-sdhci-extend-maximum-ADMA-transfer-length-to-4Mi.patch b/target/linux/bcm27xx/patches-6.12/950-0437-mmc-sdhci-extend-maximum-ADMA-transfer-length-to-4Mi.patch
-index 6a1c5a1be1..dc580e53ee 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0437-mmc-sdhci-extend-maximum-ADMA-transfer-length-to-4Mi.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0437-mmc-sdhci-extend-maximum-ADMA-transfer-length-to-4Mi.patch
-@@ -23,7 +23,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	BUG_ON(data->blksz > host->mmc->max_blk_size);
-  	BUG_ON(data->blocks > 65535);
-  
--@@ -4714,11 +4714,16 @@ int sdhci_setup_host(struct sdhci_host *
-+@@ -4709,11 +4709,16 @@ int sdhci_setup_host(struct sdhci_host *
-  	spin_lock_init(&host->lock);
-  
-  	/*
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0442-drivers-mmc-disable-write-caching-on-Samsung-2023-mo.patch b/target/linux/bcm27xx/patches-6.12/950-0442-drivers-mmc-disable-write-caching-on-Samsung-2023-mo.patch
-index bcfc4d7dc8..970ec3d9a0 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0442-drivers-mmc-disable-write-caching-on-Samsung-2023-mo.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0442-drivers-mmc-disable-write-caching-on-Samsung-2023-mo.patch
-@@ -30,9 +30,9 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  #define CID_MANFID_KINGSTON     0x70
- --- a/drivers/mmc/core/quirks.h
- +++ b/drivers/mmc/core/quirks.h
--@@ -44,6 +44,14 @@ static const struct mmc_fixup __maybe_un
-- 		   0, -1ull, SDIO_ANY_ID, SDIO_ANY_ID, add_quirk_sd,
-- 		   MMC_QUIRK_NO_UHS_DDR50_TUNING, EXT_CSD_REV_ANY),
-+@@ -58,6 +58,14 @@ static const struct mmc_fixup __maybe_un
-+ 	MMC_FIXUP("SD32G", 0x41, 0x3432, add_quirk, MMC_QUIRK_ERASE_BROKEN),
-+ 	MMC_FIXUP("SD64G", 0x41, 0x3432, add_quirk, MMC_QUIRK_ERASE_BROKEN),
-  
- +	/*
- +	 * Samsung Pro Plus/EVO Plus/Pro Ultimate SD cards (2023) claim to cache
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0443-mmc-quirks-disable-cache-on-more-known-bad-Sandisk-c.patch b/target/linux/bcm27xx/patches-6.12/950-0443-mmc-quirks-disable-cache-on-more-known-bad-Sandisk-c.patch
-index d345868bf1..df9f4cfc7c 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0443-mmc-quirks-disable-cache-on-more-known-bad-Sandisk-c.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0443-mmc-quirks-disable-cache-on-more-known-bad-Sandisk-c.patch
-@@ -14,7 +14,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/mmc/core/quirks.h
- +++ b/drivers/mmc/core/quirks.h
--@@ -52,6 +52,18 @@ static const struct mmc_fixup __maybe_un
-+@@ -66,6 +66,18 @@ static const struct mmc_fixup __maybe_un
-  		   0, -1ull, SDIO_ANY_ID, SDIO_ANY_ID, add_quirk_sd,
-  		   MMC_QUIRK_BROKEN_SD_CACHE, EXT_CSD_REV_ANY),
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0445-mmc-quirks-add-MMC_QUIRK_BROKEN_ERASE-for-Phison-Int.patch b/target/linux/bcm27xx/patches-6.12/950-0445-mmc-quirks-add-MMC_QUIRK_BROKEN_ERASE-for-Phison-Int.patch
-index 2939ea0636..c116baa163 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0445-mmc-quirks-add-MMC_QUIRK_BROKEN_ERASE-for-Phison-Int.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0445-mmc-quirks-add-MMC_QUIRK_BROKEN_ERASE-for-Phison-Int.patch
-@@ -16,8 +16,8 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- --- a/drivers/mmc/core/quirks.h
- +++ b/drivers/mmc/core/quirks.h
- @@ -181,6 +181,15 @@ static const struct mmc_fixup __maybe_un
-- 	MMC_FIXUP("SD32G", 0x41, 0x3432, add_quirk, MMC_QUIRK_ERASE_BROKEN),
-- 	MMC_FIXUP("SD64G", 0x41, 0x3432, add_quirk, MMC_QUIRK_ERASE_BROKEN),
-+ 	MMC_FIXUP("M62704", CID_MANFID_KINGSTON, 0x0100, add_quirk_mmc,
-+ 		  MMC_QUIRK_TRIM_BROKEN),
-  
- +	/*
- +	 * Larger Integral SD cards using rebranded Phison controllers trash
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0446-i2c-designware-Add-support-for-bus-clear-feature.patch b/target/linux/bcm27xx/patches-6.12/950-0446-i2c-designware-Add-support-for-bus-clear-feature.patch
-index 752c7f5755..0d1238bfb5 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0446-i2c-designware-Add-support-for-bus-clear-feature.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0446-i2c-designware-Add-support-for-bus-clear-feature.patch
-@@ -134,7 +134,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	/* Write SDA hold time if supported */
-  	if (dev->sda_hold_time)
-  		regmap_write(dev->map, DW_IC_SDA_HOLD, dev->sda_hold_time);
--@@ -1033,6 +1045,7 @@ int i2c_dw_probe_master(struct dw_i2c_de
-+@@ -1034,6 +1046,7 @@ int i2c_dw_probe_master(struct dw_i2c_de
-  	struct i2c_adapter *adap = &dev->adapter;
-  	unsigned long irq_flags;
-  	unsigned int ic_con;
-@@ -142,7 +142,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	int ret;
-  
-  	init_completion(&dev->cmd_complete);
--@@ -1067,7 +1080,11 @@ int i2c_dw_probe_master(struct dw_i2c_de
-+@@ -1068,7 +1081,11 @@ int i2c_dw_probe_master(struct dw_i2c_de
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
-index f77140b7ba..2b1d523594 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
-@@ -15,7 +15,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
- 
- --- a/net/bluetooth/hci_sync.c
- +++ b/net/bluetooth/hci_sync.c
--@@ -4877,7 +4877,8 @@ static const struct {
-+@@ -4921,7 +4921,8 @@ static const struct {
-   */
-  static int hci_dev_setup_sync(struct hci_dev *hdev)
-  {
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0525-drivers-usb-xhci-prevent-a-theoretical-race-on-non-c.patch b/target/linux/bcm27xx/patches-6.12/950-0525-drivers-usb-xhci-prevent-a-theoretical-race-on-non-c.patch
-index b446093c40..6946643056 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0525-drivers-usb-xhci-prevent-a-theoretical-race-on-non-c.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0525-drivers-usb-xhci-prevent-a-theoretical-race-on-non-c.patch
-@@ -28,7 +28,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/usb/host/xhci-ring.c
- +++ b/drivers/usb/host/xhci-ring.c
--@@ -510,6 +510,19 @@ void xhci_ring_ep_doorbell(struct xhci_h
-+@@ -509,6 +509,19 @@ void xhci_ring_ep_doorbell(struct xhci_h
-  
-  	trace_xhci_ring_ep_doorbell(slot_id, DB_VALUE(ep_index, stream_id));
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0751-mmc-set-MMC_QUIRK_KNOWN_WORKING_SD_CQ-on-Raspberry-P.patch b/target/linux/bcm27xx/patches-6.12/950-0751-mmc-set-MMC_QUIRK_KNOWN_WORKING_SD_CQ-on-Raspberry-P.patch
-index 3514ff82d8..dcea495090 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0751-mmc-set-MMC_QUIRK_KNOWN_WORKING_SD_CQ-on-Raspberry-P.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0751-mmc-set-MMC_QUIRK_KNOWN_WORKING_SD_CQ-on-Raspberry-P.patch
-@@ -26,7 +26,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  #define END_FIXUP { NULL }
- --- a/drivers/mmc/core/quirks.h
- +++ b/drivers/mmc/core/quirks.h
--@@ -76,6 +76,12 @@ static const struct mmc_fixup __maybe_un
-+@@ -90,6 +90,12 @@ static const struct mmc_fixup __maybe_un
-  		   0, -1ull, SDIO_ANY_ID, SDIO_ANY_ID, add_quirk_sd,
-  		   MMC_QUIRK_BROKEN_SD_CACHE, EXT_CSD_REV_ANY),
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0767-drm-v3d-Fix-return-if-scheduler-initialization-fails.patch b/target/linux/bcm27xx/patches-6.12/950-0767-drm-v3d-Fix-return-if-scheduler-initialization-fails.patch
-index 0f913b72ea..807e033b91 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0767-drm-v3d-Fix-return-if-scheduler-initialization-fails.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0767-drm-v3d-Fix-return-if-scheduler-initialization-fails.patch
-@@ -21,7 +21,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-4-mca
- 
- --- a/drivers/gpu/drm/v3d/v3d_gem.c
- +++ b/drivers/gpu/drm/v3d/v3d_gem.c
--@@ -294,8 +294,9 @@ v3d_gem_init(struct drm_device *dev)
-+@@ -296,8 +296,9 @@ v3d_gem_init(struct drm_device *dev)
-  	ret = v3d_sched_init(v3d);
-  	if (ret) {
-  		drm_mm_takedown(&v3d->mm);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0768-drm-v3d-Introduce-gemfs.patch b/target/linux/bcm27xx/patches-6.12/950-0768-drm-v3d-Introduce-gemfs.patch
-index f2e230267b..f1efefd9d9 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0768-drm-v3d-Introduce-gemfs.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0768-drm-v3d-Introduce-gemfs.patch
-@@ -39,7 +39,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-6-mca
-  
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -143,6 +143,11 @@ struct v3d_dev {
-+@@ -151,6 +151,11 @@ struct v3d_dev {
-  	struct drm_mm mm;
-  	spinlock_t mm_lock;
-  
-@@ -51,7 +51,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-6-mca
-  	struct work_struct overflow_mem_work;
-  
-  	struct v3d_bin_job *bin_job;
--@@ -540,6 +545,10 @@ void v3d_reset(struct v3d_dev *v3d);
-+@@ -548,6 +553,10 @@ void v3d_reset(struct v3d_dev *v3d);
-  void v3d_invalidate_caches(struct v3d_dev *v3d);
-  void v3d_clean_caches(struct v3d_dev *v3d);
-  
-@@ -64,7 +64,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-6-mca
-  void v3d_job_put(struct v3d_job *job);
- --- a/drivers/gpu/drm/v3d/v3d_gem.c
- +++ b/drivers/gpu/drm/v3d/v3d_gem.c
--@@ -291,6 +291,8 @@ v3d_gem_init(struct drm_device *dev)
-+@@ -293,6 +293,8 @@ v3d_gem_init(struct drm_device *dev)
-  	v3d_init_hw_state(v3d);
-  	v3d_mmu_set_page_table(v3d);
-  
-@@ -73,7 +73,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-6-mca
-  	ret = v3d_sched_init(v3d);
-  	if (ret) {
-  		drm_mm_takedown(&v3d->mm);
--@@ -308,6 +310,7 @@ v3d_gem_destroy(struct drm_device *dev)
-+@@ -310,6 +312,7 @@ v3d_gem_destroy(struct drm_device *dev)
-  	struct v3d_dev *v3d = to_v3d_dev(dev);
-  
-  	v3d_sched_fini(v3d);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0772-drm-v3d-Add-modparam-for-turning-off-Big-Super-Pages.patch b/target/linux/bcm27xx/patches-6.12/950-0772-drm-v3d-Add-modparam-for-turning-off-Big-Super-Pages.patch
-index 3757f2eb66..9d21a30aaa 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0772-drm-v3d-Add-modparam-for-turning-off-Big-Super-Pages.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0772-drm-v3d-Add-modparam-for-turning-off-Big-Super-Pages.patch
-@@ -39,7 +39,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20240923141348.2422499-11-mc
-  {
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -545,6 +545,7 @@ void v3d_invalidate_caches(struct v3d_de
-+@@ -553,6 +553,7 @@ void v3d_invalidate_caches(struct v3d_de
-  void v3d_clean_caches(struct v3d_dev *v3d);
-  
-  /* v3d_gemfs.c */
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0775-drm-v3d-Add-DRM_IOCTL_V3D_PERFMON_SET_GLOBAL.patch b/target/linux/bcm27xx/patches-6.12/950-0775-drm-v3d-Add-DRM_IOCTL_V3D_PERFMON_SET_GLOBAL.patch
-index fe4c8136fb..d33cd574ae 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0775-drm-v3d-Add-DRM_IOCTL_V3D_PERFMON_SET_GLOBAL.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0775-drm-v3d-Add-DRM_IOCTL_V3D_PERFMON_SET_GLOBAL.patch
-@@ -39,7 +39,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241202140615.74802-1-chris
-  static const struct drm_driver v3d_drm_driver = {
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -189,6 +189,12 @@ struct v3d_dev {
-+@@ -197,6 +197,12 @@ struct v3d_dev {
-  		u32 num_allocated;
-  		u32 pages_allocated;
-  	} bo_stats;
-@@ -52,7 +52,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20241202140615.74802-1-chris
-  };
-  
-  static inline struct v3d_dev *
--@@ -600,6 +606,8 @@ int v3d_perfmon_get_values_ioctl(struct
-+@@ -608,6 +614,8 @@ int v3d_perfmon_get_values_ioctl(struct
-  				 struct drm_file *file_priv);
-  int v3d_perfmon_get_counter_ioctl(struct drm_device *dev, void *data,
-  				  struct drm_file *file_priv);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0777-drm-v3d-Remove-v3d-cpu_job.patch b/target/linux/bcm27xx/patches-6.12/950-0777-drm-v3d-Remove-v3d-cpu_job.patch
-index 8ecf113d8e..9cb1524aa0 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0777-drm-v3d-Remove-v3d-cpu_job.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0777-drm-v3d-Remove-v3d-cpu_job.patch
-@@ -25,7 +25,7 @@ Link: https://patchwork.freedesktop.org/patch/msgid/20250113154741.67520-2-mcana
- 
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -153,7 +153,6 @@ struct v3d_dev {
-+@@ -161,7 +161,6 @@ struct v3d_dev {
-  	struct v3d_render_job *render_job;
-  	struct v3d_tfu_job *tfu_job;
-  	struct v3d_csd_job *csd_job;
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0860-drm-v3d-Associate-a-V3D-tech-revision-to-all-support.patch b/target/linux/bcm27xx/patches-6.12/950-0860-drm-v3d-Associate-a-V3D-tech-revision-to-all-support.patch
-index 4ab4ac72ab..176c04ec2b 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0860-drm-v3d-Associate-a-V3D-tech-revision-to-all-support.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0860-drm-v3d-Associate-a-V3D-tech-revision-to-all-support.patch
-@@ -324,8 +324,8 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  			goto clk_disable;
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -94,11 +94,18 @@ struct v3d_perfmon {
-- 	u64 values[] __counted_by(ncounters);
-+@@ -100,11 +100,18 @@ enum v3d_irq {
-+ 	V3D_MAX_IRQS,
-  };
-  
- +enum v3d_gen {
-@@ -344,7 +344,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  
-  	/* Short representation (e.g. 5, 6) of the V3D tech revision */
-  	int rev;
--@@ -205,7 +212,7 @@ to_v3d_dev(struct drm_device *dev)
-+@@ -213,7 +220,7 @@ to_v3d_dev(struct drm_device *dev)
-  static inline bool
-  v3d_has_csd(struct v3d_dev *v3d)
-  {
-@@ -373,7 +373,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  		return;
-  
-  	V3D_GCA_WRITE(V3D_GCA_SAFE_SHUTDOWN, V3D_GCA_SAFE_SHUTDOWN_EN);
--@@ -133,13 +133,13 @@ v3d_reset(struct v3d_dev *v3d)
-+@@ -135,13 +135,13 @@ v3d_reset(struct v3d_dev *v3d)
-  static void
-  v3d_flush_l3(struct v3d_dev *v3d)
-  {
-@@ -389,7 +389,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  			V3D_GCA_WRITE(V3D_GCA_CACHE_CTRL,
-  				      gca_ctrl & ~V3D_GCA_CACHE_CTRL_FLUSH);
-  		}
--@@ -152,7 +152,7 @@ v3d_flush_l3(struct v3d_dev *v3d)
-+@@ -154,7 +154,7 @@ v3d_flush_l3(struct v3d_dev *v3d)
-  static void
-  v3d_invalidate_l2c(struct v3d_dev *v3d, int core)
-  {
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0863-drm-v3d-Use-V3D_SMS-registers-for-power-on-off-and-r.patch b/target/linux/bcm27xx/patches-6.12/950-0863-drm-v3d-Use-V3D_SMS-registers-for-power-on-off-and-r.patch
-index 813c47c9fd..aa5c14271f 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0863-drm-v3d-Use-V3D_SMS-registers-for-power-on-off-and-r.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0863-drm-v3d-Use-V3D_SMS-registers-for-power-on-off-and-r.patch
-@@ -40,7 +40,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  
- --- a/drivers/gpu/drm/v3d/v3d_drv.h
- +++ b/drivers/gpu/drm/v3d/v3d_drv.h
--@@ -118,6 +118,7 @@ struct v3d_dev {
-+@@ -126,6 +126,7 @@ struct v3d_dev {
-  	void __iomem *core_regs[3];
-  	void __iomem *bridge_regs;
-  	void __iomem *gca_regs;
-@@ -48,7 +48,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  	struct clk *clk;
-  	struct delayed_work clk_down_work;
-  	unsigned long clk_up_rate, clk_down_rate;
--@@ -274,6 +275,15 @@ to_v3d_fence(struct dma_fence *fence)
-+@@ -282,6 +283,15 @@ to_v3d_fence(struct dma_fence *fence)
-  #define V3D_GCA_READ(offset) readl(v3d->gca_regs + offset)
-  #define V3D_GCA_WRITE(offset, val) writel(val, v3d->gca_regs + offset)
-  
-@@ -64,7 +64,7 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  #define V3D_CORE_READ(core, offset) readl(v3d->core_regs[core] + offset)
-  #define V3D_CORE_WRITE(core, offset, val) writel(val, v3d->core_regs[core] + offset)
-  
--@@ -552,6 +562,7 @@ struct dma_fence *v3d_fence_create(struc
-+@@ -560,6 +570,7 @@ struct dma_fence *v3d_fence_create(struc
-  /* v3d_gem.c */
-  int v3d_gem_init(struct drm_device *dev);
-  void v3d_gem_destroy(struct drm_device *dev);
-@@ -97,8 +97,8 @@ Signed-off-by: Maíra Canal <mcanal@igalia.com>
-  v3d_reset(struct v3d_dev *v3d)
-  {
-  	struct drm_device *dev = &v3d->drm;
--@@ -120,6 +136,7 @@ v3d_reset(struct v3d_dev *v3d)
-- 		v3d_idle_axi(v3d, 0);
-+@@ -122,6 +138,7 @@ v3d_reset(struct v3d_dev *v3d)
-+ 	v3d_irq_disable(v3d);
-  
-  	v3d_idle_gca(v3d);
- +	v3d_reset_sms(v3d);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch b/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-index 5f577250fc..8be659cdd0 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-@@ -40,7 +40,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  static bool td_on_ring(struct xhci_td *td, struct xhci_ring *ring)
-  {
-  	struct xhci_segment *seg = ring->first_seg;
--@@ -4807,7 +4811,7 @@ static u16 xhci_calculate_u1_timeout(str
-+@@ -4786,7 +4790,7 @@ static u16 xhci_calculate_u1_timeout(str
-  		}
-  	}
-  
-@@ -49,7 +49,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  		timeout_ns = xhci_calculate_intel_u1_timeout(udev, desc);
-  	else
-  		timeout_ns = udev->u1_params.sel;
--@@ -4871,7 +4875,7 @@ static u16 xhci_calculate_u2_timeout(str
-+@@ -4850,7 +4854,7 @@ static u16 xhci_calculate_u2_timeout(str
-  		}
-  	}
-  
-diff --git a/target/linux/generic/backport-6.12/710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch b/target/linux/generic/backport-6.12/710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-index e231bc8d49..48d03f15e7 100644
---- a/target/linux/generic/backport-6.12/710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-+++ b/target/linux/generic/backport-6.12/710-v6.16-igc-enable-HW-vlan-tag-insertion-stripping-by-defaul.patch
-@@ -20,7 +20,7 @@ Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
- 
- --- a/drivers/net/ethernet/intel/igc/igc_main.c
- +++ b/drivers/net/ethernet/intel/igc/igc_main.c
--@@ -7066,6 +7066,9 @@ static int igc_probe(struct pci_dev *pde
-+@@ -7070,6 +7070,9 @@ static int igc_probe(struct pci_dev *pde
-  	netdev->xdp_features = NETDEV_XDP_ACT_BASIC | NETDEV_XDP_ACT_REDIRECT |
-  			       NETDEV_XDP_ACT_XSK_ZEROCOPY;
-  
-diff --git a/target/linux/generic/hack-6.12/902-debloat_proc.patch b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-index 2bc77873fd..092f5b6c81 100644
---- a/target/linux/generic/hack-6.12/902-debloat_proc.patch
-+++ b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-@@ -235,14 +235,14 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+diff --git a/target/linux/generic/hack-6.6/902-debloat_proc.patch b/target/linux/generic/hack-6.6/902-debloat_proc.patch
+index 64472ad18f..886111a66c 100644
+--- a/target/linux/generic/hack-6.6/902-debloat_proc.patch
++++ b/target/linux/generic/hack-6.6/902-debloat_proc.patch
+@@ -235,7 +235,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
   	if (!pe)
  --- a/mm/vmalloc.c
  +++ b/mm/vmalloc.c
--@@ -5054,6 +5054,8 @@ static int __init proc_vmalloc_init(void
-- {
-- 	void *priv_data = NULL;
-+@@ -4990,6 +4990,8 @@ static int vmalloc_info_show(struct seq_
-+ 	int i;
-+ 	unsigned int *counters;
+-@@ -4450,6 +4450,8 @@ static const struct seq_operations vmall
++@@ -4458,6 +4458,8 @@ static const struct seq_operations vmall
   
- +	if (IS_ENABLED(CONFIG_PROC_STRIPPED))
- +		return 0;
-  	if (IS_ENABLED(CONFIG_NUMA))
-- 		priv_data = kmalloc(nr_node_ids * sizeof(unsigned int), GFP_KERNEL);
-+ 		counters = kmalloc(nr_node_ids * sizeof(unsigned int), GFP_KERNEL);
+  static int __init proc_vmalloc_init(void)
+  {
+diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
+index 1e572366f2..1570562ec6 100644
+--- a/target/linux/generic/kernel-6.6
++++ b/target/linux/generic/kernel-6.6
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.6 = .98
+-LINUX_KERNEL_HASH-6.6.98 = 296a34c500abc22c434b967d471d75568891f06a98f11fc31c5e79b037f45de5
++LINUX_VERSION-6.6 = .99
++LINUX_KERNEL_HASH-6.6.99 = e25e3c4bc123742a0856a8385b9a09b80bb4122c3cdb39537e20acd0e449fd5a
+diff --git a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch b/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
+index 946f3a5252..09e4be3b34 100644
+--- a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
++++ b/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+ 
+ --- a/drivers/pwm/pwm-mediatek.c
+ +++ b/drivers/pwm/pwm-mediatek.c
+-@@ -345,6 +345,13 @@ static const struct pwm_mediatek_of_data
++@@ -348,6 +348,13 @@ static const struct pwm_mediatek_of_data
+  	.reg_offset = mtk_pwm_reg_offset_v1,
+  };
   
- --- a/mm/vmstat.c
- +++ b/mm/vmstat.c
+@@ -34,7 +34,7 @@ Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+  static const struct pwm_mediatek_of_data mt8183_pwm_data = {
+  	.num_pwms = 4,
+  	.pwm45_fixup = false,
+-@@ -375,6 +382,7 @@ static const struct of_device_id pwm_med
++@@ -378,6 +385,7 @@ static const struct of_device_id pwm_med
+  	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
+  	{ .compatible = "mediatek,mt7981-pwm", .data = &mt7981_pwm_data },
+  	{ .compatible = "mediatek,mt7986-pwm", .data = &mt7986_pwm_data },
+-- 
+2.48.1
+
+
+From 2239791a689127252e4c3a8fb0e69267fd6d6ea8 Mon Sep 17 00:00:00 2001
+From: Leo Barsky <leobrsky@proton.me>
+Date: Tue, 15 Jul 2025 11:52:35 -0400
+Subject: [PATCH 2/2] kernel: bump 6.12 to 6.12.39
+
+Changelog: https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.12.39
+All patches auto refreshed.
+
+Signed-off-by: Leo Barsky <leobrsky@proton.me>
+---
+ ...dd-device-quirks-for-Freeway-Airmouse-T3-an.patch |  2 +-
+ ...chip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch |  2 +-
+ .../950-0528-drm-Increase-plane_mask-to-64bit.patch  |  2 +-
+ ...dd-Broadcom-bcm2712-MSI-X-interrupt-control.patch |  2 +-
+ ...dd-support-for-bcm6345-style-external-inter.patch |  2 +-
+ .../202-mips-bmips-tweak-Kconfig-options.patch       |  4 ++--
+ ...6.14-net-phy-Constify-struct-mdio_device_id.patch |  6 +++---
+ .../linux/generic/hack-6.12/902-debloat_proc.patch   |  2 +-
+ .../generic/hack-6.12/904-debloat_dma_buf.patch      |  2 +-
+ target/linux/generic/kernel-6.12                     |  4 ++--
+ ...x-add-qualcomm-ipq5018-internal-phy-support.patch | 12 ++++++------
+ 11 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
+index 1c13a65b21..dc9c10cb73 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
+  #define USB_VENDOR_ID_BELKIN		0x050d
+  #define USB_DEVICE_ID_FLIP_KVM		0x3201
+  
+-@@ -1460,6 +1463,9 @@
++@@ -1463,6 +1466,9 @@
+  #define USB_VENDOR_ID_XIAOMI		0x2717
+  #define USB_DEVICE_ID_MI_SILENT_MOUSE	0x5014
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch b/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
+index b156ff12c2..aa130c1627 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
+@@ -31,7 +31,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+ 
+ --- a/drivers/irqchip/Kconfig
+ +++ b/drivers/irqchip/Kconfig
+-@@ -109,6 +109,14 @@ config I8259
++@@ -110,6 +110,14 @@ config I8259
+  	bool
+  	select IRQ_DOMAIN
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch b/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
+index 6fe5d2ad96..1ae93a6b42 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  	drm_printf(p, "\tmode: " DRM_MODE_FMT "\n", DRM_MODE_ARG(&state->mode));
+ --- a/drivers/gpu/drm/drm_framebuffer.c
+ +++ b/drivers/gpu/drm/drm_framebuffer.c
+-@@ -975,7 +975,7 @@ static int atomic_remove_fb(struct drm_f
++@@ -1002,7 +1002,7 @@ static int atomic_remove_fb(struct drm_f
+  	struct drm_connector *conn __maybe_unused;
+  	struct drm_connector_state *conn_state;
+  	int i, ret;
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch b/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
+index 9f05866ae3..cf917e1f38 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
+ 
+ --- a/drivers/irqchip/Kconfig
+ +++ b/drivers/irqchip/Kconfig
+-@@ -110,12 +110,20 @@ config I8259
++@@ -111,12 +111,20 @@ config I8259
+  	select IRQ_DOMAIN
+  
+  config BCM2712_MIP
+diff --git a/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch b/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
+index 5829fee2ed..27d6b409bb 100644
+--- a/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
++++ b/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
+@@ -50,7 +50,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+ +};
+ --- a/drivers/irqchip/Kconfig
+ +++ b/drivers/irqchip/Kconfig
+-@@ -109,6 +109,10 @@ config I8259
++@@ -110,6 +110,10 @@ config I8259
+  	bool
+  	select IRQ_DOMAIN
+  
+diff --git a/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch b/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
+index e7a69b8184..406f4d3421 100644
+--- a/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
++++ b/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
+@@ -43,7 +43,7 @@ Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+  	  BCM33xx cable modem chips, BCM63xx DSL chips, and BCM7xxx set-top
+ --- a/drivers/irqchip/Kconfig
+ +++ b/drivers/irqchip/Kconfig
+-@@ -122,7 +122,6 @@ config BCM6345_L1_IRQ
++@@ -123,7 +123,6 @@ config BCM6345_L1_IRQ
+  config BCM7038_L1_IRQ
+  	tristate "Broadcom STB 7038-style L1/L2 interrupt controller driver"
+  	depends on ARCH_BRCMSTB || BMIPS_GENERIC
+@@ -51,7 +51,7 @@ Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+  	select GENERIC_IRQ_CHIP
+  	select IRQ_DOMAIN
+  	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
+-@@ -130,14 +129,12 @@ config BCM7038_L1_IRQ
++@@ -131,14 +130,12 @@ config BCM7038_L1_IRQ
+  config BCM7120_L2_IRQ
+  	tristate "Broadcom STB 7120-style L2 interrupt controller driver"
+  	depends on ARCH_BRCMSTB || BMIPS_GENERIC
+diff --git a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
+index 669b58d22a..a1be891a09 100644
+--- a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
++++ b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
+@@ -469,7 +469,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  	{ PHY_ID_KSZ9131, MICREL_PHY_ID_MASK },
+ --- a/drivers/net/phy/microchip.c
+ +++ b/drivers/net/phy/microchip.c
+-@@ -508,7 +508,7 @@ static struct phy_driver microchip_phy_d
++@@ -509,7 +509,7 @@ static struct phy_driver microchip_phy_d
+  
+  module_phy_driver(microchip_phy_driver);
+  
+@@ -579,7 +579,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
+ --- a/drivers/net/phy/qcom/at803x.c
+ +++ b/drivers/net/phy/qcom/at803x.c
+-@@ -1098,7 +1098,7 @@ static struct phy_driver at803x_driver[]
++@@ -1071,7 +1071,7 @@ static struct phy_driver at803x_driver[]
+  
+  module_phy_driver(at803x_driver);
+  
+@@ -645,7 +645,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  };
+ --- a/drivers/net/phy/smsc.c
+ +++ b/drivers/net/phy/smsc.c
+-@@ -837,7 +837,7 @@ MODULE_DESCRIPTION("SMSC PHY driver");
++@@ -884,7 +884,7 @@ MODULE_DESCRIPTION("SMSC PHY driver");
+  MODULE_AUTHOR("Herbert Valerio Riedel");
+  MODULE_LICENSE("GPL");
+  
+diff --git a/target/linux/generic/hack-6.12/902-debloat_proc.patch b/target/linux/generic/hack-6.12/902-debloat_proc.patch
+index ce89e4ba13..c52a7ac5f3 100644
+--- a/target/linux/generic/hack-6.12/902-debloat_proc.patch
++++ b/target/linux/generic/hack-6.12/902-debloat_proc.patch
+@@ -235,7 +235,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	if (!pe)
+ --- a/mm/vmalloc.c
+ +++ b/mm/vmalloc.c
+-@@ -5066,6 +5066,9 @@ static int vmalloc_info_show(struct seq_
++@@ -5074,6 +5074,9 @@ static int vmalloc_info_show(struct seq_
+  
+  static int __init proc_vmalloc_init(void)
+  {
+diff --git a/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch b/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
+index 1dbd56b929..bceb474f1a 100644
+--- a/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
++++ b/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
+@@ -74,7 +74,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ +MODULE_LICENSE("GPL");
+ --- a/kernel/sched/core.c
+ +++ b/kernel/sched/core.c
+-@@ -4428,6 +4428,7 @@ int wake_up_state(struct task_struct *p,
++@@ -4433,6 +4433,7 @@ int wake_up_state(struct task_struct *p,
+  {
+  	return try_to_wake_up(p, state, 0);
+  }
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 536c404c2e..471091bc3c 100644
+index d389e589d8..dbc7c94d28 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .36
--LINUX_KERNEL_HASH-6.12.36 = 4a168aed2de5a81aadd90ba2b153860a98d99bfc34651936e17f18e54f01ba8c
-+LINUX_VERSION-6.12 = .37
-+LINUX_KERNEL_HASH-6.12.37 = 936fdfd2405b5e0ac38d4e094b07772610c22cd478f4bb257c9bf929e762ff95
-diff --git a/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch b/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-index 7713981f00..1578b72bf1 100644
---- a/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-+++ b/target/linux/mediatek/patches-6.12/330-snand-mtk-bmt-support.patch
-@@ -8,7 +8,7 @@
+-LINUX_VERSION-6.12 = .38
+-LINUX_KERNEL_HASH-6.12.38 = f035fa8d83d59f793c76b23567b130cc42118f10696815fed03c16bb15670fcc
++LINUX_VERSION-6.12 = .39
++LINUX_KERNEL_HASH-6.12.39 = e21ad84bae75104e15a40cc4d6c4bc20b3cd93bbe59de8984ec1b84c47eea0c3
+diff --git a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch b/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
+index acdd74b545..394eca19da 100644
+--- a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
++++ b/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
+@@ -69,7 +69,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  #include <dt-bindings/net/qca-ar803x.h>
   
-  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
+  #include "qcom.h"
+-@@ -96,6 +101,8 @@
++@@ -93,6 +98,8 @@
+  #define ATH8035_PHY_ID				0x004dd072
+  #define AT8030_PHY_ID_MASK			0xffffffef
+  
+@@ -78,7 +78,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  #define QCA9561_PHY_ID				0x004dd042
+  
+  #define AT803X_PAGE_FIBER			0
+-@@ -108,6 +115,50 @@
++@@ -105,6 +112,50 @@
+  /* disable hibernation mode */
+  #define AT803X_DISABLE_HIBERNATION_MODE		BIT(2)
+  
+@@ -129,7 +129,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  MODULE_DESCRIPTION("Qualcomm Atheros AR803x PHY driver");
+  MODULE_AUTHOR("Matus Ujhelyi");
+  MODULE_LICENSE("GPL");
+-@@ -133,6 +184,11 @@ struct at803x_context {
++@@ -130,6 +181,11 @@ struct at803x_context {
+  	u16 led_control;
+  };
+  
+@@ -141,7 +141,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  static int at803x_write_page(struct phy_device *phydev, int page)
   {
--@@ -1527,6 +1528,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1526,6 +1527,7 @@ static int spinand_probe(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-@@ -16,7 +16,7 @@
-  	ret = mtd_device_register(mtd, NULL, 0);
-  	if (ret)
-  		goto err_spinand_cleanup;
--@@ -1534,6 +1536,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1533,6 +1535,7 @@ static int spinand_probe(struct spi_mem
-  	return 0;
-  
-  err_spinand_cleanup:
-@@ -24,7 +24,7 @@
-  	spinand_cleanup(spinand);
-  
-  	return ret;
--@@ -1552,6 +1555,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1551,6 +1554,7 @@ static int spinand_remove(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch b/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-index 37496f4486..e8377f5c4c 100644
---- a/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-+++ b/target/linux/mediatek/patches-6.12/433-drivers-spi-mem-Add-spi-calibration-hook.patch
-@@ -11,7 +11,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
- 
- --- a/drivers/spi/spi-mem.c
- +++ b/drivers/spi/spi-mem.c
--@@ -483,6 +483,14 @@ int spi_mem_exec_op(struct spi_mem *mem,
-+@@ -466,6 +466,14 @@ int spi_mem_exec_op(struct spi_mem *mem,
+  	int mask;
+-@@ -987,6 +1043,105 @@ static int at8035_probe(struct phy_devic
++@@ -960,6 +1016,105 @@ static int at8035_probe(struct phy_devic
+  	return at8035_parse_dt(phydev);
   }
-  EXPORT_SYMBOL_GPL(spi_mem_exec_op);
   
-@@ -28,7 +28,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
-   *			upper layer if necessary
- --- a/include/linux/spi/spi-mem.h
- +++ b/include/linux/spi/spi-mem.h
--@@ -384,6 +384,10 @@ bool spi_mem_supports_op(struct spi_mem
-+@@ -372,6 +372,10 @@ bool spi_mem_supports_op(struct spi_mem
-  int spi_mem_exec_op(struct spi_mem *mem,
-  		    const struct spi_mem_op *op);
-  
-diff --git a/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch b/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-index a94d98a76e..eda2d8366a 100644
---- a/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-+++ b/target/linux/mediatek/patches-6.12/435-drivers-mtd-spinand-Add-calibration-support-for-spin.patch
-@@ -68,7 +68,7 @@ Signed-off-by: SkyLake.Huang <skylake.huang@mediatek.com>
-  static int spinand_id_detect(struct spinand_device *spinand)
+@@ -247,7 +247,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  static struct phy_driver at803x_driver[] = {
   {
-  	u8 *id = spinand->id.data;
--@@ -1405,6 +1455,10 @@ static int spinand_init(struct spinand_d
-+@@ -1403,6 +1453,10 @@ static int spinand_init(struct spinand_d
-  	if (!spinand->scratchbuf)
-  		return -ENOMEM;
-  
-diff --git a/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch b/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-index 50c35dd913..c788cccdce 100644
---- a/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-+++ b/target/linux/mediatek/patches-6.12/960-asus-hack-u-boot-ignore-mtdparts.patch
-@@ -29,7 +29,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
- 
- --- a/drivers/mtd/nand/spi/core.c
- +++ b/drivers/mtd/nand/spi/core.c
--@@ -1621,6 +1621,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1620,6 +1620,7 @@ static int spinand_remove(struct spi_mem
-  
-  static const struct spi_device_id spinand_ids[] = {
-  	{ .name = "spi-nand" },
-@@ -37,7 +37,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-  	{ /* sentinel */ },
-  };
-  MODULE_DEVICE_TABLE(spi, spinand_ids);
--@@ -1628,6 +1629,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-+@@ -1627,6 +1628,7 @@ MODULE_DEVICE_TABLE(spi, spinand_ids);
-  #ifdef CONFIG_OF
-  static const struct of_device_id spinand_of_ids[] = {
-  	{ .compatible = "spi-nand" },
-diff --git a/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch b/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-index 1f83d73282..ff686e03a7 100644
---- a/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-+++ b/target/linux/pistachio/patches-6.12/401-mtd-nor-support-mtd-name-from-device-tree.patch
-@@ -10,7 +10,7 @@ Signed-off-by: Abhimanyu Vishwakarma <Abhimanyu.Vishwakarma@imgtec.com>
- 
- --- a/drivers/spi/spi-mem.c
- +++ b/drivers/spi/spi-mem.c
--@@ -927,7 +927,9 @@ static int spi_mem_probe(struct spi_devi
-+@@ -893,7 +893,9 @@ static int spi_mem_probe(struct spi_devi
-  {
-  	struct spi_mem_driver *memdrv = to_spi_mem_drv(spi->dev.driver);
-  	struct spi_controller *ctlr = spi->controller;
-@@ -20,7 +20,7 @@ Signed-off-by: Abhimanyu Vishwakarma <Abhimanyu.Vishwakarma@imgtec.com>
-  
-  	mem = devm_kzalloc(&spi->dev, sizeof(*mem), GFP_KERNEL);
-  	if (!mem)
--@@ -935,10 +937,15 @@ static int spi_mem_probe(struct spi_devi
-+@@ -901,10 +903,15 @@ static int spi_mem_probe(struct spi_devi
-  
-  	mem->spi = spi;
-  
-diff --git a/target/linux/ramips/patches-6.12/003-v6.13-mmc-mtk-sd-Implement-Host-Software-Queue-for-eMMC.patch b/target/linux/ramips/patches-6.12/003-v6.13-mmc-mtk-sd-Implement-Host-Software-Queue-for-eMMC.patch
-index 61018cad2c..de09b680ea 100644
---- a/target/linux/ramips/patches-6.12/003-v6.13-mmc-mtk-sd-Implement-Host-Software-Queue-for-eMMC.patch
-+++ b/target/linux/ramips/patches-6.12/003-v6.13-mmc-mtk-sd-Implement-Host-Software-Queue-for-eMMC.patch
-@@ -89,7 +89,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  	struct msdc_save_para save_para; /* used when gate HCLK */
-  	struct msdc_tune_para def_tune_para; /* default tune setting */
-  	struct msdc_tune_para saved_tune_para; /* tune result of CMD21/CMD19 */
--@@ -1165,7 +1167,9 @@ static void msdc_track_cmd_data(struct m
-+@@ -1171,7 +1173,9 @@ static void msdc_track_cmd_data(struct m
-  
-  static void msdc_request_done(struct msdc_host *host, struct mmc_request *mrq)
-  {
-@@ -99,7 +99,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  
-  	/*
-  	 * No need check the return value of cancel_delayed_work, as only ONE
--@@ -1173,6 +1177,27 @@ static void msdc_request_done(struct msd
-+@@ -1179,6 +1183,27 @@ static void msdc_request_done(struct msd
-  	 */
-  	cancel_delayed_work(&host->req_timeout);
-  
-@@ -127,7 +127,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  	spin_lock_irqsave(&host->lock, flags);
-  	host->mrq = NULL;
-  	spin_unlock_irqrestore(&host->lock, flags);
--@@ -1182,7 +1207,7 @@ static void msdc_request_done(struct msd
-+@@ -1188,7 +1213,7 @@ static void msdc_request_done(struct msd
-  		msdc_unprepare_data(host, mrq->data);
-  	if (host->error)
-  		msdc_reset_hw(host);
-@@ -136,7 +136,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  	if (host->dev_comp->recheck_sdio_irq)
-  		msdc_recheck_sdio_irq(host);
-  }
--@@ -1342,7 +1367,7 @@ static void msdc_ops_request(struct mmc_
-+@@ -1348,7 +1373,7 @@ static void msdc_ops_request(struct mmc_
-  	struct msdc_host *host = mmc_priv(mmc);
-  
-  	host->error = 0;
-@@ -144,8 +144,8 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
- +	WARN_ON(!host->hsq_en && host->mrq);
-  	host->mrq = mrq;
-  
-- 	if (mrq->data)
--@@ -2908,6 +2933,19 @@ static int msdc_drv_probe(struct platfor
-+ 	if (mrq->data) {
-+@@ -2925,6 +2950,19 @@ static int msdc_drv_probe(struct platfor
-  		mmc->max_seg_size = 64 * 1024;
-  		/* Reduce CIT to 0x40 that corresponds to 2.35us */
-  		msdc_cqe_cit_cal(host, 2350);
-@@ -165,7 +165,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  	}
-  
-  	ret = devm_request_irq(&pdev->dev, host->irq, msdc_irq,
--@@ -3033,6 +3071,9 @@ static int __maybe_unused msdc_runtime_s
-+@@ -3050,6 +3088,9 @@ static int __maybe_unused msdc_runtime_s
-  	struct mmc_host *mmc = dev_get_drvdata(dev);
-  	struct msdc_host *host = mmc_priv(mmc);
-  
-@@ -175,7 +175,7 @@ Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-  	msdc_save_reg(host);
-  
-  	if (sdio_irq_claimed(mmc)) {
--@@ -3063,6 +3104,10 @@ static int __maybe_unused msdc_runtime_r
-+@@ -3080,6 +3121,10 @@ static int __maybe_unused msdc_runtime_r
-  		pinctrl_select_state(host->pinctrl, host->pins_uhs);
-  		enable_irq(host->irq);
-  	}
-diff --git a/target/linux/ramips/patches-6.12/831-01-mmc-mtk-sd-add-tuning-parameters-for-legacy-MIPS-MT7.patch b/target/linux/ramips/patches-6.12/831-01-mmc-mtk-sd-add-tuning-parameters-for-legacy-MIPS-MT7.patch
-index 328ff20ab9..e7d353a13d 100644
---- a/target/linux/ramips/patches-6.12/831-01-mmc-mtk-sd-add-tuning-parameters-for-legacy-MIPS-MT7.patch
-+++ b/target/linux/ramips/patches-6.12/831-01-mmc-mtk-sd-add-tuning-parameters-for-legacy-MIPS-MT7.patch
-@@ -46,7 +46,7 @@ Signed-off-by: Shiji Yang <yangshiji66@outlook.com>
-  };
-  
-  static const struct mtk_mmc_compatible mt7622_compat = {
--@@ -969,7 +976,12 @@ static void msdc_set_mclk(struct msdc_ho
-+@@ -975,7 +982,12 @@ static void msdc_set_mclk(struct msdc_ho
-  	 * mmc_select_hs400() will drop to 50Mhz and High speed mode,
-  	 * tune result of hs200/200Mhz is not suitable for 50Mhz
-  	 */
-@@ -60,7 +60,7 @@ Signed-off-by: Shiji Yang <yangshiji66@outlook.com>
-  		writel(host->def_tune_para.iocon, host->base + MSDC_IOCON);
-  		if (host->top_base) {
-  			writel(host->def_tune_para.emmc_top_control,
--@@ -1839,6 +1851,18 @@ static void msdc_init_hw(struct msdc_hos
-+@@ -1856,6 +1868,18 @@ static void msdc_init_hw(struct msdc_hos
-  				     MSDC_PAD_TUNE_RXDLYSEL);
-  	}
-  
-diff --git a/target/linux/ramips/patches-6.12/831-02-mmc-mtk-sd-disable-auto-CMD23-support-for-mt7620.patch b/target/linux/ramips/patches-6.12/831-02-mmc-mtk-sd-disable-auto-CMD23-support-for-mt7620.patch
-index 93790b551d..b9d25dff84 100644
---- a/target/linux/ramips/patches-6.12/831-02-mmc-mtk-sd-disable-auto-CMD23-support-for-mt7620.patch
-+++ b/target/linux/ramips/patches-6.12/831-02-mmc-mtk-sd-disable-auto-CMD23-support-for-mt7620.patch
-@@ -124,7 +124,7 @@ Signed-off-by: Shiji Yang <yangshiji66@outlook.com>
-  };
-  
-  static const struct of_device_id msdc_of_ids[] = {
--@@ -2896,7 +2908,9 @@ static int msdc_drv_probe(struct platfor
-+@@ -2913,7 +2925,9 @@ static int msdc_drv_probe(struct platfor
-  	if (mmc->caps & MMC_CAP_SDIO_IRQ)
-  		mmc->caps2 |= MMC_CAP2_SDIO_IRQ_NOTHREAD;
-  
-diff --git a/target/linux/ramips/patches-6.12/831-03-mmc-mtk-sd-use-default-PATCH_BIT1-2-values-for-mt762.patch b/target/linux/ramips/patches-6.12/831-03-mmc-mtk-sd-use-default-PATCH_BIT1-2-values-for-mt762.patch
-index cfe43112a9..3142870aee 100644
---- a/target/linux/ramips/patches-6.12/831-03-mmc-mtk-sd-use-default-PATCH_BIT1-2-values-for-mt762.patch
-+++ b/target/linux/ramips/patches-6.12/831-03-mmc-mtk-sd-use-default-PATCH_BIT1-2-values-for-mt762.patch
-@@ -13,7 +13,7 @@ Signed-off-by: Shiji Yang <yangshiji66@outlook.com>
- 
- --- a/drivers/mmc/host/mtk-sd.c
- +++ b/drivers/mmc/host/mtk-sd.c
--@@ -1787,9 +1787,11 @@ static void msdc_init_hw(struct msdc_hos
-+@@ -1804,9 +1804,11 @@ static void msdc_init_hw(struct msdc_hos
-  	}
-  	writel(0, host->base + MSDC_IOCON);
-  	sdr_set_field(host->base + MSDC_IOCON, MSDC_IOCON_DDLSEL, 0);
+  	/* Qualcomm Atheros AR8035 */
+-@@ -1079,6 +1234,19 @@ static struct phy_driver at803x_driver[]
++@@ -1052,6 +1207,19 @@ static struct phy_driver at803x_driver[]
+  	.soft_reset		= genphy_soft_reset,
+  	.config_aneg		= at803x_config_aneg,
+  }, {
+@@ -267,7 +267,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  	/* Qualcomm Atheros QCA9561 */
+  	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
+  	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
+-@@ -1104,6 +1272,7 @@ static const struct mdio_device_id __may
++@@ -1077,6 +1245,7 @@ static const struct mdio_device_id __may
+  	{ PHY_ID_MATCH_EXACT(ATH8032_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(ATH8035_PHY_ID) },
+  	{ PHY_ID_MATCH_EXACT(ATH9331_PHY_ID) },
 -- 
 2.48.1
 
