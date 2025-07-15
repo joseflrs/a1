@@ -20,8 +20,8 @@ jobs:
               run: |
                 git clone https://github.com/openwrt/openwrt.git
                 cd openwrt
-                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19411.patch
-                git apply 19411.patch
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19388.patch
+                git apply 19388.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
