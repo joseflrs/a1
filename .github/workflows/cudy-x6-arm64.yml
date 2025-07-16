@@ -21,8 +21,8 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
-                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19411.patch
-                git apply 19411.patch
+                git apply pm.patch
+                git apply kernel.patch
                 git apply mt7621.patch
                 git apply 01-ip-addr.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
@@ -30,7 +30,6 @@ jobs:
                 ./scripts/feeds install -a -f
                 mv cudy-x6 .config
                 make defconfig
-                git apply pm.patch
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
                 make download -j32
                 rm -rf files
