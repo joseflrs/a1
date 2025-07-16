@@ -35,7 +35,7 @@ index 1e572366f2..1570562ec6 100644
 -LINUX_VERSION-6.6 = .98
 -LINUX_KERNEL_HASH-6.6.98 = 296a34c500abc22c434b967d471d75568891f06a98f11fc31c5e79b037f45de5
 +LINUX_VERSION-6.6 = .99
-+LINUX_KERNEL_HASH-6.6.99 = e25e3c4bc123742a0856a8385b9a09b80bb4122c3cdb39537e20acd0e449fd5a
++LINUX_KERNEL_HASH-6.6.99 = 77a949b3a8a474263fcf1b1f462d8bee1ad1d7e2162846de7fdc025297bc1862
 diff --git a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch b/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
 index 946f3a5252..09e4be3b34 100644
 --- a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
@@ -237,7 +237,7 @@ index d389e589d8..dbc7c94d28 100644
 -LINUX_VERSION-6.12 = .38
 -LINUX_KERNEL_HASH-6.12.38 = f035fa8d83d59f793c76b23567b130cc42118f10696815fed03c16bb15670fcc
 +LINUX_VERSION-6.12 = .39
-+LINUX_KERNEL_HASH-6.12.39 = e21ad84bae75104e15a40cc4d6c4bc20b3cd93bbe59de8984ec1b84c47eea0c3
++LINUX_KERNEL_HASH-6.12.39 = dd14a5257b13e521b40ba7225099dea272df5d1cb419945e17c38f870fdc55f4
 diff --git a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch b/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
 index acdd74b545..394eca19da 100644
 --- a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
