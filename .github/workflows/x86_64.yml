@@ -19,12 +19,22 @@ jobs:
             - name: Build
               run: |
                 git clone https://github.com/openwrt/openwrt.git
+                cp -rf r3/kernel.patch openwrt/
+                cp -rf r3/pm.patch openwrt/
                 cd openwrt
                 wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19388.patch
                 git apply 19388.patch
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19417.patch
+                git apply 19417.patch
+                git apply kernel.patch
+                git apply pm.patch
+                sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 wget https://downloads.openwrt.org/snapshots/targets/x86/64/config.buildinfo -O .config
+                echo "CONFIG_PACKAGE_luci=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.23.5/arm64/bin"' >> .config
                 make defconfig
                 make download -j32
                 make -j$(nproc) 'IGNORE_ERRORS=n m'
@@ -41,7 +51,7 @@ jobs:
               uses: ncipollo/release-action@v1.14.0
               with:
                 allowUpdates: true
-                name: X86_64 LLVM TOOLCHAIN v19.1.0 aarch64 ${{ env.D }}
+                name: X86_64  ${{ env.D }}
                 tag: x86_64-6.12
                 replacesArtifacts: true
                 makeLatest: true
