@@ -66,7 +66,7 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
-                tar -xvf https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
                 mv rk-snapshot .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.24.4/arm64/bin"' >> .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
