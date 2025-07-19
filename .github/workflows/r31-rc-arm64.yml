@@ -30,8 +30,8 @@ jobs:
                 git apply kmod-apk.patch
                 wget https://github.com/mj22226/openwrt/commit/4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
                 git apply 4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
-                wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
-                tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
