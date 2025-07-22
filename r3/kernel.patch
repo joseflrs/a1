@@ -1,301 +1,387 @@
-From 8c1d4ac7197e6dd1935521db8a1a1c3c2ea445f2 Mon Sep 17 00:00:00 2001
-From: Leo Barsky <leobrsky@proton.me>
-Date: Tue, 15 Jul 2025 11:45:29 -0400
-Subject: [PATCH 1/2] kernel: bump 6.6 to 6.6.99
+From 3319eb8931db48dbb27ecd4c6647ebc87f67c1af Mon Sep 17 00:00:00 2001
+From: J R <io@roton.me>
+Date: Tue, 22 Jul 2025 14:29:24 +0000
+Subject: [PATCH] kernel: bump 6.12 to 6.12.40
 
-Changelog: https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.6.99
-
-All patches auto refreshed.
-
-Signed-off-by: Leo Barsky <leobrsky@proton.me>
+Signed-off-by: J R <io@roton.me>
 ---
- target/linux/generic/hack-6.6/902-debloat_proc.patch          | 2 +-
- target/linux/generic/kernel-6.6                               | 4 ++--
- .../806-v6.9-pwm-mediatek-add-support-for-MT7988.patch        | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ .../950-0054-Add-dwc_otg-driver.patch         |  2 +-
+ ...m-Register-vcsm-cma-as-a-platform-dr.patch |  4 +--
+ ...m-Register-bcm2835-codec-as-a-platfo.patch |  4 +--
+ ...m-Set-up-dma-ranges-on-child-devices.patch |  2 +-
+ ...q-Load-bcm2835_isp-driver-from-vchiq.patch |  4 +--
+ ...-phys-addresses-for-slave-DMA-config.patch |  4 +--
+ ...-Add-downstream-overclocking-support.patch | 18 +++++-----
+ ...t-size-the-hashtable-more-adequately.patch |  2 +-
+ target/linux/generic/kernel-6.12              |  4 +--
+ .../pending-6.12/630-packet_socket_type.patch |  6 ++--
+ ...fix-switchdev-host-mdb-entry-updates.patch |  2 +-
+ ...hdev-Don-t-drop-packets-between-port.patch |  2 +-
+ .../680-net-fix-TCP-UDP-fraglist-GRO.patch    | 35 -------------------
+ ..._F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch |  2 +-
+ .../825-i2c-MIPS-adds-ralink-I2C-driver.patch |  2 +-
+ .../310-add-i2c-rtl9300-support.patch         |  2 +-
+ 16 files changed, 30 insertions(+), 65 deletions(-)
+ delete mode 100644 target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
 
-diff --git a/target/linux/generic/hack-6.6/902-debloat_proc.patch b/target/linux/generic/hack-6.6/902-debloat_proc.patch
-index 64472ad18f..886111a66c 100644
---- a/target/linux/generic/hack-6.6/902-debloat_proc.patch
-+++ b/target/linux/generic/hack-6.6/902-debloat_proc.patch
-@@ -235,7 +235,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (!pe)
- --- a/mm/vmalloc.c
- +++ b/mm/vmalloc.c
--@@ -4450,6 +4450,8 @@ static const struct seq_operations vmall
-+@@ -4458,6 +4458,8 @@ static const struct seq_operations vmall
-  
-  static int __init proc_vmalloc_init(void)
-  {
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 1e572366f2..1570562ec6 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .98
--LINUX_KERNEL_HASH-6.6.98 = 296a34c500abc22c434b967d471d75568891f06a98f11fc31c5e79b037f45de5
-+LINUX_VERSION-6.6 = .99
-+LINUX_KERNEL_HASH-6.6.99 = b08679729f1ec74b9fa829f5990936ca2511039d87acc7e8b3f39912de89ab36
-diff --git a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch b/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
-index 946f3a5252..09e4be3b34 100644
---- a/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
-+++ b/target/linux/mediatek/patches-6.6/806-v6.9-pwm-mediatek-add-support-for-MT7988.patch
-@@ -20,7 +20,7 @@ Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
- 
- --- a/drivers/pwm/pwm-mediatek.c
- +++ b/drivers/pwm/pwm-mediatek.c
--@@ -345,6 +345,13 @@ static const struct pwm_mediatek_of_data
-+@@ -348,6 +348,13 @@ static const struct pwm_mediatek_of_data
-  	.reg_offset = mtk_pwm_reg_offset_v1,
-  };
-  
-@@ -34,7 +34,7 @@ Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-  static const struct pwm_mediatek_of_data mt8183_pwm_data = {
-  	.num_pwms = 4,
-  	.pwm45_fixup = false,
--@@ -375,6 +382,7 @@ static const struct of_device_id pwm_med
-+@@ -378,6 +385,7 @@ static const struct of_device_id pwm_med
-  	{ .compatible = "mediatek,mt7629-pwm", .data = &mt7629_pwm_data },
-  	{ .compatible = "mediatek,mt7981-pwm", .data = &mt7981_pwm_data },
-  	{ .compatible = "mediatek,mt7986-pwm", .data = &mt7986_pwm_data },
--- 
-2.48.1
-
-
-From 2239791a689127252e4c3a8fb0e69267fd6d6ea8 Mon Sep 17 00:00:00 2001
-From: Leo Barsky <leobrsky@proton.me>
-Date: Tue, 15 Jul 2025 11:52:35 -0400
-Subject: [PATCH 2/2] kernel: bump 6.12 to 6.12.39
-
-Changelog: https://cdn.kernel.org/pub/linux/kernel/v6.x/ChangeLog-6.12.39
-All patches auto refreshed.
-
-Signed-off-by: Leo Barsky <leobrsky@proton.me>
----
- ...dd-device-quirks-for-Freeway-Airmouse-T3-an.patch |  2 +-
- ...chip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch |  2 +-
- .../950-0528-drm-Increase-plane_mask-to-64bit.patch  |  2 +-
- ...dd-Broadcom-bcm2712-MSI-X-interrupt-control.patch |  2 +-
- ...dd-support-for-bcm6345-style-external-inter.patch |  2 +-
- .../202-mips-bmips-tweak-Kconfig-options.patch       |  4 ++--
- ...6.14-net-phy-Constify-struct-mdio_device_id.patch |  6 +++---
- .../linux/generic/hack-6.12/902-debloat_proc.patch   |  2 +-
- .../generic/hack-6.12/904-debloat_dma_buf.patch      |  2 +-
- target/linux/generic/kernel-6.12                     |  4 ++--
- ...x-add-qualcomm-ipq5018-internal-phy-support.patch | 12 ++++++------
- 11 files changed, 20 insertions(+), 20 deletions(-)
-
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-index 1c13a65b21..dc9c10cb73 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-@@ -32,7 +32,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-  #define USB_VENDOR_ID_BELKIN		0x050d
-  #define USB_DEVICE_ID_FLIP_KVM		0x3201
-  
--@@ -1460,6 +1463,9 @@
-+@@ -1463,6 +1466,9 @@
-  #define USB_VENDOR_ID_XIAOMI		0x2717
-  #define USB_DEVICE_ID_MI_SILENT_MOUSE	0x5014
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch b/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
-index b156ff12c2..aa130c1627 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0345-irqchip-irq-bcm2712-mip-Support-for-2712-s-MIP.patch
-@@ -31,7 +31,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/irqchip/Kconfig
- +++ b/drivers/irqchip/Kconfig
--@@ -109,6 +109,14 @@ config I8259
-+@@ -110,6 +110,14 @@ config I8259
-  	bool
-  	select IRQ_DOMAIN
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch b/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
-index 6fe5d2ad96..1ae93a6b42 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0528-drm-Increase-plane_mask-to-64bit.patch
-@@ -32,7 +32,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-  	drm_printf(p, "\tmode: " DRM_MODE_FMT "\n", DRM_MODE_ARG(&state->mode));
- --- a/drivers/gpu/drm/drm_framebuffer.c
- +++ b/drivers/gpu/drm/drm_framebuffer.c
--@@ -975,7 +975,7 @@ static int atomic_remove_fb(struct drm_f
-+@@ -1002,7 +1002,7 @@ static int atomic_remove_fb(struct drm_f
-  	struct drm_connector *conn __maybe_unused;
-  	struct drm_connector_state *conn_state;
-  	int i, ret;
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch b/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
-index 9f05866ae3..cf917e1f38 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0901-irqchip-Add-Broadcom-bcm2712-MSI-X-interrupt-control.patch
-@@ -21,7 +21,7 @@ Signed-off-by: Stanimir Varbanov <svarbanov@suse.de>
- 
- --- a/drivers/irqchip/Kconfig
- +++ b/drivers/irqchip/Kconfig
--@@ -110,12 +110,20 @@ config I8259
-+@@ -111,12 +111,20 @@ config I8259
-  	select IRQ_DOMAIN
-  
-  config BCM2712_MIP
-diff --git a/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch b/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
-index 5829fee2ed..27d6b409bb 100644
---- a/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
-+++ b/target/linux/bmips/patches-6.12/100-irqchip-add-support-for-bcm6345-style-external-inter.patch
-@@ -50,7 +50,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
- +};
- --- a/drivers/irqchip/Kconfig
- +++ b/drivers/irqchip/Kconfig
--@@ -109,6 +109,10 @@ config I8259
-+@@ -110,6 +110,10 @@ config I8259
-  	bool
-  	select IRQ_DOMAIN
-  
-diff --git a/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch b/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
-index e7a69b8184..406f4d3421 100644
---- a/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
-+++ b/target/linux/bmips/patches-6.12/202-mips-bmips-tweak-Kconfig-options.patch
-@@ -43,7 +43,7 @@ Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-  	  BCM33xx cable modem chips, BCM63xx DSL chips, and BCM7xxx set-top
- --- a/drivers/irqchip/Kconfig
- +++ b/drivers/irqchip/Kconfig
--@@ -122,7 +122,6 @@ config BCM6345_L1_IRQ
-+@@ -123,7 +123,6 @@ config BCM6345_L1_IRQ
-  config BCM7038_L1_IRQ
-  	tristate "Broadcom STB 7038-style L1/L2 interrupt controller driver"
-  	depends on ARCH_BRCMSTB || BMIPS_GENERIC
-@@ -51,7 +51,7 @@ Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
-  	select GENERIC_IRQ_CHIP
-  	select IRQ_DOMAIN
-  	select GENERIC_IRQ_EFFECTIVE_AFF_MASK if SMP
--@@ -130,14 +129,12 @@ config BCM7038_L1_IRQ
-+@@ -131,14 +130,12 @@ config BCM7038_L1_IRQ
-  config BCM7120_L2_IRQ
-  	tristate "Broadcom STB 7120-style L2 interrupt controller driver"
-  	depends on ARCH_BRCMSTB || BMIPS_GENERIC
-diff --git a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-index 669b58d22a..a1be891a09 100644
---- a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-+++ b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-@@ -469,7 +469,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  	{ PHY_ID_KSZ9131, MICREL_PHY_ID_MASK },
- --- a/drivers/net/phy/microchip.c
- +++ b/drivers/net/phy/microchip.c
--@@ -508,7 +508,7 @@ static struct phy_driver microchip_phy_d
-+@@ -509,7 +509,7 @@ static struct phy_driver microchip_phy_d
-  
-  module_phy_driver(microchip_phy_driver);
-  
-@@ -579,7 +579,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  	{ PHY_ID_MATCH_MODEL(PHY_ID_TJA1102) },
- --- a/drivers/net/phy/qcom/at803x.c
- +++ b/drivers/net/phy/qcom/at803x.c
--@@ -1098,7 +1098,7 @@ static struct phy_driver at803x_driver[]
-+@@ -1071,7 +1071,7 @@ static struct phy_driver at803x_driver[]
-  
-  module_phy_driver(at803x_driver);
-  
-@@ -645,7 +645,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  };
- --- a/drivers/net/phy/smsc.c
- +++ b/drivers/net/phy/smsc.c
--@@ -837,7 +837,7 @@ MODULE_DESCRIPTION("SMSC PHY driver");
-+@@ -884,7 +884,7 @@ MODULE_DESCRIPTION("SMSC PHY driver");
-  MODULE_AUTHOR("Herbert Valerio Riedel");
-  MODULE_LICENSE("GPL");
-  
-diff --git a/target/linux/generic/hack-6.12/902-debloat_proc.patch b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-index ce89e4ba13..c52a7ac5f3 100644
---- a/target/linux/generic/hack-6.12/902-debloat_proc.patch
-+++ b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-@@ -235,7 +235,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (!pe)
- --- a/mm/vmalloc.c
- +++ b/mm/vmalloc.c
--@@ -5066,6 +5066,9 @@ static int vmalloc_info_show(struct seq_
-+@@ -5074,6 +5074,9 @@ static int vmalloc_info_show(struct seq_
-  
-  static int __init proc_vmalloc_init(void)
-  {
-diff --git a/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch b/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
-index 1dbd56b929..bceb474f1a 100644
---- a/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
-+++ b/target/linux/generic/hack-6.12/904-debloat_dma_buf.patch
-@@ -74,7 +74,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- +MODULE_LICENSE("GPL");
- --- a/kernel/sched/core.c
- +++ b/kernel/sched/core.c
--@@ -4428,6 +4428,7 @@ int wake_up_state(struct task_struct *p,
-+@@ -4433,6 +4433,7 @@ int wake_up_state(struct task_struct *p,
-  {
-  	return try_to_wake_up(p, state, 0);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
+index ad0b6cf7dd..9502cdf2cf 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
+@@ -1248,7 +1248,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
   }
+ --- a/drivers/usb/core/hub.c
+ +++ b/drivers/usb/core/hub.c
+-@@ -5757,7 +5757,7 @@ static void port_event(struct usb_hub *h
++@@ -5786,7 +5786,7 @@ static void port_event(struct usb_hub *h
+  		port_dev->over_current_count++;
+  		port_over_current_notify(port_dev);
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
+index e9f351d518..b580ee5377 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+  	.cache_line_size = 32,
+-@@ -1759,6 +1760,7 @@ static int vchiq_probe(struct platform_d
++@@ -1760,6 +1761,7 @@ static int vchiq_probe(struct platform_d
+  
+  	vchiq_debugfs_init(&mgmt->state);
+  
+@@ -29,7 +29,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+  
+-@@ -1777,6 +1779,7 @@ static void vchiq_remove(struct platform
++@@ -1778,6 +1780,7 @@ static void vchiq_remove(struct platform
+  
+  	vchiq_device_unregister(bcm2835_audio);
+  	vchiq_device_unregister(bcm2835_camera);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
+index acc70e2977..874bf15d34 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  static struct vchiq_device *vcsm_cma;
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+-@@ -1761,6 +1762,7 @@ static int vchiq_probe(struct platform_d
++@@ -1762,6 +1763,7 @@ static int vchiq_probe(struct platform_d
+  	vchiq_debugfs_init(&mgmt->state);
+  
+  	vcsm_cma = vchiq_device_register(&pdev->dev, "vcsm-cma");
+@@ -30,7 +30,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+  
+-@@ -1779,6 +1781,7 @@ static void vchiq_remove(struct platform
++@@ -1780,6 +1782,7 @@ static void vchiq_remove(struct platform
+  
+  	vchiq_device_unregister(bcm2835_audio);
+  	vchiq_device_unregister(bcm2835_camera);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
+index b2b470eaeb..0c7fd01ec8 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
+@@ -234,7 +234,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	dev_dbg(&pdev->dev, "arm: vchiq_init - done (slots %pK, phys %pad)\n",
+  		vchiq_slot_zero, &slot_phys);
+  
+-@@ -1710,6 +1776,7 @@ void vchiq_platform_conn_state_changed(s
++@@ -1711,6 +1777,7 @@ void vchiq_platform_conn_state_changed(s
+  static const struct of_device_id vchiq_of_match[] = {
+  	{ .compatible = "brcm,bcm2835-vchiq", .data = &bcm2835_info },
+  	{ .compatible = "brcm,bcm2836-vchiq", .data = &bcm2836_info },
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
+index c9394bc85b..1ba21abf1d 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+  static struct vchiq_device *vcsm_cma;
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+-@@ -1857,6 +1858,7 @@ static int vchiq_probe(struct platform_d
++@@ -1858,6 +1859,7 @@ static int vchiq_probe(struct platform_d
+  	bcm2835_codec = vchiq_device_register(&pdev->dev, "bcm2835-codec");
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+@@ -29,7 +29,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+  
+  	return 0;
+  
+-@@ -1871,6 +1873,7 @@ static void vchiq_remove(struct platform
++@@ -1872,6 +1874,7 @@ static void vchiq_remove(struct platform
+  	struct vchiq_drv_mgmt *mgmt = dev_get_drvdata(&pdev->dev);
+  	struct vchiq_arm_state *arm_state;
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch b/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
+index abaa96cd73..ba33fc35d1 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  #include <linux/of_irq.h>
+  #include <linux/platform_device.h>
+  #include <linux/scatterlist.h>
+-@@ -1347,8 +1346,8 @@ static int bcm2835_probe(struct platform
++@@ -1348,8 +1347,8 @@ static int bcm2835_probe(struct platform
+  	struct device *dev = &pdev->dev;
+  	struct clk *clk;
+  	struct bcm2835_host *host;
+@@ -32,7 +32,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret;
+  
+  	dev_dbg(dev, "%s\n", __func__);
+-@@ -1361,23 +1360,13 @@ static int bcm2835_probe(struct platform
++@@ -1362,23 +1361,13 @@ static int bcm2835_probe(struct platform
+  	host->pdev = pdev;
+  	spin_lock_init(&host->lock);
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch b/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
+index 76412231c6..94dd7356ee 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
+@@ -65,7 +65,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  }
+  
+  static void bcm2835_reset(struct mmc_host *mmc)
+-@@ -595,6 +607,25 @@ static void bcm2835_finish_request(struc
++@@ -596,6 +608,25 @@ static void bcm2835_finish_request(struc
+  
+  	mrq = host->mrq;
+  
+@@ -91,7 +91,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	host->mrq = NULL;
+  	host->cmd = NULL;
+  	host->data = NULL;
+-@@ -1091,8 +1122,13 @@ static void bcm2835_dma_complete_work(st
++@@ -1092,8 +1123,13 @@ static void bcm2835_dma_complete_work(st
+  static void bcm2835_set_clock(struct bcm2835_host *host, unsigned int clock)
+  {
+  	struct mmc_host *mmc = mmc_from_priv(host);
+@@ -105,7 +105,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	/* The SDCDIV register has 11 bits, and holds (div - 2).  But
+  	 * in data mode the max is 50MHz wihout a minimum, and only
+  	 * the bottom 3 bits are used. Since the switch over is
+-@@ -1114,38 +1150,78 @@ static void bcm2835_set_clock(struct bcm
++@@ -1115,38 +1151,78 @@ static void bcm2835_set_clock(struct bcm
+  	 * clock divisor at all times.
+  	 */
+  
+@@ -205,7 +205,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  }
+  
+  static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
+-@@ -1175,6 +1251,9 @@ static void bcm2835_request(struct mmc_h
++@@ -1176,6 +1252,9 @@ static void bcm2835_request(struct mmc_h
+  		return;
+  	}
+  
+@@ -215,7 +215,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	mutex_lock(&host->mutex);
+  
+  	WARN_ON(host->mrq);
+-@@ -1198,7 +1277,7 @@ static void bcm2835_request(struct mmc_h
++@@ -1199,7 +1278,7 @@ static void bcm2835_request(struct mmc_h
+  		return;
+  	}
+  
+@@ -224,7 +224,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  		bcm2835_prepare_dma(host, mrq->data);
+  
+  	host->use_sbc = !!mrq->sbc && host->mrq->data &&
+-@@ -1333,8 +1412,8 @@ static int bcm2835_add_host(struct bcm28
++@@ -1334,8 +1413,8 @@ static int bcm2835_add_host(struct bcm28
+  	}
+  
+  	pio_limit_string[0] = '\0';
+@@ -235,7 +235,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	dev_info(dev, "loaded - DMA %s%s\n",
+  		 host->use_dma ? "enabled" : "disabled", pio_limit_string);
+  
+-@@ -1344,10 +1423,13 @@ static int bcm2835_add_host(struct bcm28
++@@ -1345,10 +1424,13 @@ static int bcm2835_add_host(struct bcm28
+  static int bcm2835_probe(struct platform_device *pdev)
+  {
+  	struct device *dev = &pdev->dev;
+@@ -250,7 +250,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret;
+  
+  	dev_dbg(dev, "%s\n", __func__);
+-@@ -1367,6 +1449,23 @@ static int bcm2835_probe(struct platform
++@@ -1368,6 +1450,23 @@ static int bcm2835_probe(struct platform
+  	}
+  
+  	host->phys_addr = iomem->start;
+@@ -274,7 +274,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  
+  	host->dma_chan = NULL;
+  	host->dma_desc = NULL;
+-@@ -1389,6 +1488,24 @@ static int bcm2835_probe(struct platform
++@@ -1390,6 +1489,24 @@ static int bcm2835_probe(struct platform
+  		goto err;
+  	}
+  
+diff --git a/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch b/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
+index f548cdb9b5..b4bf160e82 100644
+--- a/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
++++ b/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
+ 
+ --- a/net/netfilter/nf_conntrack_core.c
+ +++ b/net/netfilter/nf_conntrack_core.c
+-@@ -2634,7 +2634,7 @@ int nf_conntrack_init_start(void)
++@@ -2648,7 +2648,7 @@ int nf_conntrack_init_start(void)
+  
+  	if (!nf_conntrack_htable_size) {
+  		nf_conntrack_htable_size
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index d389e589d8..dbc7c94d28 100644
+index b738ea851d..f2697345db 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .38
--LINUX_KERNEL_HASH-6.12.38 = f035fa8d83d59f793c76b23567b130cc42118f10696815fed03c16bb15670fcc
-+LINUX_VERSION-6.12 = .39
-+LINUX_KERNEL_HASH-6.12.39 = 6e562502a8fd11639f558e43b74f0df0d85fa85e60f5332acb275a75a35f5345
-diff --git a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch b/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
-index acdd74b545..394eca19da 100644
---- a/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
-+++ b/target/linux/qualcommax/patches-6.12/0712-net-phy-qcom-at803x-add-qualcomm-ipq5018-internal-phy-support.patch
-@@ -69,7 +69,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  #include <dt-bindings/net/qca-ar803x.h>
+-LINUX_VERSION-6.12 = .39
+-LINUX_KERNEL_HASH-6.12.39 = 6e562502a8fd11639f558e43b74f0df0d85fa85e60f5332acb275a75a35f5345
++LINUX_VERSION-6.12 = .40
++LINUX_KERNEL_HASH-6.12.40 = 31cc7579d8ba32df1a93116ff6a155f84e418e7ce061fbaa423776384b053569
+diff --git a/target/linux/generic/pending-6.12/630-packet_socket_type.patch b/target/linux/generic/pending-6.12/630-packet_socket_type.patch
+index fff421bd3c..769696e404 100644
+--- a/target/linux/generic/pending-6.12/630-packet_socket_type.patch
++++ b/target/linux/generic/pending-6.12/630-packet_socket_type.patch
+@@ -87,7 +87,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	if (!net_eq(dev_net(dev), sock_net(sk)))
+  		goto drop;
   
-  #include "qcom.h"
--@@ -96,6 +101,8 @@
-+@@ -93,6 +98,8 @@
-  #define ATH8035_PHY_ID				0x004dd072
-  #define AT8030_PHY_ID_MASK			0xffffffef
+-@@ -3430,6 +3432,7 @@ static int packet_create(struct net *net
++@@ -3429,6 +3431,7 @@ static int packet_create(struct net *net
+  	mutex_init(&po->pg_vec_lock);
+  	po->rollover = NULL;
+  	po->prot_hook.func = packet_rcv;
+@@ -95,7 +95,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
   
-@@ -78,7 +78,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  #define QCA9561_PHY_ID				0x004dd042
-  
-  #define AT803X_PAGE_FIBER			0
--@@ -108,6 +115,50 @@
-+@@ -105,6 +112,50 @@
-  /* disable hibernation mode */
-  #define AT803X_DISABLE_HIBERNATION_MODE		BIT(2)
-  
-@@ -129,7 +129,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  MODULE_DESCRIPTION("Qualcomm Atheros AR803x PHY driver");
-  MODULE_AUTHOR("Matus Ujhelyi");
-  MODULE_LICENSE("GPL");
--@@ -133,6 +184,11 @@ struct at803x_context {
-+@@ -130,6 +181,11 @@ struct at803x_context {
-  	u16 led_control;
-  };
-  
-@@ -141,7 +141,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  static int at803x_write_page(struct phy_device *phydev, int page)
+  	if (sock->type == SOCK_PACKET)
+  		po->prot_hook.func = packet_rcv_spkt;
+-@@ -4097,6 +4100,16 @@ packet_setsockopt(struct socket *sock, i
++@@ -4096,6 +4099,16 @@ packet_setsockopt(struct socket *sock, i
+  		packet_sock_flag_set(po, PACKET_SOCK_QDISC_BYPASS, val);
+  		return 0;
+  	}
+@@ -112,7 +112,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	default:
+  		return -ENOPROTOOPT;
+  	}
+-@@ -4159,6 +4172,13 @@ static int packet_getsockopt(struct sock
++@@ -4158,6 +4171,13 @@ static int packet_getsockopt(struct sock
+  	case PACKET_COPY_THRESH:
+  		val = READ_ONCE(pkt_sk(sk)->copy_thresh);
+  		break;
+diff --git a/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch b/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
+index cf55c6a3fb..8271e062ff 100644
+--- a/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
++++ b/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/bridge/br_switchdev.c
+ +++ b/net/bridge/br_switchdev.c
+-@@ -568,10 +568,18 @@ static void br_switchdev_host_mdb(struct
++@@ -571,10 +571,18 @@ static void br_switchdev_host_mdb(struct
+  				  struct net_bridge_mdb_entry *mp, int type)
   {
-  	int mask;
--@@ -987,6 +1043,105 @@ static int at8035_probe(struct phy_devic
-+@@ -960,6 +1016,105 @@ static int at8035_probe(struct phy_devic
-  	return at8035_parse_dt(phydev);
-  }
+  	struct net_device *lower_dev;
+diff --git a/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch b/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
+index 1c4ec61b50..531e1c99c6 100644
+--- a/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
++++ b/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
+@@ -27,7 +27,7 @@ Signed-off-by: Leon M. Busch-George <leon@georgemail.eu>
+ 
+ --- a/net/bridge/br_switchdev.c
+ +++ b/net/bridge/br_switchdev.c
+-@@ -67,7 +67,7 @@ bool nbp_switchdev_allowed_egress(const
++@@ -70,7 +70,7 @@ bool nbp_switchdev_allowed_egress(const
+  	struct br_input_skb_cb *cb = BR_INPUT_SKB_CB(skb);
   
-@@ -247,7 +247,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  static struct phy_driver at803x_driver[] = {
-  {
-  	/* Qualcomm Atheros AR8035 */
--@@ -1079,6 +1234,19 @@ static struct phy_driver at803x_driver[]
-+@@ -1052,6 +1207,19 @@ static struct phy_driver at803x_driver[]
-  	.soft_reset		= genphy_soft_reset,
-  	.config_aneg		= at803x_config_aneg,
-  }, {
-@@ -267,7 +267,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
-  	/* Qualcomm Atheros QCA9561 */
-  	PHY_ID_MATCH_EXACT(QCA9561_PHY_ID),
-  	.name			= "Qualcomm Atheros QCA9561 built-in PHY",
--@@ -1104,6 +1272,7 @@ static const struct mdio_device_id __may
-+@@ -1077,6 +1245,7 @@ static const struct mdio_device_id __may
-  	{ PHY_ID_MATCH_EXACT(ATH8032_PHY_ID) },
-  	{ PHY_ID_MATCH_EXACT(ATH8035_PHY_ID) },
-  	{ PHY_ID_MATCH_EXACT(ATH9331_PHY_ID) },
+  	return !test_bit(p->hwdom, &cb->fwd_hwdoms) &&
+diff --git a/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch b/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
+deleted file mode 100644
+index 221e2708ec..0000000000
+--- a/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
++++ /dev/null
+@@ -1,35 +0,0 @@
+-From: Felix Fietkau <nbd@nbd.name>
+-Date: Sat, 5 Jul 2025 13:44:10 +0200
+-Subject: [PATCH] net: fix TCP/UDP fraglist GRO
+-
+-Since "net: gro: use cb instead of skb->network_header", the skb network
+-header is no longer set in the GRO path.
+-This breaks fraglist segmentation, which relies on ip_hdr()/tcp_hdr()
+-to check for address/port changes.
+-Fix this regression by selectively setting the network header for merged
+-segment skbs.
+-
+-Fixes: 186b1ea73ad8 ("net: gro: use cb instead of skb->network_header")
+-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+----
+-
+---- a/net/ipv4/tcp_offload.c
+-+++ b/net/ipv4/tcp_offload.c
+-@@ -355,6 +355,7 @@ struct sk_buff *tcp_gro_receive(struct l
+- 		flush |= skb->ip_summed != p->ip_summed;
+- 		flush |= skb->csum_level != p->csum_level;
+- 		flush |= NAPI_GRO_CB(p)->count >= 64;
+-+		skb_set_network_header(skb, skb_gro_receive_network_offset(skb));
+- 
+- 		if (flush || skb_gro_receive_list(p, skb))
+- 			mss = 1;
+---- a/net/ipv4/udp_offload.c
+-+++ b/net/ipv4/udp_offload.c
+-@@ -604,6 +604,7 @@ static struct sk_buff *udp_gro_receive_s
+- 					NAPI_GRO_CB(skb)->flush = 1;
+- 					return NULL;
+- 				}
+-+				skb_set_network_header(skb, skb_gro_receive_network_offset(skb));
+- 				ret = skb_gro_receive_list(p, skb);
+- 			} else {
+- 				skb_gro_postpull_rcsum(skb, uh,
+diff --git a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
+index 34e7a44beb..e89e0d25f5 100644
+--- a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
++++ b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
+@@ -65,7 +65,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+ --- a/net/8021q/vlan.h
+ +++ b/net/8021q/vlan.h
+-@@ -108,7 +108,7 @@ static inline netdev_features_t vlan_tnl
++@@ -109,7 +109,7 @@ static inline netdev_features_t vlan_tnl
+  	netdev_features_t ret;
+  
+  	ret = real_dev->hw_enc_features &
+diff --git a/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch b/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
+index cc70a04596..c0df681956 100644
+--- a/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
++++ b/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
+@@ -45,7 +45,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
+ +};
+ --- a/drivers/i2c/busses/Kconfig
+ +++ b/drivers/i2c/busses/Kconfig
+-@@ -1061,6 +1061,11 @@ config I2C_RK3X
++@@ -1062,6 +1062,11 @@ config I2C_RK3X
+  	  This driver can also be built as a module. If so, the module will
+  	  be called i2c-rk3x.
+  
+diff --git a/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch b/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
+index 4a56675bdf..7a32866818 100644
+--- a/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
++++ b/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
+@@ -17,7 +17,7 @@ Submitted-by: Birger Koblitz <git@birger-koblitz.de>
+ 
+ --- a/drivers/i2c/busses/Kconfig
+ +++ b/drivers/i2c/busses/Kconfig
+-@@ -1061,6 +1061,16 @@ config I2C_RK3X
++@@ -1062,6 +1062,16 @@ config I2C_RK3X
+  	  This driver can also be built as a module. If so, the module will
+  	  be called i2c-rk3x.
+  
 -- 
-2.48.1
+2.49.0
 
