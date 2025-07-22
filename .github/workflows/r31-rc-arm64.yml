@@ -24,6 +24,7 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
+                git apply kernel.patch
                 git apply pm.patch
                 git apply 0001-bpi-r31.patch
                 git apply 01-ip-addr.patch
