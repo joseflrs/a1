@@ -36,6 +36,7 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
+                git apply kernel.patch
                 git apply ms.patch
                 git apply kmod-apk.patch
                 git apply rk-6.12-config.patch
