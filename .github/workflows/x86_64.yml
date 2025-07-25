@@ -22,9 +22,10 @@ jobs:
                 cp -rf r3/kernel.patch openwrt/
                 cp -rf r3/pm.patch openwrt/
                 cd openwrt
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19514.patch
+                git apply 19514.patch
                 wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19388.patch
                 git apply 19388.patch
-                git apply kernel.patch
                 git apply pm.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
