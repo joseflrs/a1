@@ -12,7 +12,7 @@ index 9bc2d7ac10..95b74fe205 100644
 --- a/scripts/projectsmirrors.json
 +++ b/scripts/projectsmirrors.json
 @@ -63,6 +63,10 @@
- 		"https://mirrors.ustc.edu.cn/gnome/sources"
+ 		"http://ftp.nara.wide.ad.jp/pub/X11/GNOME/sources"
  	],
  	"@OPENWRT": [
 +		"https://github.com/joseflrs/a4/releases/download/v6.6/",
