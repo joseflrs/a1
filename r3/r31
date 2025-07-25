@@ -758,6 +758,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax3000sm is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_fr365-v1 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_elecom_wrc-x3000gs3 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax3000q is not set
 CONFIG_PACKAGE_losetup=y
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
