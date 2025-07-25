@@ -29,8 +29,8 @@ jobs:
 
                 wget https://gist.githubusercontent.com/anon503/404095754ac6b88c2b749648d04310bd/raw/b42bb629623b0fb239e66ad1bbc9ab9b211d3b21/rtl8814.patch
                 git apply rtl8814.patch
-                wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
-                tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
                 git apply 0001-bpi-r31.patch
                 git apply 01-ip-addr.patch
                 ./scripts/feeds update -a
