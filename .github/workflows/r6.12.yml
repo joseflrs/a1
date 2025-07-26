@@ -36,8 +36,6 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19514.patch
-                git apply 19514.patch
                 git apply ms.patch
                 git apply kmod-apk.patch
                 git apply rk-6.12-config.patch
