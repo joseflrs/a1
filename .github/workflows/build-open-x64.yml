@@ -1,4 +1,4 @@
-name: Build openwrt on x64
+name: Build openwrt quilt on x64
 on:
    workflow_dispatch:
 jobs:
