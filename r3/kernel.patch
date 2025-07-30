@@ -1,52 +1,273 @@
-From 3319eb8931db48dbb27ecd4c6647ebc87f67c1af Mon Sep 17 00:00:00 2001
+From a354b74e5a6422024bb64583130f12d44e0fa063 Mon Sep 17 00:00:00 2001
 From: J R <io@roton.me>
-Date: Tue, 22 Jul 2025 14:29:24 +0000
-Subject: [PATCH] kernel: bump 6.12 to 6.12.40
+Date: Wed, 30 Jul 2025 15:01:33 +0000
+Subject: [PATCH 1/2] kernel: bump 6.6 to 6.6.101
 
 Signed-off-by: J R <io@roton.me>
 ---
- .../950-0054-Add-dwc_otg-driver.patch         |  2 +-
- ...m-Register-vcsm-cma-as-a-platform-dr.patch |  4 +--
- ...m-Register-bcm2835-codec-as-a-platfo.patch |  4 +--
- ...m-Set-up-dma-ranges-on-child-devices.patch |  2 +-
- ...q-Load-bcm2835_isp-driver-from-vchiq.patch |  4 +--
- ...-phys-addresses-for-slave-DMA-config.patch |  4 +--
- ...-Add-downstream-overclocking-support.patch | 18 +++++-----
- ...t-size-the-hashtable-more-adequately.patch |  2 +-
- target/linux/generic/kernel-6.12              |  4 +--
- .../pending-6.12/630-packet_socket_type.patch |  6 ++--
- ...fix-switchdev-host-mdb-entry-updates.patch |  2 +-
- ...hdev-Don-t-drop-packets-between-port.patch |  2 +-
- .../680-net-fix-TCP-UDP-fraglist-GRO.patch    | 35 -------------------
- ..._F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch |  2 +-
- .../825-i2c-MIPS-adds-ralink-I2C-driver.patch |  2 +-
- .../310-add-i2c-rtl9300-support.patch         |  2 +-
- 16 files changed, 30 insertions(+), 65 deletions(-)
- delete mode 100644 target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
+ ...wnand-qcom-cleanup-qcom_nandc-driver.patch | 24 +++++++++----------
+ ...d-qcom-Add-qcom-prefix-to-common-api.patch | 10 ++++----
+ ...14-mtd-nand-Add-qpic_common-API-file.patch |  6 ++---
+ ...nand-qcom-use-FIELD_PREP-and-GENMASK.patch |  2 +-
+ ...-fix-broken-config-in-qcom_param_pag.patch |  2 +-
+ .../generic/hack-6.6/259-regmap_dynamic.patch |  2 +-
+ target/linux/generic/kernel-6.6               |  4 ++--
+ 7 files changed, 25 insertions(+), 25 deletions(-)
 
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-index ad0b6cf7dd..9502cdf2cf 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0054-Add-dwc_otg-driver.patch
-@@ -1248,7 +1248,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  }
- --- a/drivers/usb/core/hub.c
- +++ b/drivers/usb/core/hub.c
--@@ -5757,7 +5757,7 @@ static void port_event(struct usb_hub *h
-+@@ -5786,7 +5786,7 @@ static void port_event(struct usb_hub *h
-  		port_dev->over_current_count++;
-  		port_over_current_notify(port_dev);
+diff --git a/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch b/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+index 95b66071ad..07b031a094 100644
+--- a/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
++++ b/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+@@ -815,7 +815,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	read_reg_dma(nandc, NAND_FLASH_STATUS, 1, NAND_BAM_NEXT_SGL);
   
+  	ret = submit_descs(nandc);
+-@@ -2864,7 +2815,7 @@ static int qcom_param_page_type_exec(str
++@@ -2869,7 +2820,7 @@ static int qcom_param_page_type_exec(str
+  	if (ret)
+  		return ret;
+  
+@@ -824,7 +824,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+-@@ -2872,38 +2823,38 @@ static int qcom_param_page_type_exec(str
++@@ -2877,38 +2828,38 @@ static int qcom_param_page_type_exec(str
+  	clear_read_regs(nandc);
+  	clear_bam_transaction(nandc);
+  
+@@ -890,9 +890,9 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	instr = q_op.data_instr;
+-@@ -2912,9 +2863,9 @@ static int qcom_param_page_type_exec(str
+- 
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2920,9 +2871,9 @@ static int qcom_param_page_type_exec(str
++ 	else
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+ -	if (!nandc->props->qpic_v2) {
+ -		write_reg_dma(nandc, NAND_DEV_CMD_VLD, 1, 0);
+@@ -903,7 +903,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2926,9 +2877,10 @@ static int qcom_param_page_type_exec(str
++@@ -2934,9 +2885,10 @@ static int qcom_param_page_type_exec(str
+  		      nandc->buf_count, 0);
+  
+  	/* restore CMD1 and VLD regs */
+@@ -917,7 +917,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	ret = submit_descs(nandc);
+-@@ -3017,7 +2969,7 @@ static const struct nand_controller_ops
++@@ -3025,7 +2977,7 @@ static const struct nand_controller_ops
+  
+  static void qcom_nandc_unalloc(struct qcom_nand_controller *nandc)
+  {
+@@ -926,7 +926,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		if (!dma_mapping_error(nandc->dev, nandc->reg_read_dma))
+  			dma_unmap_single(nandc->dev, nandc->reg_read_dma,
+  					 MAX_REG_RD *
+-@@ -3070,7 +3022,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3078,7 +3030,7 @@ static int qcom_nandc_alloc(struct qcom_
+  	if (!nandc->reg_read_buf)
+  		return -ENOMEM;
+  
+@@ -935,7 +935,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->reg_read_dma =
+  			dma_map_single(nandc->dev, nandc->reg_read_buf,
+  				       MAX_REG_RD *
+-@@ -3151,15 +3103,15 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3159,15 +3111,15 @@ static int qcom_nandc_setup(struct qcom_
+  	u32 nand_ctrl;
+  
+  	/* kill onenand */
+@@ -954,7 +954,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nand_ctrl = nandc_read(nandc, NAND_CTRL);
+  
+  		/*
+-@@ -3176,7 +3128,7 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3184,7 +3136,7 @@ static int qcom_nandc_setup(struct qcom_
+  	}
+  
+  	/* save the original values of these registers */
+@@ -963,7 +963,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
+  		nandc->vld = NAND_DEV_CMD_VLD_VAL;
+  	}
+-@@ -3349,7 +3301,7 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3357,7 +3309,7 @@ static int qcom_nandc_parse_dt(struct pl
+  	struct device_node *np = nandc->dev->of_node;
+  	int ret;
+  
+@@ -972,7 +972,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		ret = of_property_read_u32(np, "qcom,cmd-crci",
+  					   &nandc->cmd_crci);
+  		if (ret) {
+-@@ -3474,30 +3426,30 @@ static void qcom_nandc_remove(struct pla
++@@ -3482,30 +3434,30 @@ static void qcom_nandc_remove(struct pla
+  
+  static const struct qcom_nandc_props ipq806x_nandc_props = {
+  	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
+diff --git a/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch b/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+index f634e0442a..23ef86f807 100644
+--- a/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
++++ b/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+@@ -823,7 +823,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting misc descriptor\n");
+  		goto err_out;
+-@@ -2820,8 +2820,8 @@ static int qcom_param_page_type_exec(str
++@@ -2825,8 +2825,8 @@ static int qcom_param_page_type_exec(str
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+  	host->use_ecc = false;
+@@ -834,8 +834,8 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->regs->cmd = q_op.cmd_reg;
+  	nandc->regs->addr0 = 0;
+-@@ -2864,8 +2864,8 @@ static int qcom_param_page_type_exec(str
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2872,8 +2872,8 @@ static int qcom_param_page_type_exec(str
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+  	if (!nandc->props->qpic_version2) {
+ -		write_reg_dma(nandc, &nandc->regs->vld, NAND_DEV_CMD_VLD, 1, 0);
+@@ -845,7 +845,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2873,17 +2873,17 @@ static int qcom_param_page_type_exec(str
++@@ -2881,17 +2881,17 @@ static int qcom_param_page_type_exec(str
+  
+  	config_nand_single_cw_page_read(chip, false, 0);
+  
+@@ -869,7 +869,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting param page descriptor\n");
+  		goto err_out;
+-@@ -3067,7 +3067,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3075,7 +3075,7 @@ static int qcom_nandc_alloc(struct qcom_
+  		 * maximum codeword size
+  		 */
+  		nandc->max_cwperpage = 1;
+diff --git a/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch b/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+index 26211461c1..9272f98862 100644
+--- a/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
++++ b/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+@@ -1786,7 +1786,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  /*
+   * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
+   * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
+-@@ -2967,141 +2022,14 @@ static const struct nand_controller_ops
++@@ -2975,141 +2030,14 @@ static const struct nand_controller_ops
+  	.exec_op = qcom_nand_exec_op,
+  };
+  
+@@ -1931,7 +1931,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	/* kill onenand */
+  	if (!nandc->props->nandc_part_of_qpic)
+  		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
+-@@ -3240,7 +2168,7 @@ static int qcom_nand_host_init_and_regis
++@@ -3248,7 +2176,7 @@ static int qcom_nand_host_init_and_regis
+  	chip->legacy.block_bad		= qcom_nandc_block_bad;
+  	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
+  
+@@ -1940,7 +1940,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
+  			 NAND_SKIP_BBTSCAN;
+  
+-@@ -3323,17 +2251,21 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3331,17 +2259,21 @@ static int qcom_nandc_parse_dt(struct pl
+  static int qcom_nandc_probe(struct platform_device *pdev)
+  {
+  	struct qcom_nand_controller *nandc;
+diff --git a/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch b/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+index b37507409a..c19f681e9d 100644
+--- a/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
++++ b/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+@@ -104,7 +104,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	if (!nandc->props->qpic_version2)
+  		host->ecc_buf_cfg = 0x203 << NUM_STEPS;
+-@@ -1882,21 +1881,21 @@ static int qcom_param_page_type_exec(str
++@@ -1887,21 +1886,21 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
+  
+diff --git a/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch b/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+index a6a4db229f..238a1f9d93 100644
+--- a/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
++++ b/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+ 
+ --- a/drivers/mtd/nand/raw/qcom_nandc.c
+ +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+-@@ -1881,18 +1881,18 @@ static int qcom_param_page_type_exec(str
++@@ -1886,18 +1886,18 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
+  
+diff --git a/target/linux/generic/hack-6.6/259-regmap_dynamic.patch b/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
+index 4f6dca7127..c7b7a28ce3 100644
+--- a/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
++++ b/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
+@@ -137,7 +137,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  #include <linux/mutex.h>
+  #include <linux/err.h>
+  #include <linux/property.h>
+-@@ -3483,3 +3484,5 @@ static int __init regmap_initcall(void)
++@@ -3485,3 +3486,5 @@ static int __init regmap_initcall(void)
+  	return 0;
+  }
+  postcore_initcall(regmap_initcall);
+diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
+index 4a55a573ae..1c5fd30f61 100644
+--- a/target/linux/generic/kernel-6.6
++++ b/target/linux/generic/kernel-6.6
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.6 = .100
+-LINUX_KERNEL_HASH-6.6.100 = d6c0ec4d55b14814f55b62a0b23a2d95faf66877e48fbfb4b83523e4afdf97ba
++LINUX_VERSION-6.6 = .101
++LINUX_KERNEL_HASH-6.6.101 = 0df70e40872b072e1055408d65bc111b7b36c63e372bef0c4ad027404a500efc
+-- 
+2.48.1
+
+
+From e614ea3275ff9e348b8d8a33eb214657df44a7ca Mon Sep 17 00:00:00 2001
+From: J R <io@roton.me>
+Date: Wed, 30 Jul 2025 14:59:35 +0000
+Subject: [PATCH 2/2] kernel: bump 6.12 to 6.12.41
+
+Signed-off-by: J R <io@roton.me>
+---
+ ...m-Register-vcsm-cma-as-a-platform-dr.patch |  4 ++--
+ ...m-Register-bcm2835-codec-as-a-platfo.patch |  4 ++--
+ ...m-Set-up-dma-ranges-on-child-devices.patch |  2 +-
+ ...q-Load-bcm2835_isp-driver-from-vchiq.patch |  4 ++--
+ ...n-Maintain-TLB-coherency-in-LRU-code.patch |  2 +-
+ ...wnand-qcom-cleanup-qcom_nandc-driver.patch | 24 +++++++++----------
+ ...d-qcom-Add-qcom-prefix-to-common-api.patch | 10 ++++----
+ ...14-mtd-nand-Add-qpic_common-API-file.patch |  6 ++---
+ ...nand-qcom-use-FIELD_PREP-and-GENMASK.patch |  2 +-
+ ...-fix-broken-config-in-qcom_param_pag.patch |  2 +-
+ .../hack-6.12/259-regmap_dynamic.patch        |  2 +-
+ target/linux/generic/kernel-6.12              |  4 ++--
+ 12 files changed, 33 insertions(+), 33 deletions(-)
+
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
-index e9f351d518..b580ee5377 100644
+index b580ee5377..e9f351d518 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
 @@ -21,7 +21,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
   
   static const struct vchiq_platform_info bcm2835_info = {
   	.cache_line_size = 32,
--@@ -1759,6 +1760,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1760,6 +1761,7 @@ static int vchiq_probe(struct platform_d
+-@@ -1760,6 +1761,7 @@ static int vchiq_probe(struct platform_d
++@@ -1759,6 +1760,7 @@ static int vchiq_probe(struct platform_d
   
   	vchiq_debugfs_init(&mgmt->state);
   
@@ -54,21 +275,21 @@ index e9f351d518..b580ee5377 100644
   	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
   	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
   
--@@ -1777,6 +1779,7 @@ static void vchiq_remove(struct platform
-+@@ -1778,6 +1780,7 @@ static void vchiq_remove(struct platform
+-@@ -1778,6 +1780,7 @@ static void vchiq_remove(struct platform
++@@ -1777,6 +1779,7 @@ static void vchiq_remove(struct platform
   
   	vchiq_device_unregister(bcm2835_audio);
   	vchiq_device_unregister(bcm2835_camera);
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
-index acc70e2977..874bf15d34 100644
+index 874bf15d34..acc70e2977 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
 @@ -22,7 +22,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
   static struct vchiq_device *vcsm_cma;
   
   static const struct vchiq_platform_info bcm2835_info = {
--@@ -1761,6 +1762,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1762,6 +1763,7 @@ static int vchiq_probe(struct platform_d
+-@@ -1762,6 +1763,7 @@ static int vchiq_probe(struct platform_d
++@@ -1761,6 +1762,7 @@ static int vchiq_probe(struct platform_d
   	vchiq_debugfs_init(&mgmt->state);
   
   	vcsm_cma = vchiq_device_register(&pdev->dev, "vcsm-cma");
@@ -76,34 +297,34 @@ index acc70e2977..874bf15d34 100644
   	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
   	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
   
--@@ -1779,6 +1781,7 @@ static void vchiq_remove(struct platform
-+@@ -1780,6 +1782,7 @@ static void vchiq_remove(struct platform
+-@@ -1780,6 +1782,7 @@ static void vchiq_remove(struct platform
++@@ -1779,6 +1781,7 @@ static void vchiq_remove(struct platform
   
   	vchiq_device_unregister(bcm2835_audio);
   	vchiq_device_unregister(bcm2835_camera);
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
-index b2b470eaeb..0c7fd01ec8 100644
+index 0c7fd01ec8..b2b470eaeb 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
 @@ -234,7 +234,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
   	dev_dbg(&pdev->dev, "arm: vchiq_init - done (slots %pK, phys %pad)\n",
   		vchiq_slot_zero, &slot_phys);
   
--@@ -1710,6 +1776,7 @@ void vchiq_platform_conn_state_changed(s
-+@@ -1711,6 +1777,7 @@ void vchiq_platform_conn_state_changed(s
+-@@ -1711,6 +1777,7 @@ void vchiq_platform_conn_state_changed(s
++@@ -1710,6 +1776,7 @@ void vchiq_platform_conn_state_changed(s
   static const struct of_device_id vchiq_of_match[] = {
   	{ .compatible = "brcm,bcm2835-vchiq", .data = &bcm2835_info },
   	{ .compatible = "brcm,bcm2836-vchiq", .data = &bcm2836_info },
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
-index c9394bc85b..1ba21abf1d 100644
+index 1ba21abf1d..c9394bc85b 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
 @@ -21,7 +21,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
   static struct vchiq_device *vcsm_cma;
   
   static const struct vchiq_platform_info bcm2835_info = {
--@@ -1857,6 +1858,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1858,6 +1859,7 @@ static int vchiq_probe(struct platform_d
+-@@ -1858,6 +1859,7 @@ static int vchiq_probe(struct platform_d
++@@ -1857,6 +1858,7 @@ static int vchiq_probe(struct platform_d
   	bcm2835_codec = vchiq_device_register(&pdev->dev, "bcm2835-codec");
   	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
   	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
@@ -111,277 +332,243 @@ index c9394bc85b..1ba21abf1d 100644
   
   	return 0;
   
--@@ -1871,6 +1873,7 @@ static void vchiq_remove(struct platform
-+@@ -1872,6 +1874,7 @@ static void vchiq_remove(struct platform
+-@@ -1872,6 +1874,7 @@ static void vchiq_remove(struct platform
++@@ -1871,6 +1873,7 @@ static void vchiq_remove(struct platform
   	struct vchiq_drv_mgmt *mgmt = dev_get_drvdata(&pdev->dev);
   	struct vchiq_arm_state *arm_state;
   
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch b/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
-index abaa96cd73..ba33fc35d1 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0325-mmc-bcm2835-Use-phys-addresses-for-slave-DMA-config.patch
-@@ -22,7 +22,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  #include <linux/of_irq.h>
-  #include <linux/platform_device.h>
-  #include <linux/scatterlist.h>
--@@ -1347,8 +1346,8 @@ static int bcm2835_probe(struct platform
-+@@ -1348,8 +1347,8 @@ static int bcm2835_probe(struct platform
-  	struct device *dev = &pdev->dev;
-  	struct clk *clk;
-  	struct bcm2835_host *host;
-@@ -32,7 +32,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	int ret;
-  
-  	dev_dbg(dev, "%s\n", __func__);
--@@ -1361,23 +1360,13 @@ static int bcm2835_probe(struct platform
-+@@ -1362,23 +1361,13 @@ static int bcm2835_probe(struct platform
-  	host->pdev = pdev;
-  	spin_lock_init(&host->lock);
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch b/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
-index 76412231c6..94dd7356ee 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0758-mmc-bcm2835-Add-downstream-overclocking-support.patch
-@@ -65,7 +65,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  }
-  
-  static void bcm2835_reset(struct mmc_host *mmc)
--@@ -595,6 +607,25 @@ static void bcm2835_finish_request(struc
-+@@ -596,6 +608,25 @@ static void bcm2835_finish_request(struc
-  
-  	mrq = host->mrq;
-  
-@@ -91,7 +91,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	host->mrq = NULL;
-  	host->cmd = NULL;
-  	host->data = NULL;
--@@ -1091,8 +1122,13 @@ static void bcm2835_dma_complete_work(st
-+@@ -1092,8 +1123,13 @@ static void bcm2835_dma_complete_work(st
-  static void bcm2835_set_clock(struct bcm2835_host *host, unsigned int clock)
-  {
-  	struct mmc_host *mmc = mmc_from_priv(host);
-@@ -105,7 +105,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	/* The SDCDIV register has 11 bits, and holds (div - 2).  But
-  	 * in data mode the max is 50MHz wihout a minimum, and only
-  	 * the bottom 3 bits are used. Since the switch over is
--@@ -1114,38 +1150,78 @@ static void bcm2835_set_clock(struct bcm
-+@@ -1115,38 +1151,78 @@ static void bcm2835_set_clock(struct bcm
-  	 * clock divisor at all times.
-  	 */
-  
-@@ -205,7 +205,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  }
-  
-  static void bcm2835_request(struct mmc_host *mmc, struct mmc_request *mrq)
--@@ -1175,6 +1251,9 @@ static void bcm2835_request(struct mmc_h
-+@@ -1176,6 +1252,9 @@ static void bcm2835_request(struct mmc_h
-  		return;
-  	}
-  
-@@ -215,7 +215,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	mutex_lock(&host->mutex);
-  
-  	WARN_ON(host->mrq);
--@@ -1198,7 +1277,7 @@ static void bcm2835_request(struct mmc_h
-+@@ -1199,7 +1278,7 @@ static void bcm2835_request(struct mmc_h
-  		return;
-  	}
-  
-@@ -224,7 +224,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  		bcm2835_prepare_dma(host, mrq->data);
-  
-  	host->use_sbc = !!mrq->sbc && host->mrq->data &&
--@@ -1333,8 +1412,8 @@ static int bcm2835_add_host(struct bcm28
-+@@ -1334,8 +1413,8 @@ static int bcm2835_add_host(struct bcm28
-  	}
-  
-  	pio_limit_string[0] = '\0';
-@@ -235,7 +235,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	dev_info(dev, "loaded - DMA %s%s\n",
-  		 host->use_dma ? "enabled" : "disabled", pio_limit_string);
-  
--@@ -1344,10 +1423,13 @@ static int bcm2835_add_host(struct bcm28
-+@@ -1345,10 +1424,13 @@ static int bcm2835_add_host(struct bcm28
-  static int bcm2835_probe(struct platform_device *pdev)
-  {
-  	struct device *dev = &pdev->dev;
-@@ -250,7 +250,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	int ret;
-  
-  	dev_dbg(dev, "%s\n", __func__);
--@@ -1367,6 +1449,23 @@ static int bcm2835_probe(struct platform
-+@@ -1368,6 +1450,23 @@ static int bcm2835_probe(struct platform
-  	}
-  
-  	host->phys_addr = iomem->start;
-@@ -274,7 +274,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  
-  	host->dma_chan = NULL;
-  	host->dma_desc = NULL;
--@@ -1389,6 +1488,24 @@ static int bcm2835_probe(struct platform
-+@@ -1390,6 +1489,24 @@ static int bcm2835_probe(struct platform
-  		goto err;
-  	}
-  
-diff --git a/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch b/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
-index f548cdb9b5..b4bf160e82 100644
---- a/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
-+++ b/target/linux/generic/hack-6.12/661-kernel-ct-size-the-hashtable-more-adequately.patch
-@@ -14,7 +14,7 @@ Signed-off-by: Rui Salvaterra <rsalvaterra@gmail.com>
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
+index 26f11df2a1..66472a96bf 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
  
- --- a/net/netfilter/nf_conntrack_core.c
- +++ b/net/netfilter/nf_conntrack_core.c
--@@ -2634,7 +2634,7 @@ int nf_conntrack_init_start(void)
-+@@ -2648,7 +2648,7 @@ int nf_conntrack_init_start(void)
+ --- a/mm/vmscan.c
+ +++ b/mm/vmscan.c
+-@@ -4128,7 +4128,7 @@ bool lru_gen_look_around(struct page_vma
++@@ -4136,7 +4136,7 @@ bool lru_gen_look_around(struct page_vma
+  		if (!folio)
+  			continue;
   
-  	if (!nf_conntrack_htable_size) {
-  		nf_conntrack_htable_size
+diff --git a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+index 95b66071ad..07b031a094 100644
+--- a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
++++ b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+@@ -815,7 +815,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	read_reg_dma(nandc, NAND_FLASH_STATUS, 1, NAND_BAM_NEXT_SGL);
+  
+  	ret = submit_descs(nandc);
+-@@ -2864,7 +2815,7 @@ static int qcom_param_page_type_exec(str
++@@ -2869,7 +2820,7 @@ static int qcom_param_page_type_exec(str
+  	if (ret)
+  		return ret;
+  
+@@ -824,7 +824,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+-@@ -2872,38 +2823,38 @@ static int qcom_param_page_type_exec(str
++@@ -2877,38 +2828,38 @@ static int qcom_param_page_type_exec(str
+  	clear_read_regs(nandc);
+  	clear_bam_transaction(nandc);
+  
+@@ -890,9 +890,9 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	instr = q_op.data_instr;
+-@@ -2912,9 +2863,9 @@ static int qcom_param_page_type_exec(str
+- 
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2920,9 +2871,9 @@ static int qcom_param_page_type_exec(str
++ 	else
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+ -	if (!nandc->props->qpic_v2) {
+ -		write_reg_dma(nandc, NAND_DEV_CMD_VLD, 1, 0);
+@@ -903,7 +903,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2926,9 +2877,10 @@ static int qcom_param_page_type_exec(str
++@@ -2934,9 +2885,10 @@ static int qcom_param_page_type_exec(str
+  		      nandc->buf_count, 0);
+  
+  	/* restore CMD1 and VLD regs */
+@@ -917,7 +917,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	ret = submit_descs(nandc);
+-@@ -3017,7 +2969,7 @@ static const struct nand_controller_ops
++@@ -3025,7 +2977,7 @@ static const struct nand_controller_ops
+  
+  static void qcom_nandc_unalloc(struct qcom_nand_controller *nandc)
+  {
+@@ -926,7 +926,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		if (!dma_mapping_error(nandc->dev, nandc->reg_read_dma))
+  			dma_unmap_single(nandc->dev, nandc->reg_read_dma,
+  					 MAX_REG_RD *
+-@@ -3070,7 +3022,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3078,7 +3030,7 @@ static int qcom_nandc_alloc(struct qcom_
+  	if (!nandc->reg_read_buf)
+  		return -ENOMEM;
+  
+@@ -935,7 +935,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->reg_read_dma =
+  			dma_map_single(nandc->dev, nandc->reg_read_buf,
+  				       MAX_REG_RD *
+-@@ -3151,15 +3103,15 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3159,15 +3111,15 @@ static int qcom_nandc_setup(struct qcom_
+  	u32 nand_ctrl;
+  
+  	/* kill onenand */
+@@ -954,7 +954,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nand_ctrl = nandc_read(nandc, NAND_CTRL);
+  
+  		/*
+-@@ -3176,7 +3128,7 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3184,7 +3136,7 @@ static int qcom_nandc_setup(struct qcom_
+  	}
+  
+  	/* save the original values of these registers */
+@@ -963,7 +963,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
+  		nandc->vld = NAND_DEV_CMD_VLD_VAL;
+  	}
+-@@ -3349,7 +3301,7 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3357,7 +3309,7 @@ static int qcom_nandc_parse_dt(struct pl
+  	struct device_node *np = nandc->dev->of_node;
+  	int ret;
+  
+@@ -972,7 +972,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		ret = of_property_read_u32(np, "qcom,cmd-crci",
+  					   &nandc->cmd_crci);
+  		if (ret) {
+-@@ -3474,30 +3426,30 @@ static void qcom_nandc_remove(struct pla
++@@ -3482,30 +3434,30 @@ static void qcom_nandc_remove(struct pla
+  
+  static const struct qcom_nandc_props ipq806x_nandc_props = {
+  	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
+diff --git a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+index f634e0442a..23ef86f807 100644
+--- a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
++++ b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+@@ -823,7 +823,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting misc descriptor\n");
+  		goto err_out;
+-@@ -2820,8 +2820,8 @@ static int qcom_param_page_type_exec(str
++@@ -2825,8 +2825,8 @@ static int qcom_param_page_type_exec(str
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+  	host->use_ecc = false;
+@@ -834,8 +834,8 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->regs->cmd = q_op.cmd_reg;
+  	nandc->regs->addr0 = 0;
+-@@ -2864,8 +2864,8 @@ static int qcom_param_page_type_exec(str
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2872,8 +2872,8 @@ static int qcom_param_page_type_exec(str
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+  	if (!nandc->props->qpic_version2) {
+ -		write_reg_dma(nandc, &nandc->regs->vld, NAND_DEV_CMD_VLD, 1, 0);
+@@ -845,7 +845,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2873,17 +2873,17 @@ static int qcom_param_page_type_exec(str
++@@ -2881,17 +2881,17 @@ static int qcom_param_page_type_exec(str
+  
+  	config_nand_single_cw_page_read(chip, false, 0);
+  
+@@ -869,7 +869,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting param page descriptor\n");
+  		goto err_out;
+-@@ -3067,7 +3067,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3075,7 +3075,7 @@ static int qcom_nandc_alloc(struct qcom_
+  		 * maximum codeword size
+  		 */
+  		nandc->max_cwperpage = 1;
+diff --git a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+index 26211461c1..9272f98862 100644
+--- a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
++++ b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+@@ -1786,7 +1786,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  /*
+   * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
+   * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
+-@@ -2967,141 +2022,14 @@ static const struct nand_controller_ops
++@@ -2975,141 +2030,14 @@ static const struct nand_controller_ops
+  	.exec_op = qcom_nand_exec_op,
+  };
+  
+@@ -1931,7 +1931,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	/* kill onenand */
+  	if (!nandc->props->nandc_part_of_qpic)
+  		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
+-@@ -3240,7 +2168,7 @@ static int qcom_nand_host_init_and_regis
++@@ -3248,7 +2176,7 @@ static int qcom_nand_host_init_and_regis
+  	chip->legacy.block_bad		= qcom_nandc_block_bad;
+  	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
+  
+@@ -1940,7 +1940,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
+  			 NAND_SKIP_BBTSCAN;
+  
+-@@ -3323,17 +2251,21 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3331,17 +2259,21 @@ static int qcom_nandc_parse_dt(struct pl
+  static int qcom_nandc_probe(struct platform_device *pdev)
+  {
+  	struct qcom_nand_controller *nandc;
+diff --git a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+index b37507409a..c19f681e9d 100644
+--- a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
++++ b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+@@ -104,7 +104,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	if (!nandc->props->qpic_version2)
+  		host->ecc_buf_cfg = 0x203 << NUM_STEPS;
+-@@ -1882,21 +1881,21 @@ static int qcom_param_page_type_exec(str
++@@ -1887,21 +1886,21 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
+  
+diff --git a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+index a6a4db229f..238a1f9d93 100644
+--- a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
++++ b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+ 
+ --- a/drivers/mtd/nand/raw/qcom_nandc.c
+ +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+-@@ -1881,18 +1881,18 @@ static int qcom_param_page_type_exec(str
++@@ -1886,18 +1886,18 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
+  
+diff --git a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
+index e7614d6822..cbd6c42234 100644
+--- a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
++++ b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
+@@ -137,7 +137,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  #include <linux/mutex.h>
+  #include <linux/err.h>
+  #include <linux/property.h>
+-@@ -3519,3 +3520,5 @@ static int __init regmap_initcall(void)
++@@ -3521,3 +3522,5 @@ static int __init regmap_initcall(void)
+  	return 0;
+  }
+  postcore_initcall(regmap_initcall);
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index b738ea851d..f2697345db 100644
+index 9880cae37e..c6cb38b367 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .39
--LINUX_KERNEL_HASH-6.12.39 = 6e562502a8fd11639f558e43b74f0df0d85fa85e60f5332acb275a75a35f5345
-+LINUX_VERSION-6.12 = .40
-+LINUX_KERNEL_HASH-6.12.40 = 31cc7579d8ba32df1a93116ff6a155f84e418e7ce061fbaa423776384b053569
-diff --git a/target/linux/generic/pending-6.12/630-packet_socket_type.patch b/target/linux/generic/pending-6.12/630-packet_socket_type.patch
-index fff421bd3c..769696e404 100644
---- a/target/linux/generic/pending-6.12/630-packet_socket_type.patch
-+++ b/target/linux/generic/pending-6.12/630-packet_socket_type.patch
-@@ -87,7 +87,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (!net_eq(dev_net(dev), sock_net(sk)))
-  		goto drop;
-  
--@@ -3430,6 +3432,7 @@ static int packet_create(struct net *net
-+@@ -3429,6 +3431,7 @@ static int packet_create(struct net *net
-  	mutex_init(&po->pg_vec_lock);
-  	po->rollover = NULL;
-  	po->prot_hook.func = packet_rcv;
-@@ -95,7 +95,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
-  	if (sock->type == SOCK_PACKET)
-  		po->prot_hook.func = packet_rcv_spkt;
--@@ -4097,6 +4100,16 @@ packet_setsockopt(struct socket *sock, i
-+@@ -4096,6 +4099,16 @@ packet_setsockopt(struct socket *sock, i
-  		packet_sock_flag_set(po, PACKET_SOCK_QDISC_BYPASS, val);
-  		return 0;
-  	}
-@@ -112,7 +112,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	default:
-  		return -ENOPROTOOPT;
-  	}
--@@ -4159,6 +4172,13 @@ static int packet_getsockopt(struct sock
-+@@ -4158,6 +4171,13 @@ static int packet_getsockopt(struct sock
-  	case PACKET_COPY_THRESH:
-  		val = READ_ONCE(pkt_sk(sk)->copy_thresh);
-  		break;
-diff --git a/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch b/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
-index cf55c6a3fb..8271e062ff 100644
---- a/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
-+++ b/target/linux/generic/pending-6.12/640-net-bridge-fix-switchdev-host-mdb-entry-updates.patch
-@@ -20,7 +20,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/net/bridge/br_switchdev.c
- +++ b/net/bridge/br_switchdev.c
--@@ -568,10 +568,18 @@ static void br_switchdev_host_mdb(struct
-+@@ -571,10 +571,18 @@ static void br_switchdev_host_mdb(struct
-  				  struct net_bridge_mdb_entry *mp, int type)
-  {
-  	struct net_device *lower_dev;
-diff --git a/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch b/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
-index 1c4ec61b50..531e1c99c6 100644
---- a/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
-+++ b/target/linux/generic/pending-6.12/641-net-bridge-switchdev-Don-t-drop-packets-between-port.patch
-@@ -27,7 +27,7 @@ Signed-off-by: Leon M. Busch-George <leon@georgemail.eu>
- 
- --- a/net/bridge/br_switchdev.c
- +++ b/net/bridge/br_switchdev.c
--@@ -67,7 +67,7 @@ bool nbp_switchdev_allowed_egress(const
-+@@ -70,7 +70,7 @@ bool nbp_switchdev_allowed_egress(const
-  	struct br_input_skb_cb *cb = BR_INPUT_SKB_CB(skb);
-  
-  	return !test_bit(p->hwdom, &cb->fwd_hwdoms) &&
-diff --git a/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch b/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
-deleted file mode 100644
-index 221e2708ec..0000000000
---- a/target/linux/generic/pending-6.12/680-net-fix-TCP-UDP-fraglist-GRO.patch
-+++ /dev/null
-@@ -1,35 +0,0 @@
--From: Felix Fietkau <nbd@nbd.name>
--Date: Sat, 5 Jul 2025 13:44:10 +0200
--Subject: [PATCH] net: fix TCP/UDP fraglist GRO
--
--Since "net: gro: use cb instead of skb->network_header", the skb network
--header is no longer set in the GRO path.
--This breaks fraglist segmentation, which relies on ip_hdr()/tcp_hdr()
--to check for address/port changes.
--Fix this regression by selectively setting the network header for merged
--segment skbs.
--
--Fixes: 186b1ea73ad8 ("net: gro: use cb instead of skb->network_header")
--Signed-off-by: Felix Fietkau <nbd@nbd.name>
-----
--
----- a/net/ipv4/tcp_offload.c
--+++ b/net/ipv4/tcp_offload.c
--@@ -355,6 +355,7 @@ struct sk_buff *tcp_gro_receive(struct l
-- 		flush |= skb->ip_summed != p->ip_summed;
-- 		flush |= skb->csum_level != p->csum_level;
-- 		flush |= NAPI_GRO_CB(p)->count >= 64;
--+		skb_set_network_header(skb, skb_gro_receive_network_offset(skb));
-- 
-- 		if (flush || skb_gro_receive_list(p, skb))
-- 			mss = 1;
----- a/net/ipv4/udp_offload.c
--+++ b/net/ipv4/udp_offload.c
--@@ -604,6 +604,7 @@ static struct sk_buff *udp_gro_receive_s
-- 					NAPI_GRO_CB(skb)->flush = 1;
-- 					return NULL;
-- 				}
--+				skb_set_network_header(skb, skb_gro_receive_network_offset(skb));
-- 				ret = skb_gro_receive_list(p, skb);
-- 			} else {
-- 				skb_gro_postpull_rcsum(skb, uh,
-diff --git a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-index 34e7a44beb..e89e0d25f5 100644
---- a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-+++ b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
-@@ -65,7 +65,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
- --- a/net/8021q/vlan.h
- +++ b/net/8021q/vlan.h
--@@ -108,7 +108,7 @@ static inline netdev_features_t vlan_tnl
-+@@ -109,7 +109,7 @@ static inline netdev_features_t vlan_tnl
-  	netdev_features_t ret;
-  
-  	ret = real_dev->hw_enc_features &
-diff --git a/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch b/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
-index cc70a04596..c0df681956 100644
---- a/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
-+++ b/target/linux/ramips/patches-6.12/825-i2c-MIPS-adds-ralink-I2C-driver.patch
-@@ -45,7 +45,7 @@ Signed-off-by: John Crispin <blogic@openwrt.org>
- +};
- --- a/drivers/i2c/busses/Kconfig
- +++ b/drivers/i2c/busses/Kconfig
--@@ -1061,6 +1061,11 @@ config I2C_RK3X
-+@@ -1062,6 +1062,11 @@ config I2C_RK3X
-  	  This driver can also be built as a module. If so, the module will
-  	  be called i2c-rk3x.
-  
-diff --git a/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch b/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
-index 4a56675bdf..7a32866818 100644
---- a/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
-+++ b/target/linux/realtek/patches-6.12/310-add-i2c-rtl9300-support.patch
-@@ -17,7 +17,7 @@ Submitted-by: Birger Koblitz <git@birger-koblitz.de>
- 
- --- a/drivers/i2c/busses/Kconfig
- +++ b/drivers/i2c/busses/Kconfig
--@@ -1061,6 +1061,16 @@ config I2C_RK3X
-+@@ -1062,6 +1062,16 @@ config I2C_RK3X
-  	  This driver can also be built as a module. If so, the module will
-  	  be called i2c-rk3x.
-  
+-LINUX_VERSION-6.12 = .40
+-LINUX_KERNEL_HASH-6.12.40 = 4811af1317f98d2cccea3c7695969a2c03a27cb02fd2d5327032dd5341842933
++LINUX_VERSION-6.12 = .41
++LINUX_KERNEL_HASH-6.12.41 = d2cb81de8c724e28ff27c1f5ecf7f264a6eab058aa2cfa407fa9ebd31abf0fc8
 -- 
-2.49.0
+2.48.1
 
