@@ -1,9 +1,11 @@
-From a354b74e5a6422024bb64583130f12d44e0fa063 Mon Sep 17 00:00:00 2001
-From: J R <io@roton.me>
+From 5f503719aa8dc8b72a50d31b1c8df67633dcd43c Mon Sep 17 00:00:00 2001
+From: I l <il@il.com>
 Date: Wed, 30 Jul 2025 15:01:33 +0000
-Subject: [PATCH 1/2] kernel: bump 6.6 to 6.6.101
+Subject: [PATCH 1/4] kernel: Linux 6.6.101
 
-Signed-off-by: J R <io@roton.me>
+https://lore.kernel.org/all/20250730093226.854413920@linuxfoundation.org
+
+Signed-off-by: I l <il@il.com>
 ---
  ...wnand-qcom-cleanup-qcom_nandc-driver.patch | 24 +++++++++----------
  ...d-qcom-Add-qcom-prefix-to-common-api.patch | 10 ++++----
@@ -225,7 +227,7 @@ index 4f6dca7127..c7b7a28ce3 100644
   }
   postcore_initcall(regmap_initcall);
 diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 4a55a573ae..1c5fd30f61 100644
+index 4a55a573ae..71181a3fc5 100644
 --- a/target/linux/generic/kernel-6.6
 +++ b/target/linux/generic/kernel-6.6
 @@ -1,2 +1,2 @@
@@ -237,12 +239,14 @@ index 4a55a573ae..1c5fd30f61 100644
 2.48.1
 
 
-From e614ea3275ff9e348b8d8a33eb214657df44a7ca Mon Sep 17 00:00:00 2001
-From: J R <io@roton.me>
+From c56492f2ff91d209279a3561df8d4da855b81338 Mon Sep 17 00:00:00 2001
+From: I l <il@il.com>
 Date: Wed, 30 Jul 2025 14:59:35 +0000
-Subject: [PATCH 2/2] kernel: bump 6.12 to 6.12.41
+Subject: [PATCH 2/4] kernel: Linux 6.12.41
 
-Signed-off-by: J R <io@roton.me>
+https://lore.kernel.org/all/20250730093233.592541778@linuxfoundation.org
+
+Signed-off-by: I l <il@il.com>
 ---
  ...m-Register-vcsm-cma-as-a-platform-dr.patch |  4 ++--
  ...m-Register-bcm2835-codec-as-a-platfo.patch |  4 ++--
@@ -561,7 +565,7 @@ index e7614d6822..cbd6c42234 100644
   }
   postcore_initcall(regmap_initcall);
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 9880cae37e..c6cb38b367 100644
+index 9880cae37e..11f05faf1c 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
@@ -569,6 +573,520 @@ index 9880cae37e..c6cb38b367 100644
 -LINUX_KERNEL_HASH-6.12.40 = 4811af1317f98d2cccea3c7695969a2c03a27cb02fd2d5327032dd5341842933
 +LINUX_VERSION-6.12 = .41
 +LINUX_KERNEL_HASH-6.12.41 = 6b19a3ae99423de2416964d67251d745910277af258b4c4c63e88fd87dbf0e27
+-- 
+2.48.1
+
+
+From f3544bdcb336bd5535f9e2b40c3622761cf341fa Mon Sep 17 00:00:00 2001
+From: I l <il@il.com>
+Date: Tue, 12 Aug 2025 20:50:01 +0000
+Subject: [PATCH 3/4] kernel: Linux 6.6.102-rc1
+
+https://lore.kernel.org/all/20250812172952.959106058@linuxfoundation.org
+
+Signed-off-by: I l <il@il.com>
+---
+ .../patches-6.6/900-unaligned_access_hacks.patch   |  2 +-
+ ...pp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch |  2 +-
+ ....7-net-introduce-napi_is_scheduled-helper.patch |  2 +-
+ .../hack-6.6/721-net-add-packet-mangeling.patch    |  4 ++--
+ .../generic/hack-6.6/904-debloat_dma_buf.patch     |  2 +-
+ target/linux/generic/kernel-6.6                    |  4 ++--
+ .../650-net-pppoe-implement-GRO-support.patch      |  4 ++--
+ .../generic/pending-6.6/655-increase_skb_pad.patch |  2 +-
+ ...jecting-with-source-address-failed-policy.patch | 14 +++++++-------
+ ...f_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch |  2 +-
+ ...-net-dsa-add-out-of-band-tagging-protocol.patch |  2 +-
+ 11 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
+index 9168d5e973..02b64bb7f8 100644
+--- a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
++++ b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
+@@ -579,7 +579,7 @@ SVN-Revision: 35130
+  			goto next_ht;
+ --- a/net/ipv6/ip6_offload.c
+ +++ b/net/ipv6/ip6_offload.c
+-@@ -273,7 +273,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
++@@ -275,7 +275,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
+  			continue;
+  
+  		iph2 = (struct ipv6hdr *)(p->data + off);
+diff --git a/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+index ad98807a6f..7d18fff096 100644
+--- a/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
++++ b/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+@@ -47,7 +47,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  		if (error) {
+ --- a/drivers/net/ppp/pptp.c
+ +++ b/drivers/net/ppp/pptp.c
+-@@ -465,6 +465,7 @@ static int pptp_connect(struct socket *s
++@@ -469,6 +469,7 @@ static int pptp_connect(struct socket *s
+  	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
+  
+  	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
+diff --git a/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch b/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
+index 319bc3e47b..4aa93c20d1 100644
+--- a/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
++++ b/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
+@@ -42,7 +42,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+   *	@adap: the adapter
+ --- a/drivers/net/wireless/realtek/rtw89/core.c
+ +++ b/drivers/net/wireless/realtek/rtw89/core.c
+-@@ -1744,7 +1744,7 @@ static void rtw89_core_rx_to_mac80211(st
++@@ -1749,7 +1749,7 @@ static void rtw89_core_rx_to_mac80211(st
+  	struct napi_struct *napi = &rtwdev->napi;
+  
+  	/* In low power mode, napi isn't scheduled. Receive it to netif. */
+diff --git a/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
+index 8b784836a0..30a0b86b00 100644
+--- a/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
++++ b/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
+@@ -60,7 +60,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+   */
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3098,6 +3098,10 @@ static inline int pskb_trim(struct sk_bu
++@@ -3121,6 +3121,10 @@ static inline int pskb_trim(struct sk_bu
+  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
+  }
+  
+@@ -71,7 +71,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  /**
+   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
+   *	@skb: buffer to alter
+-@@ -3263,16 +3267,6 @@ static inline struct sk_buff *dev_alloc_
++@@ -3286,16 +3290,6 @@ static inline struct sk_buff *dev_alloc_
+  }
+  
+  
+diff --git a/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch b/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
+index 4d2ea46212..3ca98788ab 100644
+--- a/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
++++ b/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
+@@ -73,7 +73,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ +MODULE_LICENSE("GPL");
+ --- a/kernel/sched/core.c
+ +++ b/kernel/sched/core.c
+-@@ -4486,6 +4486,7 @@ int wake_up_state(struct task_struct *p,
++@@ -4485,6 +4485,7 @@ int wake_up_state(struct task_struct *p,
+  {
+  	return try_to_wake_up(p, state, 0);
+  }
+diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
+index 71181a3fc5..e586f604b2 100644
+--- a/target/linux/generic/kernel-6.6
++++ b/target/linux/generic/kernel-6.6
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.6 = .101
+-LINUX_KERNEL_HASH-6.6.101 = 8c4ff2869736538b9b0d88ea8dbf0332b79c6ecc40a32066768a754df1fae1c0
++LINUX_VERSION-6.6 = .102
++LINUX_KERNEL_HASH-6.6.102 = 6c9519245f69c7a23751c80326f871bb5a7a0d4bde3e4f40706209da0930ad07
+diff --git a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
+index 1c6849bf22..c1d77d8cc7 100644
+--- a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
++++ b/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
+@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  {
+ --- a/net/ipv6/ip6_offload.c
+ +++ b/net/ipv6/ip6_offload.c
+-@@ -319,6 +319,7 @@ out:
++@@ -321,6 +321,7 @@ out:
+  
+  	return pp;
+  }
+@@ -238,7 +238,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
+  					      struct sk_buff *skb)
+-@@ -401,6 +402,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
++@@ -403,6 +404,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
+  out:
+  	return err;
+  }
+diff --git a/target/linux/generic/pending-6.6/655-increase_skb_pad.patch b/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
+index 4f3bb06051..8fbc915881 100644
+--- a/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
++++ b/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
+@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3065,7 +3065,7 @@ static inline int pskb_network_may_pull(
++@@ -3088,7 +3088,7 @@ static inline int pskb_network_may_pull(
+   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+   */
+  #ifndef NET_SKB_PAD
+diff --git a/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+index 0ad36b3430..ef7ca8cf74 100644
+--- a/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
++++ b/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		cfg->fc_flags |= RTF_REJECT;
+  
+  	if (rtm->rtm_type == RTN_LOCAL)
+-@@ -6341,6 +6372,8 @@ static int ip6_route_dev_notify(struct n
++@@ -6349,6 +6380,8 @@ static int ip6_route_dev_notify(struct n
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
+  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
+@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
+  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
+  #endif
+-@@ -6352,6 +6385,7 @@ static int ip6_route_dev_notify(struct n
++@@ -6360,6 +6393,7 @@ static int ip6_route_dev_notify(struct n
+  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
+@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
+  #endif
+  	}
+-@@ -6552,6 +6586,8 @@ static int __net_init ip6_route_net_init
++@@ -6560,6 +6594,8 @@ static int __net_init ip6_route_net_init
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	net->ipv6.fib6_has_custom_rules = false;
+@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
+  					       sizeof(*net->ipv6.ip6_prohibit_entry),
+  					       GFP_KERNEL);
+-@@ -6562,11 +6598,21 @@ static int __net_init ip6_route_net_init
++@@ -6570,11 +6606,21 @@ static int __net_init ip6_route_net_init
+  			 ip6_template_metrics, true);
+  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->dst.rt_uncached);
+  
+@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
+  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
+  			 ip6_template_metrics, true);
+-@@ -6593,6 +6639,8 @@ out:
++@@ -6601,6 +6647,8 @@ out:
+  	return ret;
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  out_ip6_prohibit_entry:
+  	kfree(net->ipv6.ip6_prohibit_entry);
+  out_ip6_null_entry:
+-@@ -6612,6 +6660,7 @@ static void __net_exit ip6_route_net_exi
++@@ -6620,6 +6668,7 @@ static void __net_exit ip6_route_net_exi
+  	kfree(net->ipv6.ip6_null_entry);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	kfree(net->ipv6.ip6_prohibit_entry);
+@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	kfree(net->ipv6.ip6_blk_hole_entry);
+  #endif
+  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
+-@@ -6695,6 +6744,9 @@ void __init ip6_route_init_special_entri
++@@ -6703,6 +6752,9 @@ void __init ip6_route_init_special_entri
+  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
+  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+diff --git a/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+index 1ae6f89399..7a5413700a 100644
+--- a/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
++++ b/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/netfilter/nf_tables_api.c
+ +++ b/net/netfilter/nf_tables_api.c
+-@@ -8469,7 +8469,7 @@ static int nft_register_flowtable_net_ho
++@@ -8449,7 +8449,7 @@ static int nft_register_flowtable_net_ho
+  		err = flowtable->data.type->setup(&flowtable->data,
+  						  hook->ops.dev,
+  						  FLOW_BLOCK_BIND);
+diff --git a/target/linux/ipq40xx/patches-6.6/701-net-dsa-add-out-of-band-tagging-protocol.patch b/target/linux/ipq40xx/patches-6.6/701-net-dsa-add-out-of-band-tagging-protocol.patch
+index dc70104b1c..c9abf9c870 100644
+--- a/target/linux/ipq40xx/patches-6.6/701-net-dsa-add-out-of-band-tagging-protocol.patch
++++ b/target/linux/ipq40xx/patches-6.6/701-net-dsa-add-out-of-band-tagging-protocol.patch
+@@ -93,7 +93,7 @@ Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+ +#endif
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -4683,6 +4683,9 @@ enum skb_ext_id {
++@@ -4706,6 +4706,9 @@ enum skb_ext_id {
+  #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+  	SKB_EXT_MCTP,
+  #endif
+-- 
+2.48.1
+
+
+From 627490c6ea7093a8d713f29473fef9e8446278e3 Mon Sep 17 00:00:00 2001
+From: I l <il@il.com>
+Date: Tue, 12 Aug 2025 19:37:29 +0000
+Subject: [PATCH 4/4] kernel: Linux 6.12.42-rc1
+
+https://lore.kernel.org/all/20250812173014.736537091@linuxfoundation.org
+
+Signed-off-by: I l <il@il.com>
+---
+ .../patches-6.12/900-unaligned_access_hacks.patch  |  2 +-
+ ...ng-fbtft-Add-support-for-display-variants.patch |  6 +++---
+ ...Compatibility-hack-should-be-X86-specific.patch |  4 ++--
+ ...pp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch |  2 +-
+ target/linux/generic/config-6.12                   |  1 +
+ .../hack-6.12/721-net-add-packet-mangeling.patch   |  4 ++--
+ target/linux/generic/kernel-6.12                   |  4 ++--
+ .../650-net-pppoe-implement-GRO-support.patch      |  4 ++--
+ .../pending-6.12/655-increase_skb_pad.patch        |  2 +-
+ ...jecting-with-source-address-failed-policy.patch | 14 +++++++-------
+ ...f_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch |  2 +-
+ ...-net-dsa-add-out-of-band-tagging-protocol.patch |  2 +-
+ 12 files changed, 24 insertions(+), 23 deletions(-)
+
+diff --git a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
+index ea51478fd0..12fbc59e98 100644
+--- a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
++++ b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
+@@ -578,7 +578,7 @@ SVN-Revision: 35130
+  			goto next_ht;
+ --- a/net/ipv6/ip6_offload.c
+ +++ b/net/ipv6/ip6_offload.c
+-@@ -269,7 +269,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
++@@ -271,7 +271,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
+  			continue;
+  
+  		iph2 = (struct ipv6hdr *)(p->data + off);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
+index bf6573548e..105941aa55 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
+@@ -95,7 +95,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  
+  #include <video/mipi_display.h>
+  
+-@@ -1131,6 +1133,7 @@ static struct fbtft_platform_data *fbtft
++@@ -1132,6 +1134,7 @@ static struct fbtft_platform_data *fbtft
+   * @display: Display properties
+   * @sdev: SPI device
+   * @pdev: Platform device
+@@ -103,7 +103,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+   *
+   * Allocates, initializes and registers a framebuffer
+   *
+-@@ -1140,12 +1143,15 @@ static struct fbtft_platform_data *fbtft
++@@ -1141,12 +1144,15 @@ static struct fbtft_platform_data *fbtft
+   */
+  int fbtft_probe_common(struct fbtft_display *display,
+  		       struct spi_device *sdev,
+@@ -120,7 +120,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret;
+  
+  	if (sdev)
+-@@ -1158,6 +1164,14 @@ int fbtft_probe_common(struct fbtft_disp
++@@ -1159,6 +1165,14 @@ int fbtft_probe_common(struct fbtft_disp
+  		pdata = fbtft_properties_read(dev);
+  		if (IS_ERR(pdata))
+  			return PTR_ERR(pdata);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
+index 2f8ab29fdd..3d05954a77 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/drivers/pps/pps.c
+ +++ b/drivers/pps/pps.c
+-@@ -249,12 +249,13 @@ static long pps_cdev_ioctl(struct file *
++@@ -254,12 +254,13 @@ static long pps_cdev_ioctl(struct file *
+  static long pps_cdev_compat_ioctl(struct file *file,
+  		unsigned int cmd, unsigned long arg)
+  {
+@@ -38,7 +38,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  		struct pps_fdata_compat compat;
+  		struct pps_fdata fdata;
+  		int err;
+-@@ -289,6 +290,7 @@ static long pps_cdev_compat_ioctl(struct
++@@ -296,6 +297,7 @@ static long pps_cdev_compat_ioctl(struct
+  		return copy_to_user(uarg, &compat,
+  				sizeof(struct pps_fdata_compat)) ? -EFAULT : 0;
+  	}
+diff --git a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+index 64effc5ec8..6d9ac56cf0 100644
+--- a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
++++ b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+@@ -47,7 +47,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  		if (error) {
+ --- a/drivers/net/ppp/pptp.c
+ +++ b/drivers/net/ppp/pptp.c
+-@@ -465,6 +465,7 @@ static int pptp_connect(struct socket *s
++@@ -469,6 +469,7 @@ static int pptp_connect(struct socket *s
+  	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
+  
+  	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
+diff --git a/target/linux/generic/config-6.12 b/target/linux/generic/config-6.12
+index 5d931cf995..73166b434c 100644
+--- a/target/linux/generic/config-6.12
++++ b/target/linux/generic/config-6.12
+@@ -7348,6 +7348,7 @@ CONFIG_VDSO=y
+ # CONFIG_VGA_CONSOLE is not set
+ # CONFIG_VGA_SWITCHEROO is not set
+ # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
++# CONFIG_VHOST_ENABLE_FORK_OWNER_CONTROL is not set
+ CONFIG_VHOST_MENU=y
+ # CONFIG_VHOST_NET is not set
+ # CONFIG_VHOST_VSOCK is not set
+diff --git a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+index 5ad34a4517..9430070457 100644
+--- a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
++++ b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+@@ -52,7 +52,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+   */
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3213,6 +3213,10 @@ static inline int pskb_trim(struct sk_bu
++@@ -3236,6 +3236,10 @@ static inline int pskb_trim(struct sk_bu
+  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
+  }
+  
+@@ -63,7 +63,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  /**
+   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
+   *	@skb: buffer to alter
+-@@ -3378,16 +3382,6 @@ static inline struct sk_buff *dev_alloc_
++@@ -3401,16 +3405,6 @@ static inline struct sk_buff *dev_alloc_
+  }
+  
+  
+diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
+index 11f05faf1c..183a276b41 100644
+--- a/target/linux/generic/kernel-6.12
++++ b/target/linux/generic/kernel-6.12
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.12 = .41
+-LINUX_KERNEL_HASH-6.12.41 = 6b19a3ae99423de2416964d67251d745910277af258b4c4c63e88fd87dbf0e27
++LINUX_VERSION-6.12 = .42
++LINUX_KERNEL_HASH-6.12.42 = c29194bbedcddd5fc1e5d0fc4c9f52d7b51ff7e52af8a0088847c095e9c5d435
+diff --git a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
+index d7260296bd..11d0f03fba 100644
+--- a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
++++ b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
+@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  {
+ --- a/net/ipv6/ip6_offload.c
+ +++ b/net/ipv6/ip6_offload.c
+-@@ -304,6 +304,7 @@ out:
++@@ -306,6 +306,7 @@ out:
+  
+  	return pp;
+  }
+@@ -238,7 +238,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
+  					      struct sk_buff *skb)
+-@@ -386,6 +387,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
++@@ -388,6 +389,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
+  out:
+  	return err;
+  }
+diff --git a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+index 6fa3358218..57857272f0 100644
+--- a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
++++ b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3180,7 +3180,7 @@ static inline int pskb_network_may_pull(
++@@ -3203,7 +3203,7 @@ static inline int pskb_network_may_pull(
+   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+   */
+  #ifndef NET_SKB_PAD
+diff --git a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+index d10f39cf22..f0cdd65766 100644
+--- a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
++++ b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		cfg->fc_flags |= RTF_REJECT;
+  
+  	if (rtm->rtm_type == RTN_LOCAL)
+-@@ -6349,6 +6380,8 @@ static int ip6_route_dev_notify(struct n
++@@ -6357,6 +6388,8 @@ static int ip6_route_dev_notify(struct n
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
+  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
+@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
+  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
+  #endif
+-@@ -6360,6 +6393,7 @@ static int ip6_route_dev_notify(struct n
++@@ -6368,6 +6401,7 @@ static int ip6_route_dev_notify(struct n
+  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
+@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
+  #endif
+  	}
+-@@ -6555,6 +6589,8 @@ static int __net_init ip6_route_net_init
++@@ -6563,6 +6597,8 @@ static int __net_init ip6_route_net_init
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	net->ipv6.fib6_has_custom_rules = false;
+@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
+  					       sizeof(*net->ipv6.ip6_prohibit_entry),
+  					       GFP_KERNEL);
+-@@ -6565,11 +6601,21 @@ static int __net_init ip6_route_net_init
++@@ -6573,11 +6609,21 @@ static int __net_init ip6_route_net_init
+  			 ip6_template_metrics, true);
+  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->dst.rt_uncached);
+  
+@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
+  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
+  			 ip6_template_metrics, true);
+-@@ -6596,6 +6642,8 @@ out:
++@@ -6604,6 +6650,8 @@ out:
+  	return ret;
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  out_ip6_prohibit_entry:
+  	kfree(net->ipv6.ip6_prohibit_entry);
+  out_ip6_null_entry:
+-@@ -6615,6 +6663,7 @@ static void __net_exit ip6_route_net_exi
++@@ -6623,6 +6671,7 @@ static void __net_exit ip6_route_net_exi
+  	kfree(net->ipv6.ip6_null_entry);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	kfree(net->ipv6.ip6_prohibit_entry);
+@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	kfree(net->ipv6.ip6_blk_hole_entry);
+  #endif
+  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
+-@@ -6698,6 +6747,9 @@ void __init ip6_route_init_special_entri
++@@ -6706,6 +6755,9 @@ void __init ip6_route_init_special_entri
+  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
+  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+diff --git a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+index ceb191e5c5..2ab483d6c4 100644
+--- a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
++++ b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/netfilter/nf_tables_api.c
+ +++ b/net/netfilter/nf_tables_api.c
+-@@ -8658,7 +8658,7 @@ static int nft_register_flowtable_net_ho
++@@ -8638,7 +8638,7 @@ static int nft_register_flowtable_net_ho
+  		err = flowtable->data.type->setup(&flowtable->data,
+  						  hook->ops.dev,
+  						  FLOW_BLOCK_BIND);
+diff --git a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
+index 79a4f74fcf..b9be19232d 100644
+--- a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
++++ b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
+@@ -93,7 +93,7 @@ Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+ +#endif
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -4769,6 +4769,9 @@ enum skb_ext_id {
++@@ -4792,6 +4792,9 @@ enum skb_ext_id {
+  #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+  	SKB_EXT_MCTP,
+  #endif
 -- 
 2.48.1
 
