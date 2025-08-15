@@ -681,7 +681,7 @@ index 71181a3fc5..e586f604b2 100644
 -LINUX_VERSION-6.6 = .101
 -LINUX_KERNEL_HASH-6.6.101 = 8c4ff2869736538b9b0d88ea8dbf0332b79c6ecc40a32066768a754df1fae1c0
 +LINUX_VERSION-6.6 = .102
-+LINUX_KERNEL_HASH-6.6.102 = 6c9519245f69c7a23751c80326f871bb5a7a0d4bde3e4f40706209da0930ad07
++LINUX_KERNEL_HASH-6.6.102 = 80d2feb7334c30bacbe1e7dafa9ea415efb2c0ea4f4740ecbd1467cf5d94de5c
 diff --git a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
 index 1c6849bf22..c1d77d8cc7 100644
 --- a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
@@ -958,7 +958,7 @@ index 11f05faf1c..183a276b41 100644
 -LINUX_VERSION-6.12 = .41
 -LINUX_KERNEL_HASH-6.12.41 = 6b19a3ae99423de2416964d67251d745910277af258b4c4c63e88fd87dbf0e27
 +LINUX_VERSION-6.12 = .42
-+LINUX_KERNEL_HASH-6.12.42 = c29194bbedcddd5fc1e5d0fc4c9f52d7b51ff7e52af8a0088847c095e9c5d435
++LINUX_KERNEL_HASH-6.12.42 = 4804528a29cd20309a0b41c30e5aeffc35fa21ee3358f4a706d4586d003bc1fb
 diff --git a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
 index d7260296bd..11d0f03fba 100644
 --- a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
