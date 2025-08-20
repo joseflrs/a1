@@ -1,830 +1,5 @@
-From d7e5e5e6ae998d28cfb8b8708a91e22bc7ca6782 Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Wed, 30 Jul 2025 15:01:33 +0000
-Subject: [PATCH 1/6] kernel: Linux 6.6.101
-
-https://lore.kernel.org/all/20250730093226.854413920@linuxfoundation.org
-
-Signed-off-by: i l <il@il.com>
----
- ...wnand-qcom-cleanup-qcom_nandc-driver.patch | 24 +++++++++----------
- ...d-qcom-Add-qcom-prefix-to-common-api.patch | 10 ++++----
- ...14-mtd-nand-Add-qpic_common-API-file.patch |  6 ++---
- ...nand-qcom-use-FIELD_PREP-and-GENMASK.patch |  2 +-
- ...-fix-broken-config-in-qcom_param_pag.patch |  2 +-
- .../generic/hack-6.6/259-regmap_dynamic.patch |  2 +-
- target/linux/generic/kernel-6.6               |  4 ++--
- 7 files changed, 25 insertions(+), 25 deletions(-)
-
-diff --git a/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch b/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-index 95b66071ad..07b031a094 100644
---- a/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-+++ b/target/linux/generic/backport-6.6/413-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-@@ -815,7 +815,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	read_reg_dma(nandc, NAND_FLASH_STATUS, 1, NAND_BAM_NEXT_SGL);
-  
-  	ret = submit_descs(nandc);
--@@ -2864,7 +2815,7 @@ static int qcom_param_page_type_exec(str
-+@@ -2869,7 +2820,7 @@ static int qcom_param_page_type_exec(str
-  	if (ret)
-  		return ret;
-  
-@@ -824,7 +824,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	nandc->buf_count = 0;
-  	nandc->buf_start = 0;
--@@ -2872,38 +2823,38 @@ static int qcom_param_page_type_exec(str
-+@@ -2877,38 +2828,38 @@ static int qcom_param_page_type_exec(str
-  	clear_read_regs(nandc);
-  	clear_bam_transaction(nandc);
-  
-@@ -890,9 +890,9 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	instr = q_op.data_instr;
--@@ -2912,9 +2863,9 @@ static int qcom_param_page_type_exec(str
-- 
-- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
-+@@ -2920,9 +2871,9 @@ static int qcom_param_page_type_exec(str
-+ 	else
-+ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
-  
- -	if (!nandc->props->qpic_v2) {
- -		write_reg_dma(nandc, NAND_DEV_CMD_VLD, 1, 0);
-@@ -903,7 +903,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	nandc->buf_count = 512;
--@@ -2926,9 +2877,10 @@ static int qcom_param_page_type_exec(str
-+@@ -2934,9 +2885,10 @@ static int qcom_param_page_type_exec(str
-  		      nandc->buf_count, 0);
-  
-  	/* restore CMD1 and VLD regs */
-@@ -917,7 +917,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	ret = submit_descs(nandc);
--@@ -3017,7 +2969,7 @@ static const struct nand_controller_ops
-+@@ -3025,7 +2977,7 @@ static const struct nand_controller_ops
-  
-  static void qcom_nandc_unalloc(struct qcom_nand_controller *nandc)
-  {
-@@ -926,7 +926,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		if (!dma_mapping_error(nandc->dev, nandc->reg_read_dma))
-  			dma_unmap_single(nandc->dev, nandc->reg_read_dma,
-  					 MAX_REG_RD *
--@@ -3070,7 +3022,7 @@ static int qcom_nandc_alloc(struct qcom_
-+@@ -3078,7 +3030,7 @@ static int qcom_nandc_alloc(struct qcom_
-  	if (!nandc->reg_read_buf)
-  		return -ENOMEM;
-  
-@@ -935,7 +935,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nandc->reg_read_dma =
-  			dma_map_single(nandc->dev, nandc->reg_read_buf,
-  				       MAX_REG_RD *
--@@ -3151,15 +3103,15 @@ static int qcom_nandc_setup(struct qcom_
-+@@ -3159,15 +3111,15 @@ static int qcom_nandc_setup(struct qcom_
-  	u32 nand_ctrl;
-  
-  	/* kill onenand */
-@@ -954,7 +954,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nand_ctrl = nandc_read(nandc, NAND_CTRL);
-  
-  		/*
--@@ -3176,7 +3128,7 @@ static int qcom_nandc_setup(struct qcom_
-+@@ -3184,7 +3136,7 @@ static int qcom_nandc_setup(struct qcom_
-  	}
-  
-  	/* save the original values of these registers */
-@@ -963,7 +963,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
-  		nandc->vld = NAND_DEV_CMD_VLD_VAL;
-  	}
--@@ -3349,7 +3301,7 @@ static int qcom_nandc_parse_dt(struct pl
-+@@ -3357,7 +3309,7 @@ static int qcom_nandc_parse_dt(struct pl
-  	struct device_node *np = nandc->dev->of_node;
-  	int ret;
-  
-@@ -972,7 +972,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		ret = of_property_read_u32(np, "qcom,cmd-crci",
-  					   &nandc->cmd_crci);
-  		if (ret) {
--@@ -3474,30 +3426,30 @@ static void qcom_nandc_remove(struct pla
-+@@ -3482,30 +3434,30 @@ static void qcom_nandc_remove(struct pla
-  
-  static const struct qcom_nandc_props ipq806x_nandc_props = {
-  	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
-diff --git a/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch b/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-index f634e0442a..23ef86f807 100644
---- a/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-+++ b/target/linux/generic/backport-6.6/413-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-@@ -823,7 +823,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	if (ret) {
-  		dev_err(nandc->dev, "failure in submitting misc descriptor\n");
-  		goto err_out;
--@@ -2820,8 +2820,8 @@ static int qcom_param_page_type_exec(str
-+@@ -2825,8 +2825,8 @@ static int qcom_param_page_type_exec(str
-  	nandc->buf_count = 0;
-  	nandc->buf_start = 0;
-  	host->use_ecc = false;
-@@ -834,8 +834,8 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	nandc->regs->cmd = q_op.cmd_reg;
-  	nandc->regs->addr0 = 0;
--@@ -2864,8 +2864,8 @@ static int qcom_param_page_type_exec(str
-- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
-+@@ -2872,8 +2872,8 @@ static int qcom_param_page_type_exec(str
-+ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
-  
-  	if (!nandc->props->qpic_version2) {
- -		write_reg_dma(nandc, &nandc->regs->vld, NAND_DEV_CMD_VLD, 1, 0);
-@@ -845,7 +845,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	nandc->buf_count = 512;
--@@ -2873,17 +2873,17 @@ static int qcom_param_page_type_exec(str
-+@@ -2881,17 +2881,17 @@ static int qcom_param_page_type_exec(str
-  
-  	config_nand_single_cw_page_read(chip, false, 0);
-  
-@@ -869,7 +869,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	if (ret) {
-  		dev_err(nandc->dev, "failure in submitting param page descriptor\n");
-  		goto err_out;
--@@ -3067,7 +3067,7 @@ static int qcom_nandc_alloc(struct qcom_
-+@@ -3075,7 +3075,7 @@ static int qcom_nandc_alloc(struct qcom_
-  		 * maximum codeword size
-  		 */
-  		nandc->max_cwperpage = 1;
-diff --git a/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch b/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-index 26211461c1..9272f98862 100644
---- a/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-+++ b/target/linux/generic/backport-6.6/413-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-@@ -1786,7 +1786,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  /*
-   * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
-   * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
--@@ -2967,141 +2022,14 @@ static const struct nand_controller_ops
-+@@ -2975,141 +2030,14 @@ static const struct nand_controller_ops
-  	.exec_op = qcom_nand_exec_op,
-  };
-  
-@@ -1931,7 +1931,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	/* kill onenand */
-  	if (!nandc->props->nandc_part_of_qpic)
-  		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
--@@ -3240,7 +2168,7 @@ static int qcom_nand_host_init_and_regis
-+@@ -3248,7 +2176,7 @@ static int qcom_nand_host_init_and_regis
-  	chip->legacy.block_bad		= qcom_nandc_block_bad;
-  	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
-  
-@@ -1940,7 +1940,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
-  			 NAND_SKIP_BBTSCAN;
-  
--@@ -3323,17 +2251,21 @@ static int qcom_nandc_parse_dt(struct pl
-+@@ -3331,17 +2259,21 @@ static int qcom_nandc_parse_dt(struct pl
-  static int qcom_nandc_probe(struct platform_device *pdev)
-  {
-  	struct qcom_nand_controller *nandc;
-diff --git a/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch b/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-index b37507409a..c19f681e9d 100644
---- a/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-+++ b/target/linux/generic/backport-6.6/413-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-@@ -104,7 +104,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	if (!nandc->props->qpic_version2)
-  		host->ecc_buf_cfg = 0x203 << NUM_STEPS;
--@@ -1882,21 +1881,21 @@ static int qcom_param_page_type_exec(str
-+@@ -1887,21 +1886,21 @@ static int qcom_param_page_type_exec(str
-  	nandc->regs->addr0 = 0;
-  	nandc->regs->addr1 = 0;
-  
-diff --git a/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch b/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-index a6a4db229f..238a1f9d93 100644
---- a/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-+++ b/target/linux/generic/backport-6.6/414-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-@@ -32,7 +32,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
- 
- --- a/drivers/mtd/nand/raw/qcom_nandc.c
- +++ b/drivers/mtd/nand/raw/qcom_nandc.c
--@@ -1881,18 +1881,18 @@ static int qcom_param_page_type_exec(str
-+@@ -1886,18 +1886,18 @@ static int qcom_param_page_type_exec(str
-  	nandc->regs->addr0 = 0;
-  	nandc->regs->addr1 = 0;
-  
-diff --git a/target/linux/generic/hack-6.6/259-regmap_dynamic.patch b/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
-index 4f6dca7127..c7b7a28ce3 100644
---- a/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
-+++ b/target/linux/generic/hack-6.6/259-regmap_dynamic.patch
-@@ -137,7 +137,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  #include <linux/mutex.h>
-  #include <linux/err.h>
-  #include <linux/property.h>
--@@ -3483,3 +3484,5 @@ static int __init regmap_initcall(void)
-+@@ -3485,3 +3486,5 @@ static int __init regmap_initcall(void)
-  	return 0;
-  }
-  postcore_initcall(regmap_initcall);
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 4a55a573ae..71181a3fc5 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .100
--LINUX_KERNEL_HASH-6.6.100 = d6c0ec4d55b14814f55b62a0b23a2d95faf66877e48fbfb4b83523e4afdf97ba
-+LINUX_VERSION-6.6 = .101
-+LINUX_KERNEL_HASH-6.6.101 = 8c4ff2869736538b9b0d88ea8dbf0332b79c6ecc40a32066768a754df1fae1c0
--- 
-2.48.1
-
-
-From 15522ae1328b8fa0d183eafd8d32d2d7db2d576f Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Wed, 30 Jul 2025 14:59:35 +0000
-Subject: [PATCH 2/6] kernel: Linux 6.12.41
-
-https://lore.kernel.org/all/20250730093233.592541778@linuxfoundation.org
-
-Signed-off-by: i l <il@il.com>
----
- ...m-Register-vcsm-cma-as-a-platform-dr.patch |  4 ++--
- ...m-Register-bcm2835-codec-as-a-platfo.patch |  4 ++--
- ...m-Set-up-dma-ranges-on-child-devices.patch |  2 +-
- ...q-Load-bcm2835_isp-driver-from-vchiq.patch |  4 ++--
- ...n-Maintain-TLB-coherency-in-LRU-code.patch |  2 +-
- ...wnand-qcom-cleanup-qcom_nandc-driver.patch | 24 +++++++++----------
- ...d-qcom-Add-qcom-prefix-to-common-api.patch | 10 ++++----
- ...14-mtd-nand-Add-qpic_common-API-file.patch |  6 ++---
- ...nand-qcom-use-FIELD_PREP-and-GENMASK.patch |  2 +-
- ...-fix-broken-config-in-qcom_param_pag.patch |  2 +-
- .../hack-6.12/259-regmap_dynamic.patch        |  2 +-
- target/linux/generic/kernel-6.12              |  4 ++--
- 12 files changed, 33 insertions(+), 33 deletions(-)
-
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
-index b580ee5377..e9f351d518 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
-@@ -21,7 +21,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-  
-  static const struct vchiq_platform_info bcm2835_info = {
-  	.cache_line_size = 32,
--@@ -1760,6 +1761,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1759,6 +1760,7 @@ static int vchiq_probe(struct platform_d
-  
-  	vchiq_debugfs_init(&mgmt->state);
-  
-@@ -29,7 +29,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
-  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
-  
--@@ -1778,6 +1780,7 @@ static void vchiq_remove(struct platform
-+@@ -1777,6 +1779,7 @@ static void vchiq_remove(struct platform
-  
-  	vchiq_device_unregister(bcm2835_audio);
-  	vchiq_device_unregister(bcm2835_camera);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
-index 874bf15d34..acc70e2977 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
-@@ -22,7 +22,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-  static struct vchiq_device *vcsm_cma;
-  
-  static const struct vchiq_platform_info bcm2835_info = {
--@@ -1762,6 +1763,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1761,6 +1762,7 @@ static int vchiq_probe(struct platform_d
-  	vchiq_debugfs_init(&mgmt->state);
-  
-  	vcsm_cma = vchiq_device_register(&pdev->dev, "vcsm-cma");
-@@ -30,7 +30,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
-  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
-  
--@@ -1780,6 +1782,7 @@ static void vchiq_remove(struct platform
-+@@ -1779,6 +1781,7 @@ static void vchiq_remove(struct platform
-  
-  	vchiq_device_unregister(bcm2835_audio);
-  	vchiq_device_unregister(bcm2835_camera);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
-index 0c7fd01ec8..b2b470eaeb 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
-@@ -234,7 +234,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	dev_dbg(&pdev->dev, "arm: vchiq_init - done (slots %pK, phys %pad)\n",
-  		vchiq_slot_zero, &slot_phys);
-  
--@@ -1711,6 +1777,7 @@ void vchiq_platform_conn_state_changed(s
-+@@ -1710,6 +1776,7 @@ void vchiq_platform_conn_state_changed(s
-  static const struct of_device_id vchiq_of_match[] = {
-  	{ .compatible = "brcm,bcm2835-vchiq", .data = &bcm2835_info },
-  	{ .compatible = "brcm,bcm2836-vchiq", .data = &bcm2836_info },
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
-index 1ba21abf1d..c9394bc85b 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
-@@ -21,7 +21,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
-  static struct vchiq_device *vcsm_cma;
-  
-  static const struct vchiq_platform_info bcm2835_info = {
--@@ -1858,6 +1859,7 @@ static int vchiq_probe(struct platform_d
-+@@ -1857,6 +1858,7 @@ static int vchiq_probe(struct platform_d
-  	bcm2835_codec = vchiq_device_register(&pdev->dev, "bcm2835-codec");
-  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
-  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
-@@ -29,7 +29,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
-  
-  	return 0;
-  
--@@ -1872,6 +1874,7 @@ static void vchiq_remove(struct platform
-+@@ -1871,6 +1873,7 @@ static void vchiq_remove(struct platform
-  	struct vchiq_drv_mgmt *mgmt = dev_get_drvdata(&pdev->dev);
-  	struct vchiq_arm_state *arm_state;
-  
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
-index 26f11df2a1..66472a96bf 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
-@@ -16,7 +16,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
- 
- --- a/mm/vmscan.c
- +++ b/mm/vmscan.c
--@@ -4128,7 +4128,7 @@ bool lru_gen_look_around(struct page_vma
-+@@ -4136,7 +4136,7 @@ bool lru_gen_look_around(struct page_vma
-  		if (!folio)
-  			continue;
-  
-diff --git a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-index 95b66071ad..07b031a094 100644
---- a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-+++ b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
-@@ -815,7 +815,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	read_reg_dma(nandc, NAND_FLASH_STATUS, 1, NAND_BAM_NEXT_SGL);
-  
-  	ret = submit_descs(nandc);
--@@ -2864,7 +2815,7 @@ static int qcom_param_page_type_exec(str
-+@@ -2869,7 +2820,7 @@ static int qcom_param_page_type_exec(str
-  	if (ret)
-  		return ret;
-  
-@@ -824,7 +824,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	nandc->buf_count = 0;
-  	nandc->buf_start = 0;
--@@ -2872,38 +2823,38 @@ static int qcom_param_page_type_exec(str
-+@@ -2877,38 +2828,38 @@ static int qcom_param_page_type_exec(str
-  	clear_read_regs(nandc);
-  	clear_bam_transaction(nandc);
-  
-@@ -890,9 +890,9 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	instr = q_op.data_instr;
--@@ -2912,9 +2863,9 @@ static int qcom_param_page_type_exec(str
-- 
-- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
-+@@ -2920,9 +2871,9 @@ static int qcom_param_page_type_exec(str
-+ 	else
-+ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
-  
- -	if (!nandc->props->qpic_v2) {
- -		write_reg_dma(nandc, NAND_DEV_CMD_VLD, 1, 0);
-@@ -903,7 +903,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	nandc->buf_count = 512;
--@@ -2926,9 +2877,10 @@ static int qcom_param_page_type_exec(str
-+@@ -2934,9 +2885,10 @@ static int qcom_param_page_type_exec(str
-  		      nandc->buf_count, 0);
-  
-  	/* restore CMD1 and VLD regs */
-@@ -917,7 +917,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	ret = submit_descs(nandc);
--@@ -3017,7 +2969,7 @@ static const struct nand_controller_ops
-+@@ -3025,7 +2977,7 @@ static const struct nand_controller_ops
-  
-  static void qcom_nandc_unalloc(struct qcom_nand_controller *nandc)
-  {
-@@ -926,7 +926,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		if (!dma_mapping_error(nandc->dev, nandc->reg_read_dma))
-  			dma_unmap_single(nandc->dev, nandc->reg_read_dma,
-  					 MAX_REG_RD *
--@@ -3070,7 +3022,7 @@ static int qcom_nandc_alloc(struct qcom_
-+@@ -3078,7 +3030,7 @@ static int qcom_nandc_alloc(struct qcom_
-  	if (!nandc->reg_read_buf)
-  		return -ENOMEM;
-  
-@@ -935,7 +935,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nandc->reg_read_dma =
-  			dma_map_single(nandc->dev, nandc->reg_read_buf,
-  				       MAX_REG_RD *
--@@ -3151,15 +3103,15 @@ static int qcom_nandc_setup(struct qcom_
-+@@ -3159,15 +3111,15 @@ static int qcom_nandc_setup(struct qcom_
-  	u32 nand_ctrl;
-  
-  	/* kill onenand */
-@@ -954,7 +954,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nand_ctrl = nandc_read(nandc, NAND_CTRL);
-  
-  		/*
--@@ -3176,7 +3128,7 @@ static int qcom_nandc_setup(struct qcom_
-+@@ -3184,7 +3136,7 @@ static int qcom_nandc_setup(struct qcom_
-  	}
-  
-  	/* save the original values of these registers */
-@@ -963,7 +963,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
-  		nandc->vld = NAND_DEV_CMD_VLD_VAL;
-  	}
--@@ -3349,7 +3301,7 @@ static int qcom_nandc_parse_dt(struct pl
-+@@ -3357,7 +3309,7 @@ static int qcom_nandc_parse_dt(struct pl
-  	struct device_node *np = nandc->dev->of_node;
-  	int ret;
-  
-@@ -972,7 +972,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  		ret = of_property_read_u32(np, "qcom,cmd-crci",
-  					   &nandc->cmd_crci);
-  		if (ret) {
--@@ -3474,30 +3426,30 @@ static void qcom_nandc_remove(struct pla
-+@@ -3482,30 +3434,30 @@ static void qcom_nandc_remove(struct pla
-  
-  static const struct qcom_nandc_props ipq806x_nandc_props = {
-  	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
-diff --git a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-index f634e0442a..23ef86f807 100644
---- a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-+++ b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
-@@ -823,7 +823,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	if (ret) {
-  		dev_err(nandc->dev, "failure in submitting misc descriptor\n");
-  		goto err_out;
--@@ -2820,8 +2820,8 @@ static int qcom_param_page_type_exec(str
-+@@ -2825,8 +2825,8 @@ static int qcom_param_page_type_exec(str
-  	nandc->buf_count = 0;
-  	nandc->buf_start = 0;
-  	host->use_ecc = false;
-@@ -834,8 +834,8 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	nandc->regs->cmd = q_op.cmd_reg;
-  	nandc->regs->addr0 = 0;
--@@ -2864,8 +2864,8 @@ static int qcom_param_page_type_exec(str
-- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
-+@@ -2872,8 +2872,8 @@ static int qcom_param_page_type_exec(str
-+ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
-  
-  	if (!nandc->props->qpic_version2) {
- -		write_reg_dma(nandc, &nandc->regs->vld, NAND_DEV_CMD_VLD, 1, 0);
-@@ -845,7 +845,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	}
-  
-  	nandc->buf_count = 512;
--@@ -2873,17 +2873,17 @@ static int qcom_param_page_type_exec(str
-+@@ -2881,17 +2881,17 @@ static int qcom_param_page_type_exec(str
-  
-  	config_nand_single_cw_page_read(chip, false, 0);
-  
-@@ -869,7 +869,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	if (ret) {
-  		dev_err(nandc->dev, "failure in submitting param page descriptor\n");
-  		goto err_out;
--@@ -3067,7 +3067,7 @@ static int qcom_nandc_alloc(struct qcom_
-+@@ -3075,7 +3075,7 @@ static int qcom_nandc_alloc(struct qcom_
-  		 * maximum codeword size
-  		 */
-  		nandc->max_cwperpage = 1;
-diff --git a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-index 26211461c1..9272f98862 100644
---- a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-+++ b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
-@@ -1786,7 +1786,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  /*
-   * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
-   * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
--@@ -2967,141 +2022,14 @@ static const struct nand_controller_ops
-+@@ -2975,141 +2030,14 @@ static const struct nand_controller_ops
-  	.exec_op = qcom_nand_exec_op,
-  };
-  
-@@ -1931,7 +1931,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	/* kill onenand */
-  	if (!nandc->props->nandc_part_of_qpic)
-  		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
--@@ -3240,7 +2168,7 @@ static int qcom_nand_host_init_and_regis
-+@@ -3248,7 +2176,7 @@ static int qcom_nand_host_init_and_regis
-  	chip->legacy.block_bad		= qcom_nandc_block_bad;
-  	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
-  
-@@ -1940,7 +1940,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
-  			 NAND_SKIP_BBTSCAN;
-  
--@@ -3323,17 +2251,21 @@ static int qcom_nandc_parse_dt(struct pl
-+@@ -3331,17 +2259,21 @@ static int qcom_nandc_parse_dt(struct pl
-  static int qcom_nandc_probe(struct platform_device *pdev)
-  {
-  	struct qcom_nand_controller *nandc;
-diff --git a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-index b37507409a..c19f681e9d 100644
---- a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-+++ b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
-@@ -104,7 +104,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-  
-  	if (!nandc->props->qpic_version2)
-  		host->ecc_buf_cfg = 0x203 << NUM_STEPS;
--@@ -1882,21 +1881,21 @@ static int qcom_param_page_type_exec(str
-+@@ -1887,21 +1886,21 @@ static int qcom_param_page_type_exec(str
-  	nandc->regs->addr0 = 0;
-  	nandc->regs->addr1 = 0;
-  
-diff --git a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-index a6a4db229f..238a1f9d93 100644
---- a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-+++ b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
-@@ -32,7 +32,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
- 
- --- a/drivers/mtd/nand/raw/qcom_nandc.c
- +++ b/drivers/mtd/nand/raw/qcom_nandc.c
--@@ -1881,18 +1881,18 @@ static int qcom_param_page_type_exec(str
-+@@ -1886,18 +1886,18 @@ static int qcom_param_page_type_exec(str
-  	nandc->regs->addr0 = 0;
-  	nandc->regs->addr1 = 0;
-  
-diff --git a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
-index e7614d6822..cbd6c42234 100644
---- a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
-+++ b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
-@@ -137,7 +137,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  #include <linux/mutex.h>
-  #include <linux/err.h>
-  #include <linux/property.h>
--@@ -3519,3 +3520,5 @@ static int __init regmap_initcall(void)
-+@@ -3521,3 +3522,5 @@ static int __init regmap_initcall(void)
-  	return 0;
-  }
-  postcore_initcall(regmap_initcall);
-diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 9880cae37e..11f05faf1c 100644
---- a/target/linux/generic/kernel-6.12
-+++ b/target/linux/generic/kernel-6.12
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .40
--LINUX_KERNEL_HASH-6.12.40 = 4811af1317f98d2cccea3c7695969a2c03a27cb02fd2d5327032dd5341842933
-+LINUX_VERSION-6.12 = .41
-+LINUX_KERNEL_HASH-6.12.41 = 6b19a3ae99423de2416964d67251d745910277af258b4c4c63e88fd87dbf0e27
--- 
-2.48.1
-
-
-From 80c5629f3b4bf9d70cfe64bc6b97526011b86507 Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Tue, 12 Aug 2025 20:50:01 +0000
-Subject: [PATCH 3/6] kernel: Linux 6.6.102
-
-https://lore.kernel.org/all/20250812172952.959106058@linuxfoundation.org
-
-Signed-off-by: i l <il@il.com>
----
- .../patches-6.6/900-unaligned_access_hacks.patch   |  2 +-
- ...pp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch |  2 +-
- ....7-net-introduce-napi_is_scheduled-helper.patch |  2 +-
- .../hack-6.6/721-net-add-packet-mangeling.patch    |  4 ++--
- .../generic/hack-6.6/904-debloat_dma_buf.patch     |  2 +-
- target/linux/generic/kernel-6.6                    |  4 ++--
- .../650-net-pppoe-implement-GRO-support.patch      |  4 ++--
- .../generic/pending-6.6/655-increase_skb_pad.patch |  2 +-
- ...jecting-with-source-address-failed-policy.patch | 14 +++++++-------
- ...f_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch |  2 +-
- 10 files changed, 19 insertions(+), 19 deletions(-)
-
-diff --git a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-index 9168d5e973..02b64bb7f8 100644
---- a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-+++ b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-@@ -579,7 +579,7 @@ SVN-Revision: 35130
-  			goto next_ht;
- --- a/net/ipv6/ip6_offload.c
- +++ b/net/ipv6/ip6_offload.c
--@@ -273,7 +273,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
-+@@ -275,7 +275,7 @@ INDIRECT_CALLABLE_SCOPE struct sk_buff *
-  			continue;
-  
-  		iph2 = (struct ipv6hdr *)(p->data + off);
-diff --git a/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-index ad98807a6f..7d18fff096 100644
---- a/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-+++ b/target/linux/generic/backport-6.6/624-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-@@ -47,7 +47,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  		if (error) {
- --- a/drivers/net/ppp/pptp.c
- +++ b/drivers/net/ppp/pptp.c
--@@ -465,6 +465,7 @@ static int pptp_connect(struct socket *s
-+@@ -469,6 +469,7 @@ static int pptp_connect(struct socket *s
-  	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
-  
-  	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
-diff --git a/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch b/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
-index 319bc3e47b..4aa93c20d1 100644
---- a/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
-+++ b/target/linux/generic/backport-6.6/770-v6.7-net-introduce-napi_is_scheduled-helper.patch
-@@ -42,7 +42,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-   *	@adap: the adapter
- --- a/drivers/net/wireless/realtek/rtw89/core.c
- +++ b/drivers/net/wireless/realtek/rtw89/core.c
--@@ -1744,7 +1744,7 @@ static void rtw89_core_rx_to_mac80211(st
-+@@ -1749,7 +1749,7 @@ static void rtw89_core_rx_to_mac80211(st
-  	struct napi_struct *napi = &rtwdev->napi;
-  
-  	/* In low power mode, napi isn't scheduled. Receive it to netif. */
-diff --git a/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
-index 8b784836a0..30a0b86b00 100644
---- a/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
-+++ b/target/linux/generic/hack-6.6/721-net-add-packet-mangeling.patch
-@@ -60,7 +60,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-   */
- --- a/include/linux/skbuff.h
- +++ b/include/linux/skbuff.h
--@@ -3098,6 +3098,10 @@ static inline int pskb_trim(struct sk_bu
-+@@ -3121,6 +3121,10 @@ static inline int pskb_trim(struct sk_bu
-  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
-  }
-  
-@@ -71,7 +71,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  /**
-   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
-   *	@skb: buffer to alter
--@@ -3263,16 +3267,6 @@ static inline struct sk_buff *dev_alloc_
-+@@ -3286,16 +3290,6 @@ static inline struct sk_buff *dev_alloc_
-  }
-  
-  
-diff --git a/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch b/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
-index 4d2ea46212..3ca98788ab 100644
---- a/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
-+++ b/target/linux/generic/hack-6.6/904-debloat_dma_buf.patch
-@@ -73,7 +73,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- +MODULE_LICENSE("GPL");
- --- a/kernel/sched/core.c
- +++ b/kernel/sched/core.c
--@@ -4486,6 +4486,7 @@ int wake_up_state(struct task_struct *p,
-+@@ -4485,6 +4485,7 @@ int wake_up_state(struct task_struct *p,
-  {
-  	return try_to_wake_up(p, state, 0);
-  }
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 71181a3fc5..048ae0b42a 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .101
--LINUX_KERNEL_HASH-6.6.101 = 8c4ff2869736538b9b0d88ea8dbf0332b79c6ecc40a32066768a754df1fae1c0
-+LINUX_VERSION-6.6 = .102
-+LINUX_KERNEL_HASH-6.6.102 = 80d2feb7334c30bacbe1e7dafa9ea415efb2c0ea4f4740ecbd1467cf5d94de5c
-diff --git a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
-index 1c6849bf22..c1d77d8cc7 100644
---- a/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
-+++ b/target/linux/generic/pending-6.6/650-net-pppoe-implement-GRO-support.patch
-@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  {
- --- a/net/ipv6/ip6_offload.c
- +++ b/net/ipv6/ip6_offload.c
--@@ -319,6 +319,7 @@ out:
-+@@ -321,6 +321,7 @@ out:
-  
-  	return pp;
-  }
-@@ -238,7 +238,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
-  static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
-  					      struct sk_buff *skb)
--@@ -401,6 +402,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
-+@@ -403,6 +404,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
-  out:
-  	return err;
-  }
-diff --git a/target/linux/generic/pending-6.6/655-increase_skb_pad.patch b/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
-index 4f3bb06051..8fbc915881 100644
---- a/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
-+++ b/target/linux/generic/pending-6.6/655-increase_skb_pad.patch
-@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/include/linux/skbuff.h
- +++ b/include/linux/skbuff.h
--@@ -3065,7 +3065,7 @@ static inline int pskb_network_may_pull(
-+@@ -3088,7 +3088,7 @@ static inline int pskb_network_may_pull(
-   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
-   */
-  #ifndef NET_SKB_PAD
-diff --git a/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-index 0ad36b3430..ef7ca8cf74 100644
---- a/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-+++ b/target/linux/generic/pending-6.6/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		cfg->fc_flags |= RTF_REJECT;
-  
-  	if (rtm->rtm_type == RTN_LOCAL)
--@@ -6341,6 +6372,8 @@ static int ip6_route_dev_notify(struct n
-+@@ -6349,6 +6380,8 @@ static int ip6_route_dev_notify(struct n
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
-  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
-@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
-  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
-  #endif
--@@ -6352,6 +6385,7 @@ static int ip6_route_dev_notify(struct n
-+@@ -6360,6 +6393,7 @@ static int ip6_route_dev_notify(struct n
-  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
-@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
-  #endif
-  	}
--@@ -6552,6 +6586,8 @@ static int __net_init ip6_route_net_init
-+@@ -6560,6 +6594,8 @@ static int __net_init ip6_route_net_init
-  
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  	net->ipv6.fib6_has_custom_rules = false;
-@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
-  					       sizeof(*net->ipv6.ip6_prohibit_entry),
-  					       GFP_KERNEL);
--@@ -6562,11 +6598,21 @@ static int __net_init ip6_route_net_init
-+@@ -6570,11 +6606,21 @@ static int __net_init ip6_route_net_init
-  			 ip6_template_metrics, true);
-  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->dst.rt_uncached);
-  
-@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
-  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
-  			 ip6_template_metrics, true);
--@@ -6593,6 +6639,8 @@ out:
-+@@ -6601,6 +6647,8 @@ out:
-  	return ret;
-  
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  out_ip6_prohibit_entry:
-  	kfree(net->ipv6.ip6_prohibit_entry);
-  out_ip6_null_entry:
--@@ -6612,6 +6660,7 @@ static void __net_exit ip6_route_net_exi
-+@@ -6620,6 +6668,7 @@ static void __net_exit ip6_route_net_exi
-  	kfree(net->ipv6.ip6_null_entry);
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  	kfree(net->ipv6.ip6_prohibit_entry);
-@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	kfree(net->ipv6.ip6_blk_hole_entry);
-  #endif
-  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
--@@ -6695,6 +6744,9 @@ void __init ip6_route_init_special_entri
-+@@ -6703,6 +6752,9 @@ void __init ip6_route_init_special_entri
-  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
-  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
-  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
-diff --git a/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-index 1ae6f89399..7a5413700a 100644
---- a/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-+++ b/target/linux/generic/pending-6.6/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/net/netfilter/nf_tables_api.c
- +++ b/net/netfilter/nf_tables_api.c
--@@ -8469,7 +8469,7 @@ static int nft_register_flowtable_net_ho
-+@@ -8449,7 +8449,7 @@ static int nft_register_flowtable_net_ho
-  		err = flowtable->data.type->setup(&flowtable->data,
-  						  hook->ops.dev,
-  						  FLOW_BLOCK_BIND);
--- 
-2.48.1
-
-
-From 3576527c1b9a6c98353d203e21281b40ecedbed9 Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Tue, 12 Aug 2025 19:37:29 +0000
-Subject: [PATCH 4/6] kernel: Linux 6.12.42
-
-https://lore.kernel.org/all/20250812173014.736537091@linuxfoundation.org
-
-Signed-off-by: i l <il@il.com>
----
- .../patches-6.12/900-unaligned_access_hacks.patch  |  2 +-
- ...ng-fbtft-Add-support-for-display-variants.patch |  6 +++---
- ...Compatibility-hack-should-be-X86-specific.patch |  4 ++--
- ...pp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch |  2 +-
- target/linux/generic/config-6.12                   |  1 +
- .../hack-6.12/721-net-add-packet-mangeling.patch   |  4 ++--
- target/linux/generic/kernel-6.12                   |  4 ++--
- .../650-net-pppoe-implement-GRO-support.patch      |  4 ++--
- .../pending-6.12/655-increase_skb_pad.patch        |  2 +-
- ...jecting-with-source-address-failed-policy.patch | 14 +++++++-------
- ...f_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch |  2 +-
- ...-net-dsa-add-out-of-band-tagging-protocol.patch |  2 +-
- 12 files changed, 24 insertions(+), 23 deletions(-)
-
 diff --git a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
-index ea51478fd0..12fbc59e98 100644
+index ea51478fd0..cb3aa56dc0 100644
 --- a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
 +++ b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
 @@ -578,7 +578,7 @@ SVN-Revision: 35130
@@ -836,702 +11,6 @@ index ea51478fd0..12fbc59e98 100644
   			continue;
   
   		iph2 = (struct ipv6hdr *)(p->data + off);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
-index bf6573548e..105941aa55 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
-@@ -95,7 +95,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  
-  #include <video/mipi_display.h>
-  
--@@ -1131,6 +1133,7 @@ static struct fbtft_platform_data *fbtft
-+@@ -1132,6 +1134,7 @@ static struct fbtft_platform_data *fbtft
-   * @display: Display properties
-   * @sdev: SPI device
-   * @pdev: Platform device
-@@ -103,7 +103,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-   *
-   * Allocates, initializes and registers a framebuffer
-   *
--@@ -1140,12 +1143,15 @@ static struct fbtft_platform_data *fbtft
-+@@ -1141,12 +1144,15 @@ static struct fbtft_platform_data *fbtft
-   */
-  int fbtft_probe_common(struct fbtft_display *display,
-  		       struct spi_device *sdev,
-@@ -120,7 +120,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  	int ret;
-  
-  	if (sdev)
--@@ -1158,6 +1164,14 @@ int fbtft_probe_common(struct fbtft_disp
-+@@ -1159,6 +1165,14 @@ int fbtft_probe_common(struct fbtft_disp
-  		pdata = fbtft_properties_read(dev);
-  		if (IS_ERR(pdata))
-  			return PTR_ERR(pdata);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
-index 2f8ab29fdd..3d05954a77 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
-@@ -22,7 +22,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
- 
- --- a/drivers/pps/pps.c
- +++ b/drivers/pps/pps.c
--@@ -249,12 +249,13 @@ static long pps_cdev_ioctl(struct file *
-+@@ -254,12 +254,13 @@ static long pps_cdev_ioctl(struct file *
-  static long pps_cdev_compat_ioctl(struct file *file,
-  		unsigned int cmd, unsigned long arg)
-  {
-@@ -38,7 +38,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-  		struct pps_fdata_compat compat;
-  		struct pps_fdata fdata;
-  		int err;
--@@ -289,6 +290,7 @@ static long pps_cdev_compat_ioctl(struct
-+@@ -296,6 +297,7 @@ static long pps_cdev_compat_ioctl(struct
-  		return copy_to_user(uarg, &compat,
-  				sizeof(struct pps_fdata_compat)) ? -EFAULT : 0;
-  	}
-diff --git a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-index 64effc5ec8..6d9ac56cf0 100644
---- a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-+++ b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-@@ -47,7 +47,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  		if (error) {
- --- a/drivers/net/ppp/pptp.c
- +++ b/drivers/net/ppp/pptp.c
--@@ -465,6 +465,7 @@ static int pptp_connect(struct socket *s
-+@@ -469,6 +469,7 @@ static int pptp_connect(struct socket *s
-  	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
-  
-  	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
-diff --git a/target/linux/generic/config-6.12 b/target/linux/generic/config-6.12
-index 5d931cf995..73166b434c 100644
---- a/target/linux/generic/config-6.12
-+++ b/target/linux/generic/config-6.12
-@@ -7348,6 +7348,7 @@ CONFIG_VDSO=y
- # CONFIG_VGA_CONSOLE is not set
- # CONFIG_VGA_SWITCHEROO is not set
- # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
-+# CONFIG_VHOST_ENABLE_FORK_OWNER_CONTROL is not set
- CONFIG_VHOST_MENU=y
- # CONFIG_VHOST_NET is not set
- # CONFIG_VHOST_VSOCK is not set
-diff --git a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
-index 5ad34a4517..9430070457 100644
---- a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
-+++ b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
-@@ -52,7 +52,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-   */
- --- a/include/linux/skbuff.h
- +++ b/include/linux/skbuff.h
--@@ -3213,6 +3213,10 @@ static inline int pskb_trim(struct sk_bu
-+@@ -3236,6 +3236,10 @@ static inline int pskb_trim(struct sk_bu
-  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
-  }
-  
-@@ -63,7 +63,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  /**
-   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
-   *	@skb: buffer to alter
--@@ -3378,16 +3382,6 @@ static inline struct sk_buff *dev_alloc_
-+@@ -3401,16 +3405,6 @@ static inline struct sk_buff *dev_alloc_
-  }
-  
-  
-diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 11f05faf1c..51f0379fc1 100644
---- a/target/linux/generic/kernel-6.12
-+++ b/target/linux/generic/kernel-6.12
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .41
--LINUX_KERNEL_HASH-6.12.41 = 6b19a3ae99423de2416964d67251d745910277af258b4c4c63e88fd87dbf0e27
-+LINUX_VERSION-6.12 = .42
-+LINUX_KERNEL_HASH-6.12.42 = 4804528a29cd20309a0b41c30e5aeffc35fa21ee3358f4a706d4586d003bc1fb
-diff --git a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
-index d7260296bd..11d0f03fba 100644
---- a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
-+++ b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
-@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  {
- --- a/net/ipv6/ip6_offload.c
- +++ b/net/ipv6/ip6_offload.c
--@@ -304,6 +304,7 @@ out:
-+@@ -306,6 +306,7 @@ out:
-  
-  	return pp;
-  }
-@@ -238,7 +238,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
-  static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
-  					      struct sk_buff *skb)
--@@ -386,6 +387,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
-+@@ -388,6 +389,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
-  out:
-  	return err;
-  }
-diff --git a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
-index 6fa3358218..57857272f0 100644
---- a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
-+++ b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
-@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/include/linux/skbuff.h
- +++ b/include/linux/skbuff.h
--@@ -3180,7 +3180,7 @@ static inline int pskb_network_may_pull(
-+@@ -3203,7 +3203,7 @@ static inline int pskb_network_may_pull(
-   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
-   */
-  #ifndef NET_SKB_PAD
-diff --git a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-index d10f39cf22..f0cdd65766 100644
---- a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-+++ b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
-@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		cfg->fc_flags |= RTF_REJECT;
-  
-  	if (rtm->rtm_type == RTN_LOCAL)
--@@ -6349,6 +6380,8 @@ static int ip6_route_dev_notify(struct n
-+@@ -6357,6 +6388,8 @@ static int ip6_route_dev_notify(struct n
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
-  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
-@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
-  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
-  #endif
--@@ -6360,6 +6393,7 @@ static int ip6_route_dev_notify(struct n
-+@@ -6368,6 +6401,7 @@ static int ip6_route_dev_notify(struct n
-  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
-@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
-  #endif
-  	}
--@@ -6555,6 +6589,8 @@ static int __net_init ip6_route_net_init
-+@@ -6563,6 +6597,8 @@ static int __net_init ip6_route_net_init
-  
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  	net->ipv6.fib6_has_custom_rules = false;
-@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
-  					       sizeof(*net->ipv6.ip6_prohibit_entry),
-  					       GFP_KERNEL);
--@@ -6565,11 +6601,21 @@ static int __net_init ip6_route_net_init
-+@@ -6573,11 +6609,21 @@ static int __net_init ip6_route_net_init
-  			 ip6_template_metrics, true);
-  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->dst.rt_uncached);
-  
-@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
-  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
-  			 ip6_template_metrics, true);
--@@ -6596,6 +6642,8 @@ out:
-+@@ -6604,6 +6650,8 @@ out:
-  	return ret;
-  
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  out_ip6_prohibit_entry:
-  	kfree(net->ipv6.ip6_prohibit_entry);
-  out_ip6_null_entry:
--@@ -6615,6 +6663,7 @@ static void __net_exit ip6_route_net_exi
-+@@ -6623,6 +6671,7 @@ static void __net_exit ip6_route_net_exi
-  	kfree(net->ipv6.ip6_null_entry);
-  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
-  	kfree(net->ipv6.ip6_prohibit_entry);
-@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
-  	kfree(net->ipv6.ip6_blk_hole_entry);
-  #endif
-  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
--@@ -6698,6 +6747,9 @@ void __init ip6_route_init_special_entri
-+@@ -6706,6 +6755,9 @@ void __init ip6_route_init_special_entri
-  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
-  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
-  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
-diff --git a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-index ceb191e5c5..2ab483d6c4 100644
---- a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-+++ b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
-@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/net/netfilter/nf_tables_api.c
- +++ b/net/netfilter/nf_tables_api.c
--@@ -8658,7 +8658,7 @@ static int nft_register_flowtable_net_ho
-+@@ -8638,7 +8638,7 @@ static int nft_register_flowtable_net_ho
-  		err = flowtable->data.type->setup(&flowtable->data,
-  						  hook->ops.dev,
-  						  FLOW_BLOCK_BIND);
-diff --git a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
-index 79a4f74fcf..b9be19232d 100644
---- a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
-+++ b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
-@@ -93,7 +93,7 @@ Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
- +#endif
- --- a/include/linux/skbuff.h
- +++ b/include/linux/skbuff.h
--@@ -4769,6 +4769,9 @@ enum skb_ext_id {
-+@@ -4792,6 +4792,9 @@ enum skb_ext_id {
-  #if IS_ENABLED(CONFIG_MCTP_FLOWS)
-  	SKB_EXT_MCTP,
-  #endif
--- 
-2.48.1
-
-
-From f69870741e15e3e0b549259f7794afbf0528aa72 Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Mon, 18 Aug 2025 20:54:48 +0000
-Subject: [PATCH 5/6] kernel: Linux 6.6.103-rc1
-
-Signed-off-by: i l <il@il.com>
----
- .../900-unaligned_access_hacks.patch          |  2 +-
- ...support-for-performing-fake-doorbell.patch |  4 +-
- ..._wed-introduce-versioning-utility-ro.patch |  2 +-
- ...k_wed-add-mtk_wed_soc_data-structure.patch |  4 +-
- ..._wed-introduce-WED-support-for-MT798.patch |  2 +-
- ...igger-netdev-Extend-speeds-up-to-10G.patch | 14 ++--
- ...ger-netdev-Configure-LED-blink-inter.patch | 81 -------------------
- ...dd-RCTAPT-support-for-different-OSRs.patch |  4 +-
- ...w-configuration-of-oversampling-rate.patch |  4 +-
- ...er-reuse-allocated-entropy-collector.patch |  2 +-
- .../generic/hack-6.6/204-module_strip.patch   |  8 +-
- target/linux/generic/kernel-6.6               |  4 +-
- 12 files changed, 25 insertions(+), 106 deletions(-)
- delete mode 100644 target/linux/generic/backport-6.6/847-v6.17-Revert-leds-trigger-netdev-Configure-LED-blink-inter.patch
-
-diff --git a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-index 02b64bb7f8..2e574740be 100644
---- a/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-+++ b/target/linux/ath79/patches-6.6/900-unaligned_access_hacks.patch
-@@ -785,7 +785,7 @@ SVN-Revision: 35130
-  
- --- a/include/net/neighbour.h
- +++ b/include/net/neighbour.h
--@@ -286,8 +286,10 @@ static inline bool neigh_key_eq128(const
-+@@ -287,8 +287,10 @@ static inline bool neigh_key_eq128(const
-  	const u32 *n32 = (const u32 *)n->primary_key;
-  	const u32 *p32 = pkey;
-  
-diff --git a/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch b/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-index f8d8f0069b..873243946e 100644
---- a/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-+++ b/target/linux/bcm53xx/patches-6.6/180-usb-xhci-add-support-for-performing-fake-doorbell.patch
-@@ -35,7 +35,7 @@ it on BCM4708 family.
-  /* called during probe() after chip reset completes */
- --- a/drivers/usb/host/xhci.c
- +++ b/drivers/usb/host/xhci.c
--@@ -162,6 +162,49 @@ int xhci_start(struct xhci_hcd *xhci)
-+@@ -163,6 +163,49 @@ int xhci_start(struct xhci_hcd *xhci)
-  	return ret;
-  }
-  
-@@ -85,7 +85,7 @@ it on BCM4708 family.
-  /*
-   * Reset a halted HC.
-   *
--@@ -498,6 +541,15 @@ static int xhci_run_finished(struct xhci
-+@@ -500,6 +543,15 @@ static int xhci_run_finished(struct xhci
-  		return -ENODEV;
-  	}
-  
-diff --git a/target/linux/generic/backport-6.6/752-06-v6.7-net-ethernet-mtk_wed-introduce-versioning-utility-ro.patch b/target/linux/generic/backport-6.6/752-06-v6.7-net-ethernet-mtk_wed-introduce-versioning-utility-ro.patch
-index 323bc14c3e..dc692b4968 100644
---- a/target/linux/generic/backport-6.6/752-06-v6.7-net-ethernet-mtk_wed-introduce-versioning-utility-ro.patch
-+++ b/target/linux/generic/backport-6.6/752-06-v6.7-net-ethernet-mtk_wed-introduce-versioning-utility-ro.patch
-@@ -177,7 +177,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  		return -EOPNOTSUPP;
-  
-  	switch (type) {
--@@ -1916,9 +1916,9 @@ void mtk_wed_add_hw(struct device_node *
-+@@ -1915,9 +1915,9 @@ void mtk_wed_add_hw(struct device_node *
-  	hw->wdma = wdma;
-  	hw->index = index;
-  	hw->irq = irq;
-diff --git a/target/linux/generic/backport-6.6/752-13-v6.7-net-ethernet-mtk_wed-add-mtk_wed_soc_data-structure.patch b/target/linux/generic/backport-6.6/752-13-v6.7-net-ethernet-mtk_wed-add-mtk_wed_soc_data-structure.patch
-index 6e2f8b1920..8ca733f3ed 100644
---- a/target/linux/generic/backport-6.6/752-13-v6.7-net-ethernet-mtk_wed-add-mtk_wed_soc_data-structure.patch
-+++ b/target/linux/generic/backport-6.6/752-13-v6.7-net-ethernet-mtk_wed-add-mtk_wed_soc_data-structure.patch
-@@ -142,7 +142,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  		return -ENOMEM;
-  
-  	wdma_w32(dev, MTK_WDMA_RING_TX(idx) + MTK_WED_RING_OFS_BASE,
--@@ -1930,7 +1937,12 @@ void mtk_wed_add_hw(struct device_node *
-+@@ -1929,7 +1936,12 @@ void mtk_wed_add_hw(struct device_node *
-  	hw->irq = irq;
-  	hw->version = eth->soc->version;
-  
-@@ -156,7 +156,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  		hw->mirror = syscon_regmap_lookup_by_phandle(eth_np,
-  				"mediatek,pcie-mirror");
-  		hw->hifsys = syscon_regmap_lookup_by_phandle(eth_np,
--@@ -1944,6 +1956,8 @@ void mtk_wed_add_hw(struct device_node *
-+@@ -1943,6 +1955,8 @@ void mtk_wed_add_hw(struct device_node *
-  			regmap_write(hw->mirror, 0, 0);
-  			regmap_write(hw->mirror, 4, 0);
-  		}
-diff --git a/target/linux/generic/backport-6.6/752-14-v6.7-net-ethernet-mtk_wed-introduce-WED-support-for-MT798.patch b/target/linux/generic/backport-6.6/752-14-v6.7-net-ethernet-mtk_wed-introduce-WED-support-for-MT798.patch
-index 2e846f5495..a8e97c463a 100644
---- a/target/linux/generic/backport-6.6/752-14-v6.7-net-ethernet-mtk_wed-introduce-WED-support-for-MT798.patch
-+++ b/target/linux/generic/backport-6.6/752-14-v6.7-net-ethernet-mtk_wed-introduce-WED-support-for-MT798.patch
-@@ -759,7 +759,7 @@ Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-  
-  	val = wed_r32(dev, MTK_WED_EXT_INT_STATUS);
-  	wed_w32(dev, MTK_WED_EXT_INT_STATUS, val);
--@@ -1941,6 +2132,9 @@ void mtk_wed_add_hw(struct device_node *
-+@@ -1940,6 +2131,9 @@ void mtk_wed_add_hw(struct device_node *
-  	case 2:
-  		hw->soc = &mt7986_data;
-  		break;
-diff --git a/target/linux/generic/backport-6.6/834-v6.8-leds-trigger-netdev-Extend-speeds-up-to-10G.patch b/target/linux/generic/backport-6.6/834-v6.8-leds-trigger-netdev-Extend-speeds-up-to-10G.patch
-index 3a64e6822d..4571d7d2bf 100644
---- a/target/linux/generic/backport-6.6/834-v6.8-leds-trigger-netdev-Extend-speeds-up-to-10G.patch
-+++ b/target/linux/generic/backport-6.6/834-v6.8-leds-trigger-netdev-Extend-speeds-up-to-10G.patch
-@@ -16,7 +16,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
- 
- --- a/drivers/leds/trigger/ledtrig-netdev.c
- +++ b/drivers/leds/trigger/ledtrig-netdev.c
--@@ -104,6 +104,18 @@ static void set_baseline_state(struct le
-+@@ -99,6 +99,18 @@ static void set_baseline_state(struct le
-  		    trigger_data->link_speed == SPEED_1000)
-  			blink_on = true;
-  
-@@ -35,7 +35,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  		if (test_bit(TRIGGER_NETDEV_HALF_DUPLEX, &trigger_data->mode) &&
-  		    trigger_data->duplex == DUPLEX_HALF)
-  			blink_on = true;
--@@ -294,6 +306,9 @@ static ssize_t netdev_led_attr_show(stru
-+@@ -289,6 +301,9 @@ static ssize_t netdev_led_attr_show(stru
-  	case TRIGGER_NETDEV_LINK_10:
-  	case TRIGGER_NETDEV_LINK_100:
-  	case TRIGGER_NETDEV_LINK_1000:
-@@ -45,7 +45,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  	case TRIGGER_NETDEV_HALF_DUPLEX:
-  	case TRIGGER_NETDEV_FULL_DUPLEX:
-  	case TRIGGER_NETDEV_TX:
--@@ -324,6 +339,9 @@ static ssize_t netdev_led_attr_store(str
-+@@ -319,6 +334,9 @@ static ssize_t netdev_led_attr_store(str
-  	case TRIGGER_NETDEV_LINK_10:
-  	case TRIGGER_NETDEV_LINK_100:
-  	case TRIGGER_NETDEV_LINK_1000:
-@@ -55,7 +55,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  	case TRIGGER_NETDEV_HALF_DUPLEX:
-  	case TRIGGER_NETDEV_FULL_DUPLEX:
-  	case TRIGGER_NETDEV_TX:
--@@ -342,7 +360,10 @@ static ssize_t netdev_led_attr_store(str
-+@@ -337,7 +355,10 @@ static ssize_t netdev_led_attr_store(str
-  	if (test_bit(TRIGGER_NETDEV_LINK, &mode) &&
-  	    (test_bit(TRIGGER_NETDEV_LINK_10, &mode) ||
-  	     test_bit(TRIGGER_NETDEV_LINK_100, &mode) ||
-@@ -67,7 +67,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  		return -EINVAL;
-  
-  	cancel_delayed_work_sync(&trigger_data->work);
--@@ -372,6 +393,9 @@ DEFINE_NETDEV_TRIGGER(link, TRIGGER_NETD
-+@@ -367,6 +388,9 @@ DEFINE_NETDEV_TRIGGER(link, TRIGGER_NETD
-  DEFINE_NETDEV_TRIGGER(link_10, TRIGGER_NETDEV_LINK_10);
-  DEFINE_NETDEV_TRIGGER(link_100, TRIGGER_NETDEV_LINK_100);
-  DEFINE_NETDEV_TRIGGER(link_1000, TRIGGER_NETDEV_LINK_1000);
-@@ -77,7 +77,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  DEFINE_NETDEV_TRIGGER(half_duplex, TRIGGER_NETDEV_HALF_DUPLEX);
-  DEFINE_NETDEV_TRIGGER(full_duplex, TRIGGER_NETDEV_FULL_DUPLEX);
-  DEFINE_NETDEV_TRIGGER(tx, TRIGGER_NETDEV_TX);
--@@ -435,6 +459,9 @@ static struct attribute *netdev_trig_att
-+@@ -425,6 +449,9 @@ static struct attribute *netdev_trig_att
-  	&dev_attr_link_10.attr,
-  	&dev_attr_link_100.attr,
-  	&dev_attr_link_1000.attr,
-@@ -87,7 +87,7 @@ Signed-off-by: Lee Jones <lee@kernel.org>
-  	&dev_attr_full_duplex.attr,
-  	&dev_attr_half_duplex.attr,
-  	&dev_attr_rx.attr,
--@@ -532,6 +559,9 @@ static void netdev_trig_work(struct work
-+@@ -522,6 +549,9 @@ static void netdev_trig_work(struct work
-  			 test_bit(TRIGGER_NETDEV_LINK_10, &trigger_data->mode) ||
-  			 test_bit(TRIGGER_NETDEV_LINK_100, &trigger_data->mode) ||
-  			 test_bit(TRIGGER_NETDEV_LINK_1000, &trigger_data->mode) ||
-diff --git a/target/linux/generic/backport-6.6/847-v6.17-Revert-leds-trigger-netdev-Configure-LED-blink-inter.patch b/target/linux/generic/backport-6.6/847-v6.17-Revert-leds-trigger-netdev-Configure-LED-blink-inter.patch
-deleted file mode 100644
-index 192f12d5c8..0000000000
---- a/target/linux/generic/backport-6.6/847-v6.17-Revert-leds-trigger-netdev-Configure-LED-blink-inter.patch
-+++ /dev/null
-@@ -1,81 +0,0 @@
--From 26f732791f2bcab18f59c61915bbe35225f30136 Mon Sep 17 00:00:00 2001
--From: Daniel Golle <daniel@makrotopia.org>
--Date: Sat, 12 Jul 2025 16:39:21 +0100
--Subject: [PATCH] Revert "leds: trigger: netdev: Configure LED blink interval
-- for HW offload"
--
--This reverts commit c629c972b310af41e9e072febb6dae9a299edde6.
--
--While .led_blink_set() would previously put an LED into an unconditional
--permanently blinking state, the offending commit now uses same operation
--to (also?) set the blink timing of the netdev trigger when offloading.
--
--This breaks many if not all of the existing PHY drivers which offer
--offloading LED operations, as those drivers would just put the LED into
--blinking state after .led_blink_set() has been called.
--
--Unfortunately the change even made it into stable kernels for unknown
--reasons, so it should be reverted there as well.
--
--Fixes: c629c972b310a ("leds: trigger: netdev: Configure LED blink interval for HW offload")
--Link: https://lore.kernel.org/linux-leds/c6134e26-2e45-4121-aa15-58aaef327201@lunn.ch/T/#m9d6fe81bbcb273e59f12bbedbd633edd32118387
--Suggested-by: Andrew Lunn <andrew@lunn.ch>
--Cc: stable@vger.kernel.org
--Signed-off-by: Daniel Golle <daniel@makrotopia.org>
--Reviewed-by: Andrew Lunn <andrew@lunn.ch>
--Link: https://lore.kernel.org/r/6dcc77ee1c9676891d6250d8994850f521426a0f.1752334655.git.daniel@makrotopia.org
--Signed-off-by: Lee Jones <lee@kernel.org>
-----
-- drivers/leds/trigger/ledtrig-netdev.c | 16 +++-------------
-- 1 file changed, 3 insertions(+), 13 deletions(-)
--
----- a/drivers/leds/trigger/ledtrig-netdev.c
--+++ b/drivers/leds/trigger/ledtrig-netdev.c
--@@ -54,7 +54,6 @@ struct led_netdev_data {
-- 	unsigned int last_activity;
-- 
-- 	unsigned long mode;
---	unsigned long blink_delay;
-- 	int link_speed;
-- 	u8 duplex;
-- 
--@@ -70,10 +69,6 @@ static void set_baseline_state(struct le
-- 	/* Already validated, hw control is possible with the requested mode */
-- 	if (trigger_data->hw_control) {
-- 		led_cdev->hw_control_set(led_cdev, trigger_data->mode);
---		if (led_cdev->blink_set) {
---			led_cdev->blink_set(led_cdev, &trigger_data->blink_delay,
---					    &trigger_data->blink_delay);
---		}
-- 
-- 		return;
-- 	}
--@@ -415,11 +410,10 @@ static ssize_t interval_store(struct dev
-- 			      size_t size)
-- {
-- 	struct led_netdev_data *trigger_data = led_trigger_get_drvdata(dev);
---	struct led_classdev *led_cdev = trigger_data->led_cdev;
-- 	unsigned long value;
-- 	int ret;
-- 
---	if (trigger_data->hw_control && !led_cdev->blink_set)
--+	if (trigger_data->hw_control)
-- 		return -EINVAL;
-- 
-- 	ret = kstrtoul(buf, 0, &value);
--@@ -428,13 +422,9 @@ static ssize_t interval_store(struct dev
-- 
-- 	/* impose some basic bounds on the timer interval */
-- 	if (value >= 5 && value <= 10000) {
---		if (trigger_data->hw_control) {
---			trigger_data->blink_delay = value;
---		} else {
---			cancel_delayed_work_sync(&trigger_data->work);
--+		cancel_delayed_work_sync(&trigger_data->work);
-- 
---			atomic_set(&trigger_data->interval, msecs_to_jiffies(value));
---		}
--+		atomic_set(&trigger_data->interval, msecs_to_jiffies(value));
-- 		set_baseline_state(trigger_data);	/* resets timer */
-- 	}
-- 
-diff --git a/target/linux/generic/backport-6.6/906-01-v6.7-crypto-jitter-add-RCTAPT-support-for-different-OSRs.patch b/target/linux/generic/backport-6.6/906-01-v6.7-crypto-jitter-add-RCTAPT-support-for-different-OSRs.patch
-index d0ae1258f8..a8e729cb28 100644
---- a/target/linux/generic/backport-6.6/906-01-v6.7-crypto-jitter-add-RCTAPT-support-for-different-OSRs.patch
-+++ b/target/linux/generic/backport-6.6/906-01-v6.7-crypto-jitter-add-RCTAPT-support-for-different-OSRs.patch
-@@ -43,7 +43,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
- 
- --- a/crypto/jitterentropy-kcapi.c
- +++ b/crypto/jitterentropy-kcapi.c
--@@ -245,7 +245,7 @@ static int jent_kcapi_init(struct crypto
-+@@ -246,7 +246,7 @@ static int jent_kcapi_init(struct crypto
-  	crypto_shash_init(sdesc);
-  	rng->sdesc = sdesc;
-  
-@@ -52,7 +52,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-  	if (!rng->entropy_collector) {
-  		ret = -ENOMEM;
-  		goto err;
--@@ -334,7 +334,7 @@ static int __init jent_mod_init(void)
-+@@ -335,7 +335,7 @@ static int __init jent_mod_init(void)
-  
-  	desc->tfm = tfm;
-  	crypto_shash_init(desc);
-diff --git a/target/linux/generic/backport-6.6/906-03-v6.7-crypto-jitter-Allow-configuration-of-oversampling-rate.patch b/target/linux/generic/backport-6.6/906-03-v6.7-crypto-jitter-Allow-configuration-of-oversampling-rate.patch
-index 856400fce9..a629b7b770 100644
---- a/target/linux/generic/backport-6.6/906-03-v6.7-crypto-jitter-Allow-configuration-of-oversampling-rate.patch
-+++ b/target/linux/generic/backport-6.6/906-03-v6.7-crypto-jitter-Allow-configuration-of-oversampling-rate.patch
-@@ -53,7 +53,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-  	depends on CRYPTO_JITTERENTROPY
- --- a/crypto/jitterentropy-kcapi.c
- +++ b/crypto/jitterentropy-kcapi.c
--@@ -256,7 +256,9 @@ static int jent_kcapi_init(struct crypto
-+@@ -257,7 +257,9 @@ static int jent_kcapi_init(struct crypto
-  	crypto_shash_init(sdesc);
-  	rng->sdesc = sdesc;
-  
-@@ -64,7 +64,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-  	if (!rng->entropy_collector) {
-  		ret = -ENOMEM;
-  		goto err;
--@@ -345,7 +347,7 @@ static int __init jent_mod_init(void)
-+@@ -346,7 +348,7 @@ static int __init jent_mod_init(void)
-  
-  	desc->tfm = tfm;
-  	crypto_shash_init(desc);
-diff --git a/target/linux/generic/backport-6.6/906-04-v6.7-crypto-jitter-reuse-allocated-entropy-collector.patch b/target/linux/generic/backport-6.6/906-04-v6.7-crypto-jitter-reuse-allocated-entropy-collector.patch
-index d56f1f2449..81f7f2fab5 100644
---- a/target/linux/generic/backport-6.6/906-04-v6.7-crypto-jitter-reuse-allocated-entropy-collector.patch
-+++ b/target/linux/generic/backport-6.6/906-04-v6.7-crypto-jitter-reuse-allocated-entropy-collector.patch
-@@ -36,7 +36,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
- 
- --- a/crypto/jitterentropy-kcapi.c
- +++ b/crypto/jitterentropy-kcapi.c
--@@ -347,7 +347,7 @@ static int __init jent_mod_init(void)
-+@@ -348,7 +348,7 @@ static int __init jent_mod_init(void)
-  
-  	desc->tfm = tfm;
-  	crypto_shash_init(desc);
-diff --git a/target/linux/generic/hack-6.6/204-module_strip.patch b/target/linux/generic/hack-6.6/204-module_strip.patch
-index ccadee1e5a..9402ecb147 100644
---- a/target/linux/generic/hack-6.6/204-module_strip.patch
-+++ b/target/linux/generic/hack-6.6/204-module_strip.patch
-@@ -102,7 +102,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  endif # MODULES
- --- a/kernel/module/main.c
- +++ b/kernel/module/main.c
--@@ -997,6 +997,7 @@ size_t modinfo_attrs_count = ARRAY_SIZE(
-+@@ -999,6 +999,7 @@ size_t modinfo_attrs_count = ARRAY_SIZE(
-  
-  static const char vermagic[] = VERMAGIC_STRING;
-  
-@@ -110,7 +110,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  int try_to_force_load(struct module *mod, const char *reason)
-  {
-  #ifdef CONFIG_MODULE_FORCE_LOAD
--@@ -1008,6 +1009,7 @@ int try_to_force_load(struct module *mod
-+@@ -1010,6 +1011,7 @@ int try_to_force_load(struct module *mod
-  	return -ENOEXEC;
-  #endif
-  }
-@@ -118,7 +118,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
-  /* Parse tag=value strings from .modinfo section */
-  char *module_next_tag_pair(char *string, unsigned long *secsize)
--@@ -2075,9 +2077,11 @@ static void module_augment_kernel_taints
-+@@ -2077,9 +2079,11 @@ static void module_augment_kernel_taints
-  
-  static int check_modinfo(struct module *mod, struct load_info *info, int flags)
-  {
-@@ -131,7 +131,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
-  		modmagic = NULL;
-  
--@@ -2091,6 +2095,7 @@ static int check_modinfo(struct module *
-+@@ -2093,6 +2097,7 @@ static int check_modinfo(struct module *
-  		       info->name, modmagic, vermagic);
-  		return -ENOEXEC;
-  	}
-diff --git a/target/linux/generic/kernel-6.6 b/target/linux/generic/kernel-6.6
-index 048ae0b42a..3bfac6e5b4 100644
---- a/target/linux/generic/kernel-6.6
-+++ b/target/linux/generic/kernel-6.6
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.6 = .102
--LINUX_KERNEL_HASH-6.6.102 = 80d2feb7334c30bacbe1e7dafa9ea415efb2c0ea4f4740ecbd1467cf5d94de5c
-+LINUX_VERSION-6.6 = .103
-+LINUX_KERNEL_HASH-6.6.103 = 6b6112395226bdc970c85ae96975be80c11957681c7dbcbda4bc225002064fa5
--- 
-2.48.1
-
-
-From b4a399a78b055525e2b50021c88fee4dcba65b9e Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Mon, 18 Aug 2025 20:48:13 +0000
-Subject: [PATCH 6/6] kernel: Linux 6.12.43-rc1
-
-https://lore.kernel.org/all/20250818124448.879659024@linuxfoundation.org
-
-All patches auto-refreshed.
-
-Signed-off-by: i l <il@il.com>
----
- .../900-unaligned_access_hacks.patch          |   2 +-
- ...-for-all-the-downstream-rpi-sound-ca.patch |   2 +-
- ...-tc358743-Increase-FIFO-level-to-374.patch |  31 ----
- ...-Add-support-for-972Mbit-s-link-freq.patch |   4 +-
- ...743-Check-I2C-succeeded-during-probe.patch |  98 ------------
- ...eturn-an-appropriate-colorspace-from.patch | 110 --------------
- ...hci_fixup_endpoint-for-interval-adju.patch |   4 +-
- ...d-add-the-endpoint-context-in-xhci_f.patch |   2 +-
- ...it-out-the-BCM54213PE-from-the-BCM54.patch |   6 +-
- ...xups-for-driver-submitted-to-mailing.patch |   8 +-
- ...late-phy-driver-block-for-BCM54213PE.patch |   2 +-
- ...b-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch |   6 +-
- ...5-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch |   6 +-
- ...-Allow-RESET_BRCMSTB-on-ARCH_BCM2835.patch |  20 ---
- ...nt-to-request-a-particular-dev-fbN-n.patch |  10 +-
- ...pci-Disable-Host-Memory-Buffer-usage.patch |   6 +-
- ...-to-Intel-scheme-for-calculating-U1-.patch |   4 +-
- ...6.13-block-introduce-add_disk_fwnode.patch |   2 +-
- ...3-net-dsa-use-ethtool-string-helpers.patch |   2 +-
- ...cm_sf2-implement-.support_eee-method.patch |   6 +-
- ...sa-b53-mdio-add-support-for-BCM53101.patch |   4 +-
- ...sa-b53-implement-setting-ageing-time.patch |   8 +-
- ...dsa-b53-do-not-enable-EEE-on-bcm63xx.patch |   4 +-
- ...ot-configure-bcm63xx-s-IMP-port-inte.patch |   4 +-
- ...-net-dsa-b53-support-legacy-FCS-tags.patch |   2 +-
- ...-net-dsa-b53-detect-BCM5325-variants.patch |   6 +-
- ...port-for-FDB-operations-on-5325-5365.patch |  16 +-
- ...3-prevent-FAST_AGE-access-on-BCM5325.patch |   6 +-
- ...revent-SWITCH_CTRL-access-on-BCM5325.patch |  39 -----
- ...b53-fix-IP_MULTICAST_CTRL-on-BCM5325.patch |  57 -------
- ...event-DIS_LEARNING-access-on-BCM5325.patch |  46 ------
- ...ent-BRCM_HDR-access-on-older-devices.patch |   2 +-
- ...PORT_OVERRIDE_CTRL-access-on-BCM5325.patch |  77 ----------
- ...nicast-multicast-flooding-on-BCM5325.patch |   6 +-
- ...3-fix-b53_imp_vlan_setup-for-BCM5325.patch |  32 ----
- ...-b53-ensure-BCM5325-PHYs-are-enabled.patch |  59 --------
- ...t-phy-Constify-struct-mdio_device_id.patch |   6 +-
- ...ger-netdev-Configure-LED-blink-inter.patch |  81 ----------
- .../generic/hack-6.12/204-module_strip.patch  |   8 +-
- .../hack-6.12/901-debloat_sock_diag.patch     |   2 +-
- .../generic/hack-6.12/902-debloat_proc.patch  |   2 +-
- target/linux/generic/kernel-6.12              |   4 +-
- ...-block-add-support-for-notifications.patch |   2 +-
- ..._F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch |   2 +-
- .../pending-6.12/834-ledtrig-libata.patch     |   2 +-
- ...msm-use-sdhci_set_clock-instead-of-s.patch |   2 +-
- ...m-comment-unused-sdhci_msm_set_clock.patch |   2 +-
- ...dsa-add-out-of-band-tagging-protocol.patch |   2 +-
- ...qcom_scm-Clear-download-bit-during-r.patch |   2 +-
- .../001-MIPS-lantiq-add-pcie-driver.patch     |   2 +-
- ...on-sysctrl-fix-request-memory-check-.patch |  65 --------
- ...missing-prototypes-for-vpe_-alloc-st.patch |  44 ------
- ...nor-Use-1-bit-mode-of-spansion-s25fs.patch |   2 +-
- ...-freq-table-for-nss_port6_tx_clk_src.patch | 143 ------------------
- .../810-uvc-add-iPassion-iP2970-support.patch |   6 +-
- 55 files changed, 88 insertions(+), 990 deletions(-)
- delete mode 100644 target/linux/bcm27xx/patches-6.12/950-0100-media-tc358743-Increase-FIFO-level-to-374.patch
- delete mode 100644 target/linux/bcm27xx/patches-6.12/950-0102-media-tc358743-Check-I2C-succeeded-during-probe.patch
- delete mode 100644 target/linux/bcm27xx/patches-6.12/950-0107-media-tc358743-Return-an-appropriate-colorspace-from.patch
- delete mode 100644 target/linux/bcm27xx/patches-6.12/950-0341-Allow-RESET_BRCMSTB-on-ARCH_BCM2835.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-07-v6.17-net-dsa-b53-prevent-SWITCH_CTRL-access-on-BCM5325.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-08-v6.17-net-dsa-b53-fix-IP_MULTICAST_CTRL-on-BCM5325.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-09-v6.17-net-dsa-b53-prevent-DIS_LEARNING-access-on-BCM5325.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-11-v6.17-net-dsa-b53-prevent-GMII_PORT_OVERRIDE_CTRL-access-on-BCM5325.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-13-v6.17-net-dsa-b53-fix-b53_imp_vlan_setup-for-BCM5325.patch
- delete mode 100644 target/linux/generic/backport-6.12/612-14-v6.17-net-dsa-b53-ensure-BCM5325-PHYs-are-enabled.patch
- delete mode 100644 target/linux/generic/backport-6.12/830-v6.17-Revert-leds-trigger-netdev-Configure-LED-blink-inter.patch
- delete mode 100644 target/linux/lantiq/patches-6.12/102-11-v6.17-MIPS-lantiq-falcon-sysctrl-fix-request-memory-check-.patch
- delete mode 100644 target/linux/lantiq/patches-6.12/102-12-v6.17-MIPS-vpe-mt-add-missing-prototypes-for-vpe_-alloc-st.patch
- delete mode 100644 target/linux/qualcommax/patches-6.12/0170-clk-qcom-gcc-ipq8074-fix-broken-freq-table-for-nss_port6_tx_clk_src.patch
-
-diff --git a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
-index 12fbc59e98..cb3aa56dc0 100644
---- a/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
-+++ b/target/linux/ath79/patches-6.12/900-unaligned_access_hacks.patch
 @@ -784,7 +784,7 @@ SVN-Revision: 35130
   
  --- a/include/net/neighbour.h
@@ -1868,6 +347,50 @@ index c6f2196c32..1ac575a2ce 100644
   		return;
   	}
   	ctrl_ctx->add_flags = xhci_get_endpoint_flag_from_index(ep_index);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
+index b580ee5377..e9f351d518 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0154-staging-vchiq_arm-Register-vcsm-cma-as-a-platform-dr.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+  	.cache_line_size = 32,
+-@@ -1760,6 +1761,7 @@ static int vchiq_probe(struct platform_d
++@@ -1759,6 +1760,7 @@ static int vchiq_probe(struct platform_d
+  
+  	vchiq_debugfs_init(&mgmt->state);
+  
+@@ -29,7 +29,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+  
+-@@ -1778,6 +1780,7 @@ static void vchiq_remove(struct platform
++@@ -1777,6 +1779,7 @@ static void vchiq_remove(struct platform
+  
+  	vchiq_device_unregister(bcm2835_audio);
+  	vchiq_device_unregister(bcm2835_camera);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
+index 874bf15d34..acc70e2977 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0155-staging-vchiq_arm-Register-bcm2835-codec-as-a-platfo.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  static struct vchiq_device *vcsm_cma;
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+-@@ -1762,6 +1763,7 @@ static int vchiq_probe(struct platform_d
++@@ -1761,6 +1762,7 @@ static int vchiq_probe(struct platform_d
+  	vchiq_debugfs_init(&mgmt->state);
+  
+  	vcsm_cma = vchiq_device_register(&pdev->dev, "vcsm-cma");
+@@ -30,7 +30,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+  
+-@@ -1780,6 +1782,7 @@ static void vchiq_remove(struct platform
++@@ -1779,6 +1781,7 @@ static void vchiq_remove(struct platform
+  
+  	vchiq_device_unregister(bcm2835_audio);
+  	vchiq_device_unregister(bcm2835_camera);
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0157-phy-broadcom-split-out-the-BCM54213PE-from-the-BCM54.patch b/target/linux/bcm27xx/patches-6.12/950-0157-phy-broadcom-split-out-the-BCM54213PE-from-the-BCM54.patch
 index 950e93c5db..b62142dd9f 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0157-phy-broadcom-split-out-the-BCM54213PE-from-the-BCM54.patch
@@ -1899,6 +422,72 @@ index 950e93c5db..b62142dd9f 100644
   static const struct mdio_device_id __maybe_unused broadcom_tbl[] = {
   	{ PHY_ID_BCM5411, 0xfffffff0 },
   	{ PHY_ID_BCM5421, 0xfffffff0 },
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
+index 0c7fd01ec8..b2b470eaeb 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0161-staging-vchiq_arm-Set-up-dma-ranges-on-child-devices.patch
+@@ -234,7 +234,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	dev_dbg(&pdev->dev, "arm: vchiq_init - done (slots %pK, phys %pad)\n",
+  		vchiq_slot_zero, &slot_phys);
+  
+-@@ -1711,6 +1777,7 @@ void vchiq_platform_conn_state_changed(s
++@@ -1710,6 +1776,7 @@ void vchiq_platform_conn_state_changed(s
+  static const struct of_device_id vchiq_of_match[] = {
+  	{ .compatible = "brcm,bcm2835-vchiq", .data = &bcm2835_info },
+  	{ .compatible = "brcm,bcm2836-vchiq", .data = &bcm2836_info },
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
+index 1ba21abf1d..c9394bc85b 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0163-staging-vchiq-Load-bcm2835_isp-driver-from-vchiq.patch
+@@ -21,7 +21,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+  static struct vchiq_device *vcsm_cma;
+  
+  static const struct vchiq_platform_info bcm2835_info = {
+-@@ -1858,6 +1859,7 @@ static int vchiq_probe(struct platform_d
++@@ -1857,6 +1858,7 @@ static int vchiq_probe(struct platform_d
+  	bcm2835_codec = vchiq_device_register(&pdev->dev, "bcm2835-codec");
+  	bcm2835_audio = vchiq_device_register(&pdev->dev, "bcm2835-audio");
+  	bcm2835_camera = vchiq_device_register(&pdev->dev, "bcm2835-camera");
+@@ -29,7 +29,7 @@ Signed-off-by: Naushir Patuck <naush@raspberrypi.com>
+  
+  	return 0;
+  
+-@@ -1872,6 +1874,7 @@ static void vchiq_remove(struct platform
++@@ -1871,6 +1873,7 @@ static void vchiq_remove(struct platform
+  	struct vchiq_drv_mgmt *mgmt = dev_get_drvdata(&pdev->dev);
+  	struct vchiq_arm_state *arm_state;
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
+index bf6573548e..105941aa55 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0196-staging-fbtft-Add-support-for-display-variants.patch
+@@ -95,7 +95,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  
+  #include <video/mipi_display.h>
+  
+-@@ -1131,6 +1133,7 @@ static struct fbtft_platform_data *fbtft
++@@ -1132,6 +1134,7 @@ static struct fbtft_platform_data *fbtft
+   * @display: Display properties
+   * @sdev: SPI device
+   * @pdev: Platform device
+@@ -103,7 +103,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+   *
+   * Allocates, initializes and registers a framebuffer
+   *
+-@@ -1140,12 +1143,15 @@ static struct fbtft_platform_data *fbtft
++@@ -1141,12 +1144,15 @@ static struct fbtft_platform_data *fbtft
+   */
+  int fbtft_probe_common(struct fbtft_display *display,
+  		       struct spi_device *sdev,
+@@ -120,7 +120,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret;
+  
+  	if (sdev)
+-@@ -1158,6 +1164,14 @@ int fbtft_probe_common(struct fbtft_disp
++@@ -1159,6 +1165,14 @@ int fbtft_probe_common(struct fbtft_disp
+  		pdata = fbtft_properties_read(dev);
+  		if (IS_ERR(pdata))
+  			return PTR_ERR(pdata);
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0284-hwmon-emc2305-fixups-for-driver-submitted-to-mailing.patch b/target/linux/bcm27xx/patches-6.12/950-0284-hwmon-emc2305-fixups-for-driver-submitted-to-mailing.patch
 index 453b052824..ef86c0ee60 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0284-hwmon-emc2305-fixups-for-driver-submitted-to-mailing.patch
@@ -1952,6 +541,28 @@ index b41c40e2e4..4c8a087924 100644
   	.phy_id_mask	= 0xffffffff,
   	.name		= "Broadcom BCM54213PE",
   	/* PHY_GBIT_FEATURES */
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
+index 2f8ab29fdd..3d05954a77 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0330-pps-Compatibility-hack-should-be-X86-specific.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/drivers/pps/pps.c
+ +++ b/drivers/pps/pps.c
+-@@ -249,12 +249,13 @@ static long pps_cdev_ioctl(struct file *
++@@ -254,12 +254,13 @@ static long pps_cdev_ioctl(struct file *
+  static long pps_cdev_compat_ioctl(struct file *file,
+  		unsigned int cmd, unsigned long arg)
+  {
+@@ -38,7 +38,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  		struct pps_fdata_compat compat;
+  		struct pps_fdata fdata;
+  		int err;
+-@@ -289,6 +290,7 @@ static long pps_cdev_compat_ioctl(struct
++@@ -296,6 +297,7 @@ static long pps_cdev_compat_ioctl(struct
+  		return copy_to_user(uarg, &compat,
+  				sizeof(struct pps_fdata_compat)) ? -EFAULT : 0;
+  	}
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch b/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
 index 8fec64dcc1..4e1c1bd76b 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
@@ -2075,6 +686,19 @@ index 9322cedab0..13e8d1bb3c 100644
   	put_fb_info(fb_info);
   }
   
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
+index 26f11df2a1..66472a96bf 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0521-mm-vmscan-Maintain-TLB-coherency-in-LRU-code.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/mm/vmscan.c
+ +++ b/mm/vmscan.c
+-@@ -4128,7 +4128,7 @@ bool lru_gen_look_around(struct page_vma
++@@ -4136,7 +4136,7 @@ bool lru_gen_look_around(struct page_vma
+  		if (!folio)
+  			continue;
+  
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch b/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch
 index 874ddc47c1..5ae8f6c966 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch
@@ -2127,6 +751,203 @@ index 8be659cdd0..3a52a38589 100644
 +@@ -4852,7 +4856,7 @@ static u16 xhci_calculate_u2_timeout(str
   		}
   	}
+  
+diff --git a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+index 95b66071ad..07b031a094 100644
+--- a/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
++++ b/target/linux/generic/backport-6.12/410-01-v6.14-mtd-rawnand-qcom-cleanup-qcom_nandc-driver.patch
+@@ -815,7 +815,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	read_reg_dma(nandc, NAND_FLASH_STATUS, 1, NAND_BAM_NEXT_SGL);
+  
+  	ret = submit_descs(nandc);
+-@@ -2864,7 +2815,7 @@ static int qcom_param_page_type_exec(str
++@@ -2869,7 +2820,7 @@ static int qcom_param_page_type_exec(str
+  	if (ret)
+  		return ret;
+  
+@@ -824,7 +824,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+-@@ -2872,38 +2823,38 @@ static int qcom_param_page_type_exec(str
++@@ -2877,38 +2828,38 @@ static int qcom_param_page_type_exec(str
+  	clear_read_regs(nandc);
+  	clear_bam_transaction(nandc);
+  
+@@ -890,9 +890,9 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	instr = q_op.data_instr;
+-@@ -2912,9 +2863,9 @@ static int qcom_param_page_type_exec(str
+- 
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2920,9 +2871,9 @@ static int qcom_param_page_type_exec(str
++ 	else
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+ -	if (!nandc->props->qpic_v2) {
+ -		write_reg_dma(nandc, NAND_DEV_CMD_VLD, 1, 0);
+@@ -903,7 +903,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2926,9 +2877,10 @@ static int qcom_param_page_type_exec(str
++@@ -2934,9 +2885,10 @@ static int qcom_param_page_type_exec(str
+  		      nandc->buf_count, 0);
+  
+  	/* restore CMD1 and VLD regs */
+@@ -917,7 +917,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	ret = submit_descs(nandc);
+-@@ -3017,7 +2969,7 @@ static const struct nand_controller_ops
++@@ -3025,7 +2977,7 @@ static const struct nand_controller_ops
+  
+  static void qcom_nandc_unalloc(struct qcom_nand_controller *nandc)
+  {
+@@ -926,7 +926,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		if (!dma_mapping_error(nandc->dev, nandc->reg_read_dma))
+  			dma_unmap_single(nandc->dev, nandc->reg_read_dma,
+  					 MAX_REG_RD *
+-@@ -3070,7 +3022,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3078,7 +3030,7 @@ static int qcom_nandc_alloc(struct qcom_
+  	if (!nandc->reg_read_buf)
+  		return -ENOMEM;
+  
+@@ -935,7 +935,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->reg_read_dma =
+  			dma_map_single(nandc->dev, nandc->reg_read_buf,
+  				       MAX_REG_RD *
+-@@ -3151,15 +3103,15 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3159,15 +3111,15 @@ static int qcom_nandc_setup(struct qcom_
+  	u32 nand_ctrl;
+  
+  	/* kill onenand */
+@@ -954,7 +954,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nand_ctrl = nandc_read(nandc, NAND_CTRL);
+  
+  		/*
+-@@ -3176,7 +3128,7 @@ static int qcom_nandc_setup(struct qcom_
++@@ -3184,7 +3136,7 @@ static int qcom_nandc_setup(struct qcom_
+  	}
+  
+  	/* save the original values of these registers */
+@@ -963,7 +963,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		nandc->cmd1 = nandc_read(nandc, dev_cmd_reg_addr(nandc, NAND_DEV_CMD1));
+  		nandc->vld = NAND_DEV_CMD_VLD_VAL;
+  	}
+-@@ -3349,7 +3301,7 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3357,7 +3309,7 @@ static int qcom_nandc_parse_dt(struct pl
+  	struct device_node *np = nandc->dev->of_node;
+  	int ret;
+  
+@@ -972,7 +972,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  		ret = of_property_read_u32(np, "qcom,cmd-crci",
+  					   &nandc->cmd_crci);
+  		if (ret) {
+-@@ -3474,30 +3426,30 @@ static void qcom_nandc_remove(struct pla
++@@ -3482,30 +3434,30 @@ static void qcom_nandc_remove(struct pla
+  
+  static const struct qcom_nandc_props ipq806x_nandc_props = {
+  	.ecc_modes = (ECC_RS_4BIT | ECC_BCH_8BIT),
+diff --git a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+index f634e0442a..23ef86f807 100644
+--- a/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
++++ b/target/linux/generic/backport-6.12/410-02-v6.14-mtd-rawnand-qcom-Add-qcom-prefix-to-common-api.patch
+@@ -823,7 +823,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting misc descriptor\n");
+  		goto err_out;
+-@@ -2820,8 +2820,8 @@ static int qcom_param_page_type_exec(str
++@@ -2825,8 +2825,8 @@ static int qcom_param_page_type_exec(str
+  	nandc->buf_count = 0;
+  	nandc->buf_start = 0;
+  	host->use_ecc = false;
+@@ -834,8 +834,8 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	nandc->regs->cmd = q_op.cmd_reg;
+  	nandc->regs->addr0 = 0;
+-@@ -2864,8 +2864,8 @@ static int qcom_param_page_type_exec(str
+- 	nandc_set_read_loc(chip, 0, 0, 0, len, 1);
++@@ -2872,8 +2872,8 @@ static int qcom_param_page_type_exec(str
++ 		nandc_set_read_loc_first(chip, reg_base, 0, len, 1);
+  
+  	if (!nandc->props->qpic_version2) {
+ -		write_reg_dma(nandc, &nandc->regs->vld, NAND_DEV_CMD_VLD, 1, 0);
+@@ -845,7 +845,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	}
+  
+  	nandc->buf_count = 512;
+-@@ -2873,17 +2873,17 @@ static int qcom_param_page_type_exec(str
++@@ -2881,17 +2881,17 @@ static int qcom_param_page_type_exec(str
+  
+  	config_nand_single_cw_page_read(chip, false, 0);
+  
+@@ -869,7 +869,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	if (ret) {
+  		dev_err(nandc->dev, "failure in submitting param page descriptor\n");
+  		goto err_out;
+-@@ -3067,7 +3067,7 @@ static int qcom_nandc_alloc(struct qcom_
++@@ -3075,7 +3075,7 @@ static int qcom_nandc_alloc(struct qcom_
+  		 * maximum codeword size
+  		 */
+  		nandc->max_cwperpage = 1;
+diff --git a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+index 26211461c1..9272f98862 100644
+--- a/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
++++ b/target/linux/generic/backport-6.12/410-03-v6.14-mtd-nand-Add-qpic_common-API-file.patch
+@@ -1786,7 +1786,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  /*
+   * when using BCH ECC, the HW flags an error in NAND_FLASH_STATUS if it read
+   * an erased CW, and reports an erased CW in NAND_ERASED_CW_DETECT_STATUS.
+-@@ -2967,141 +2022,14 @@ static const struct nand_controller_ops
++@@ -2975,141 +2030,14 @@ static const struct nand_controller_ops
+  	.exec_op = qcom_nand_exec_op,
+  };
+  
+@@ -1931,7 +1931,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	/* kill onenand */
+  	if (!nandc->props->nandc_part_of_qpic)
+  		nandc_write(nandc, SFLASHC_BURST_CFG, 0);
+-@@ -3240,7 +2168,7 @@ static int qcom_nand_host_init_and_regis
++@@ -3248,7 +2176,7 @@ static int qcom_nand_host_init_and_regis
+  	chip->legacy.block_bad		= qcom_nandc_block_bad;
+  	chip->legacy.block_markbad	= qcom_nandc_block_markbad;
+  
+@@ -1940,7 +1940,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  	chip->options |= NAND_NO_SUBPAGE_WRITE | NAND_USES_DMA |
+  			 NAND_SKIP_BBTSCAN;
+  
+-@@ -3323,17 +2251,21 @@ static int qcom_nandc_parse_dt(struct pl
++@@ -3331,17 +2259,21 @@ static int qcom_nandc_parse_dt(struct pl
+  static int qcom_nandc_probe(struct platform_device *pdev)
+  {
+  	struct qcom_nand_controller *nandc;
+diff --git a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+index b37507409a..c19f681e9d 100644
+--- a/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
++++ b/target/linux/generic/backport-6.12/410-04-v6.14-mtd-rawnand-qcom-use-FIELD_PREP-and-GENMASK.patch
+@@ -104,7 +104,7 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+  
+  	if (!nandc->props->qpic_version2)
+  		host->ecc_buf_cfg = 0x203 << NUM_STEPS;
+-@@ -1882,21 +1881,21 @@ static int qcom_param_page_type_exec(str
++@@ -1887,21 +1886,21 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
+  
+diff --git a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+index a6a4db229f..238a1f9d93 100644
+--- a/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
++++ b/target/linux/generic/backport-6.12/410-05-v6.14-mtd-rawnand-qcom-fix-broken-config-in-qcom_param_pag.patch
+@@ -32,7 +32,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+ 
+ --- a/drivers/mtd/nand/raw/qcom_nandc.c
+ +++ b/drivers/mtd/nand/raw/qcom_nandc.c
+-@@ -1881,18 +1881,18 @@ static int qcom_param_page_type_exec(str
++@@ -1886,18 +1886,18 @@ static int qcom_param_page_type_exec(str
+  	nandc->regs->addr0 = 0;
+  	nandc->regs->addr1 = 0;
   
 diff --git a/target/linux/generic/backport-6.12/500-02-v6.13-block-introduce-add_disk_fwnode.patch b/target/linux/generic/backport-6.12/500-02-v6.13-block-introduce-add_disk_fwnode.patch
 index b9fabe6742..381838d8ea 100644
@@ -2832,6 +1653,19 @@ index f9bea6133a..0000000000
 - 
 - /* IP Multicast control (8 bit) */
 - #define B53_IP_MULTICAST_CTRL		0x21
+diff --git a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+index 64effc5ec8..6d9ac56cf0 100644
+--- a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
++++ b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
+@@ -47,7 +47,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  		if (error) {
+ --- a/drivers/net/ppp/pptp.c
+ +++ b/drivers/net/ppp/pptp.c
+-@@ -465,6 +465,7 @@ static int pptp_connect(struct socket *s
++@@ -469,6 +469,7 @@ static int pptp_connect(struct socket *s
+  	po->chan.mtu -= PPTP_HEADER_OVERHEAD;
+  
+  	po->chan.hdrlen = 2 + sizeof(struct pptp_gre_header);
 diff --git a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
 index a1be891a09..aa5fc662fa 100644
 --- a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
@@ -2950,6 +1784,18 @@ index ba83b8e069..0000000000
 - 		set_baseline_state(trigger_data);	/* resets timer */
 - 	}
 - 
+diff --git a/target/linux/generic/config-6.12 b/target/linux/generic/config-6.12
+index 5d931cf995..73166b434c 100644
+--- a/target/linux/generic/config-6.12
++++ b/target/linux/generic/config-6.12
+@@ -7348,6 +7348,7 @@ CONFIG_VDSO=y
+ # CONFIG_VGA_CONSOLE is not set
+ # CONFIG_VGA_SWITCHEROO is not set
+ # CONFIG_VHOST_CROSS_ENDIAN_LEGACY is not set
++# CONFIG_VHOST_ENABLE_FORK_OWNER_CONTROL is not set
+ CONFIG_VHOST_MENU=y
+ # CONFIG_VHOST_NET is not set
+ # CONFIG_VHOST_VSOCK is not set
 diff --git a/target/linux/generic/hack-6.12/204-module_strip.patch b/target/linux/generic/hack-6.12/204-module_strip.patch
 index d999e0992c..1c67eb5de4 100644
 --- a/target/linux/generic/hack-6.12/204-module_strip.patch
@@ -2990,6 +1836,41 @@ index d999e0992c..1c67eb5de4 100644
   		       info->name, modmagic, vermagic);
   		return -ENOEXEC;
   	}
+diff --git a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
+index e7614d6822..cbd6c42234 100644
+--- a/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
++++ b/target/linux/generic/hack-6.12/259-regmap_dynamic.patch
+@@ -137,7 +137,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  #include <linux/mutex.h>
+  #include <linux/err.h>
+  #include <linux/property.h>
+-@@ -3519,3 +3520,5 @@ static int __init regmap_initcall(void)
++@@ -3521,3 +3522,5 @@ static int __init regmap_initcall(void)
+  	return 0;
+  }
+  postcore_initcall(regmap_initcall);
+diff --git a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+index 5ad34a4517..9430070457 100644
+--- a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
++++ b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+@@ -52,7 +52,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+   */
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3213,6 +3213,10 @@ static inline int pskb_trim(struct sk_bu
++@@ -3236,6 +3236,10 @@ static inline int pskb_trim(struct sk_bu
+  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
+  }
+  
+@@ -63,7 +63,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  /**
+   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
+   *	@skb: buffer to alter
+-@@ -3378,16 +3382,6 @@ static inline struct sk_buff *dev_alloc_
++@@ -3401,16 +3405,6 @@ static inline struct sk_buff *dev_alloc_
+  }
+  
+  
 diff --git a/target/linux/generic/hack-6.12/901-debloat_sock_diag.patch b/target/linux/generic/hack-6.12/901-debloat_sock_diag.patch
 index d130b82dd6..17a22d0528 100644
 --- a/target/linux/generic/hack-6.12/901-debloat_sock_diag.patch
@@ -3017,12 +1898,12 @@ index c52a7ac5f3..5b344a1982 100644
   static int __init proto_init(void)
   {
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 51f0379fc1..a162601bf1 100644
+index 9880cae37e..78b4d39332 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .42
--LINUX_KERNEL_HASH-6.12.42 = 4804528a29cd20309a0b41c30e5aeffc35fa21ee3358f4a706d4586d003bc1fb
+-LINUX_VERSION-6.12 = .40
+-LINUX_KERNEL_HASH-6.12.40 = 4811af1317f98d2cccea3c7695969a2c03a27cb02fd2d5327032dd5341842933
 +LINUX_VERSION-6.12 = .43
 +LINUX_KERNEL_HASH-6.12.43 = 0fcbbbbcd456e87bbbfc8bf37af541fda62ccfcce76903503424fd101ef7bdee
 diff --git a/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch b/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
@@ -3038,6 +1919,108 @@ index 300cbf7c7c..bb78fc368f 100644
   
   #define DEFINE_IO_COMP_BATCH(name)	struct io_comp_batch name = { }
   
+diff --git a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
+index d7260296bd..11d0f03fba 100644
+--- a/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
++++ b/target/linux/generic/pending-6.12/650-net-pppoe-implement-GRO-support.patch
+@@ -230,7 +230,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  {
+ --- a/net/ipv6/ip6_offload.c
+ +++ b/net/ipv6/ip6_offload.c
+-@@ -304,6 +304,7 @@ out:
++@@ -306,6 +306,7 @@ out:
+  
+  	return pp;
+  }
+@@ -238,7 +238,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  static struct sk_buff *sit_ip6ip6_gro_receive(struct list_head *head,
+  					      struct sk_buff *skb)
+-@@ -386,6 +387,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
++@@ -388,6 +389,7 @@ INDIRECT_CALLABLE_SCOPE int ipv6_gro_com
+  out:
+  	return err;
+  }
+diff --git a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+index 6fa3358218..57857272f0 100644
+--- a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
++++ b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3180,7 +3180,7 @@ static inline int pskb_network_may_pull(
++@@ -3203,7 +3203,7 @@ static inline int pskb_network_may_pull(
+   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+   */
+  #ifndef NET_SKB_PAD
+diff --git a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+index d10f39cf22..f0cdd65766 100644
+--- a/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
++++ b/target/linux/generic/pending-6.12/670-ipv6-allow-rejecting-with-source-address-failed-policy.patch
+@@ -185,7 +185,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		cfg->fc_flags |= RTF_REJECT;
+  
+  	if (rtm->rtm_type == RTN_LOCAL)
+-@@ -6349,6 +6380,8 @@ static int ip6_route_dev_notify(struct n
++@@ -6357,6 +6388,8 @@ static int ip6_route_dev_notify(struct n
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		net->ipv6.ip6_prohibit_entry->dst.dev = dev;
+  		net->ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(dev);
+@@ -194,7 +194,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		net->ipv6.ip6_blk_hole_entry->dst.dev = dev;
+  		net->ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(dev);
+  #endif
+-@@ -6360,6 +6393,7 @@ static int ip6_route_dev_notify(struct n
++@@ -6368,6 +6401,7 @@ static int ip6_route_dev_notify(struct n
+  		in6_dev_put_clear(&net->ipv6.ip6_null_entry->rt6i_idev);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  		in6_dev_put_clear(&net->ipv6.ip6_prohibit_entry->rt6i_idev);
+@@ -202,7 +202,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  		in6_dev_put_clear(&net->ipv6.ip6_blk_hole_entry->rt6i_idev);
+  #endif
+  	}
+-@@ -6555,6 +6589,8 @@ static int __net_init ip6_route_net_init
++@@ -6563,6 +6597,8 @@ static int __net_init ip6_route_net_init
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	net->ipv6.fib6_has_custom_rules = false;
+@@ -211,7 +211,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_prohibit_entry = kmemdup(&ip6_prohibit_entry_template,
+  					       sizeof(*net->ipv6.ip6_prohibit_entry),
+  					       GFP_KERNEL);
+-@@ -6565,11 +6601,21 @@ static int __net_init ip6_route_net_init
++@@ -6573,11 +6609,21 @@ static int __net_init ip6_route_net_init
+  			 ip6_template_metrics, true);
+  	INIT_LIST_HEAD(&net->ipv6.ip6_prohibit_entry->dst.rt_uncached);
+  
+@@ -234,7 +234,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	net->ipv6.ip6_blk_hole_entry->dst.ops = &net->ipv6.ip6_dst_ops;
+  	dst_init_metrics(&net->ipv6.ip6_blk_hole_entry->dst,
+  			 ip6_template_metrics, true);
+-@@ -6596,6 +6642,8 @@ out:
++@@ -6604,6 +6650,8 @@ out:
+  	return ret;
+  
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+@@ -243,7 +243,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  out_ip6_prohibit_entry:
+  	kfree(net->ipv6.ip6_prohibit_entry);
+  out_ip6_null_entry:
+-@@ -6615,6 +6663,7 @@ static void __net_exit ip6_route_net_exi
++@@ -6623,6 +6671,7 @@ static void __net_exit ip6_route_net_exi
+  	kfree(net->ipv6.ip6_null_entry);
+  #ifdef CONFIG_IPV6_MULTIPLE_TABLES
+  	kfree(net->ipv6.ip6_prohibit_entry);
+@@ -251,7 +251,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
+  	kfree(net->ipv6.ip6_blk_hole_entry);
+  #endif
+  	dst_entries_destroy(&net->ipv6.ip6_dst_ops);
+-@@ -6698,6 +6747,9 @@ void __init ip6_route_init_special_entri
++@@ -6706,6 +6755,9 @@ void __init ip6_route_init_special_entri
+  	init_net.ipv6.ip6_prohibit_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
+  	init_net.ipv6.ip6_blk_hole_entry->dst.dev = init_net.loopback_dev;
+  	init_net.ipv6.ip6_blk_hole_entry->rt6i_idev = in6_dev_get(init_net.loopback_dev);
 diff --git a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch b/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
 index e89e0d25f5..4cc5717b1c 100644
 --- a/target/linux/generic/pending-6.12/681-net-remove-NETIF_F_GSO_FRAGLIST-from-NETIF_F_GSO_SOF.patch
@@ -3051,6 +2034,19 @@ index e89e0d25f5..4cc5717b1c 100644
   	if (sk_is_tcp(sk))
   		sk->sk_route_caps |= NETIF_F_GSO;
   	if (sk->sk_route_caps & NETIF_F_GSO)
+diff --git a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+index ceb191e5c5..2ab483d6c4 100644
+--- a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
++++ b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/netfilter/nf_tables_api.c
+ +++ b/net/netfilter/nf_tables_api.c
+-@@ -8658,7 +8658,7 @@ static int nft_register_flowtable_net_ho
++@@ -8638,7 +8638,7 @@ static int nft_register_flowtable_net_ho
+  		err = flowtable->data.type->setup(&flowtable->data,
+  						  hook->ops.dev,
+  						  FLOW_BLOCK_BIND);
 diff --git a/target/linux/generic/pending-6.12/834-ledtrig-libata.patch b/target/linux/generic/pending-6.12/834-ledtrig-libata.patch
 index 72e2a76b62..09c53ee875 100644
 --- a/target/linux/generic/pending-6.12/834-ledtrig-libata.patch
@@ -3091,31 +2087,18 @@ index a90b0aaf9b..6e0f35b6fc 100644
   }
   
 diff --git a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
-index b9be19232d..7d4f7a482f 100644
+index 79a4f74fcf..7d4f7a482f 100644
 --- a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
 +++ b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
 @@ -93,7 +93,7 @@ Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
  +#endif
  --- a/include/linux/skbuff.h
  +++ b/include/linux/skbuff.h
--@@ -4792,6 +4792,9 @@ enum skb_ext_id {
+-@@ -4769,6 +4769,9 @@ enum skb_ext_id {
 +@@ -4798,6 +4798,9 @@ enum skb_ext_id {
   #if IS_ENABLED(CONFIG_MCTP_FLOWS)
   	SKB_EXT_MCTP,
   #endif
-diff --git a/target/linux/ipq40xx/patches-6.12/910-Revert-firmware-qcom_scm-Clear-download-bit-during-r.patch b/target/linux/ipq40xx/patches-6.12/910-Revert-firmware-qcom_scm-Clear-download-bit-during-r.patch
-index 8a7b193e99..d9e06852b6 100644
---- a/target/linux/ipq40xx/patches-6.12/910-Revert-firmware-qcom_scm-Clear-download-bit-during-r.patch
-+++ b/target/linux/ipq40xx/patches-6.12/910-Revert-firmware-qcom_scm-Clear-download-bit-during-r.patch
-@@ -15,7 +15,7 @@ Signed-off-by: Robert Marko <robimarko@gmail.com>
- 
- --- a/drivers/firmware/qcom/qcom_scm.c
- +++ b/drivers/firmware/qcom/qcom_scm.c
--@@ -2095,7 +2095,8 @@ err:
-+@@ -2094,7 +2094,8 @@ err:
-  static void qcom_scm_shutdown(struct platform_device *pdev)
-  {
-  	/* Clean shutdown, disable download mode to allow normal restart */
 diff --git a/target/linux/lantiq/patches-6.12/001-MIPS-lantiq-add-pcie-driver.patch b/target/linux/lantiq/patches-6.12/001-MIPS-lantiq-add-pcie-driver.patch
 index a125b6bfb3..f325607dbf 100644
 --- a/target/linux/lantiq/patches-6.12/001-MIPS-lantiq-add-pcie-driver.patch
@@ -3443,6 +2426,3 @@ index 0ab9517d88..489d223806 100644
   	if (npackets == 0)
   		return -ENOMEM;
   
--- 
-2.48.1
-
