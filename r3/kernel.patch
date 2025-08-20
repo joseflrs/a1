@@ -3024,7 +3024,7 @@ index 51f0379fc1..a162601bf1 100644
 -LINUX_VERSION-6.12 = .42
 -LINUX_KERNEL_HASH-6.12.42 = 4804528a29cd20309a0b41c30e5aeffc35fa21ee3358f4a706d4586d003bc1fb
 +LINUX_VERSION-6.12 = .43
-+LINUX_KERNEL_HASH-6.12.43 = 2856b5c0f77a16304610c7676e0de1f544f5aaae2a965f39d2f73eab7b72be6a
++LINUX_KERNEL_HASH-6.12.43 = 0fcbbbbcd456e87bbbfc8bf37af541fda62ccfcce76903503424fd101ef7bdee
 diff --git a/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch b/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
 index 300cbf7c7c..bb78fc368f 100644
 --- a/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
