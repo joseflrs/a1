@@ -379,35 +379,35 @@ index 0000000000..9ac324dbbf
 +
 +## Broadcom AP6255 firmware
 +
-+AP_6255_URL:=https://raw.githubusercontent.com/RPi-Distro/firmware-nonfree/bookworm/debian/config/brcm80211/cypress/
++AP_6255_URL:=https://raw.githubusercontent.com/Infineon/ifx-linux-firmware/refs/heads/master/firmware/
 +
-+define Download/cyfmac43455-sdio-minimal.bin
-+  FILE:=cyfmac43455-sdio-minimal.bin
-+  URL:=$(AP_6255_URL)
-+  HASH:=3075cb0bdc4b28ed4f08e01b1a216d0ebc70f4022d9d3272a4a43b3c90456e60
-+endef
++# define Download/cyfmac43455-sdio-minimal.bin
++#   FILE:=cyfmac43455-sdio-minimal.bin
++#   URL:=$(AP_6255_URL)
++#   HASH:=3075cb0bdc4b28ed4f08e01b1a216d0ebc70f4022d9d3272a4a43b3c90456e60
++# endef
 +
-+define Download/cyfmac43455-sdio-standard.bin
-+  FILE:=cyfmac43455-sdio-standard.bin
++define Download/cyfmac43455-sdio.bin
++  FILE:=cyfmac43455-sdio.bin
 +  URL:=$(AP_6255_URL)
-+  HASH:=d608f866582519c0a28d86db43040f4f1b98dd1d153e72e9752586546b4a36c3
++  HASH:=eaff8d2b6d2501bb5c477ba343900c7487af915898eac13bc91b33b1285dadce
 +endef
 +
 +define Download/cyfmac43455-sdio.clm_blob
 +  FILE:=cyfmac43455-sdio.clm_blob
 +  URL:=$(AP_6255_URL)
-+  HASH:=9823842cae9fb9a5dd1e5fb31f595516ec7deee341354bef30bb3026eee29cc1
++  HASH:=8fbe9fc2952e2fbab062a142c1ea3e261cd74604761e12f304781b911df4a328
 +endef
 +
-+$(eval $(call Download,cyfmac43455-sdio-minimal.bin))
-+$(eval $(call Download,cyfmac43455-sdio-standard.bin))
++# $(eval $(call Download,cyfmac43455-sdio-minimal.bin))
++$(eval $(call Download,cyfmac43455-sdio.bin))
 +$(eval $(call Download,cyfmac43455-sdio.clm_blob))
 +
 +Package/brcmfmac-firmware-ap6255-hugsun-x99 = $(call Package/firmware-default,Broadcom hugsun x99 firmware)
 +define Package/brcmfmac-firmware-ap6255-hugsun-x99/install
 +	$(INSTALL_DIR) $(1)/lib/firmware/brcm
 +	$(INSTALL_DATA) \
-+		$(DL_DIR)/cyfmac43455-sdio-minimal.bin \
++		$(DL_DIR)/cyfmac43455-sdio.bin \
 +		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.bin
 +	$(INSTALL_DATA) \
 +		$(DL_DIR)/cyfmac43455-sdio.clm_blob \
