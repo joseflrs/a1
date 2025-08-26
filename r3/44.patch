@@ -366,13 +366,13 @@ index 0000000000..9ac324dbbf
 +define Package/brcmfmac-firmware-4356-nanopi-m4/install
 +	$(INSTALL_DIR) $(1)/lib/firmware/brcm
 +	$(INSTALL_DATA) \
-+		$(DL_DIR)/brcmfmac4356-sdio.bin \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.bin \
 +		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.bin
 +	$(INSTALL_DATA) \
-+		$(DL_DIR)/brcmfmac4356-sdio.clm_blob \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.clm_blob \
 +		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.clm_blob
 +	$(INSTALL_DATA) \
-+		$(DL_DIR)/brcmfmac4356-sdio.txt \
++		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.AP6356S.txt \
 +		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.txt
 +endef
 +$(eval $(call BuildPackage,brcmfmac-firmware-4356-nanopi-m4))
