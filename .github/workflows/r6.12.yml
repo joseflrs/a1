@@ -36,8 +36,8 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                wget https://github.com/mj22226/source/commit/5651c61663cf4d7ef95cf8fed5141900b600f09b.patch
-                git apply 5651c61663cf4d7ef95cf8fed5141900b600f09b.patch
+                wget https://github.com/mj22226/source/commit/83e8f58cb4ab6b130369097c533490b5953909fe.patch
+                git apply 83e8f58cb4ab6b130369097c533490b5953909fe.patch
                 git apply kernel.patch
                 git apply ms.patch
                 git apply kmod-apk.patch
@@ -103,6 +103,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
