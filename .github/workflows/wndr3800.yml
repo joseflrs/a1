@@ -16,15 +16,14 @@ jobs:
                 wget https://downloads.openwrt.org/snapshots/targets/ath79/generic/llvm-bpf-20.1.8.Linux-x86_64.tar.zst
                 tar -xvf llvm-bpf-20.1.8.Linux-x86_64.tar.zst
                 git apply 0001-bpi-r31.patch
-                git apply 38.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
                 cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
-                echo "CONFIG_PACKAGE_luci-app-filemanager=y" >> .config
                 mv w3800 .config
+                echo "CONFIG_PACKAGE_luci-app-filemanager=y" >> .config
                 make defconfig
                 make download -j32
                 make -j$(nproc) 'IGNORE_ERRORS=n m'
@@ -47,4 +46,5 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/ath79/generic/*
+
 
