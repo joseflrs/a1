@@ -13,23 +13,13 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
-                wget https://downloads.openwrt.org/snapshots/targets/ath79/generic/llvm-bpf-18.1.7.Linux-x86_64.tar.zst
-                tar -xvf llvm-bpf-18.1.7.Linux-x86_64.tar.zst
+                wget https://downloads.openwrt.org/snapshots/targets/ath79/generic/llvm-bpf-20.1.8.Linux-x86_64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-x86_64.tar.zst
                 git apply 0001-bpi-r31.patch
                 git apply 38.patch
-                wget https://github.com/mj22226/openwrt/commit/848e171336e93686c886333ef978537b35c090d6.patch
-                wget https://github.com/mj22226/openwrt/commit/cd3b961bd2bccd10f385fa94bd55285113f27da0.patch
-                wget https://github.com/mj22226/openwrt/commit/8b9b1723955a93498ed6df58f3b22a92fb991aaa.patch
-                wget https://github.com/mj22226/openwrt/commit/0964b12f6d827e73a0f96ef118d81f4d4263bc46.patch
-                git apply 848e171336e93686c886333ef978537b35c090d6.patch
-                git apply cd3b961bd2bccd10f385fa94bd55285113f27da0.patch
-                git apply 8b9b1723955a93498ed6df58f3b22a92fb991aaa.patch
-                git apply 0964b12f6d827e73a0f96ef118d81f4d4263bc46.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
-                wget https://github.com/openwrt/luci/commit/10319bbcc4fa50e29e18ecc0b29c8a26124604f2.patch
-                git apply 10319bbcc4fa50e29e18ecc0b29c8a26124604f2.patch
                 cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
@@ -57,3 +47,4 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/ath79/generic/*
+
