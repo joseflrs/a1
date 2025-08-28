@@ -24,8 +24,8 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
-                wget https://github.com/mj22226/source/commit/83e8f58cb4ab6b130369097c533490b5953909fe.patch
-                git apply 83e8f58cb4ab6b130369097c533490b5953909fe.patch
+                wget https://github.com/mj22226/openwrt/commit/3c84dcce13e6d9556849c22171b7dd332a0dab88.patch
+                git apply 3c84dcce13e6d9556849c22171b7dd332a0dab88.patch
                 git apply kernel.patch
                 git apply pm.patch
                 git apply 0001-bpi-r31.patch
