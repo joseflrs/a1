@@ -180,14 +180,14 @@ CONFIG_TARGET_OPTIONS=y
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut200 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut241 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_xiaomi_miwifi-3a is not set
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_creality_wb-01
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_hongdian_h7920-v40
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_keenetic_kn-1112
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_keenetic_kn-1212
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut9x1
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut9x6
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_wavlink_wl-wn570ha2
-# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_wodesys_wd-r1208u
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_creality_wb-01 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_hongdian_h7920-v40 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_keenetic_kn-1112 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_keenetic_kn-1212 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut9x1 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut9x6 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_wavlink_wl-wn570ha2 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_wodesys_wd-r1208u is not set
 CONFIG_HOST_EXTRA_CFLAGS=""
 CONFIG_HOST_EXTRA_CPPFLAGS=""
 CONFIG_HOST_EXTRA_CXXFLAGS=""
