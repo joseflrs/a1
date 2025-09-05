@@ -166,7 +166,7 @@ index e28a8c4870..3dc1a2d8d0 100644
 -LINUX_VERSION-6.12 = .44
 -LINUX_KERNEL_HASH-6.12.44 = b650210ed3027b224969d148aa377452a9aad3ae7f2851abedd31adfef16bdae
 +LINUX_VERSION-6.12 = .45
-+LINUX_KERNEL_HASH-6.12.45 = d432657076edbf877fc576f708f560ee11bf2e1996c6b4aa007ab9ded656ec4f
++LINUX_KERNEL_HASH-6.12.45 = 8f95a8549cfbdfb89c1181a1f55a971f04dfcd629508a2ed70b777ab92f9db3e
 diff --git a/target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch b/target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch
 deleted file mode 100644
 index b0748acd40..0000000000
