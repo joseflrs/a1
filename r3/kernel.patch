@@ -1,59 +1,148 @@
-From ba8dc4a73c2da244450b0c97a3b83fa624c757b4 Mon Sep 17 00:00:00 2001
-From: i l <il@il.com>
-Date: Wed, 3 Sep 2025 00:44:56 +0000
-Subject: [PATCH] kernel: Linux 6.12.45-rc1
+From 6b8cc8c7d85fe82fd43ce47b303ffb8d4bf3b7c0 Mon Sep 17 00:00:00 2001
+From: J R <io@roton.me>
+Date: Sun, 7 Sep 2025 23:48:18 +0000
+Subject: [PATCH] kernel: bump 6.12 to 6.12.46
 
+Signed-off-by: J R <io@roton.me>
 ---
- ...ce-quirks-for-Freeway-Airmouse-T3-an.patch |   4 +-
- ...-net-macb-Also-set-DMA-coherent-mask.patch |   4 +-
- .../950-0356-pinctrl-Add-rp1-driver.patch     |   2 +-
- ...e-IFF_NO_QUEUE-in-virtual-interfaces.patch |   2 +-
- ...regression-in-local-broadcast-routes.patch |  47 -----
- ...t-phy-Constify-struct-mdio_device_id.patch |   2 +-
+ ...-net-macb-Also-set-DMA-coherent-mask.patch |  28 ++--
+ ...port-for-Raspberry-Pi-RP1-ethernet-c.patch |   4 +-
+ ...-to-determine-whether-EEE-is-support.patch |  54 --------
+ ...ovide-implementation-of-.support_eee.patch |  53 --------
+ ...cm_sf2-implement-.support_eee-method.patch |  69 ----------
+ ...sa-b53-mdio-add-support-for-BCM53101.patch |   4 +-
+ ...sa-b53-implement-setting-ageing-time.patch |   4 +-
+ ...dsa-b53-do-not-enable-EEE-on-bcm63xx.patch |  47 -------
+ .../621-proc-fix-missing-pde_set_flags.patch  | 121 ------------------
+ ...et-ethernet-mediatek-add-EEE-support.patch |   6 +-
+ .../721-net-add-packet-mangeling.patch        |   4 +-
  target/linux/generic/kernel-6.12              |   4 +-
- ...mediatek-lvts_thermal-Change-lvts-co.patch |  77 --------
- ...mediatek-lvts_thermal-Add-lvts-comma.patch | 186 ------------------
- ...mediatek-lvts_thermal-Add-mt7988-lvt.patch |  57 ------
- ...10-v6.14-net-phy-add-phy_inband_caps.patch |   2 +-
- .../1011-net-stmmac-use-GFP_DMA32.patch       |   2 +-
- 12 files changed, 11 insertions(+), 378 deletions(-)
- delete mode 100644 target/linux/generic/backport-6.12/626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch
- delete mode 100644 target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch
- delete mode 100644 target/linux/mediatek/patches-6.12/052-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-lvts-comma.patch
- delete mode 100644 target/linux/mediatek/patches-6.12/053-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-mt7988-lvt.patch
+ ...-block-add-support-for-notifications.patch |   2 +-
+ .../pending-6.12/655-increase_skb_pad.patch   |   2 +-
+ ...net-mtk_eth_soc-enable-threaded-NAPI.patch |   2 +-
+ ..._eth_soc-work-around-issue-with-send.patch |   4 +-
+ ...ernet-mtk_eth_soc-use-napi_build_skb.patch |   4 +-
+ ...-mediatek-enlarge-DMA-reserve-buffer.patch |   2 +-
+ ..._eth_soc-add-paths-and-SerDes-modes-.patch |  18 +--
+ ...th_soc-reduce-rx-ring-size-for-older.patch |  16 +--
+ ..._eth_soc-do-not-enable-page-pool-sta.patch |   4 +-
+ ..._eth_soc-fix-tx-vlan-tag-for-llc-pac.patch |  39 ------
+ ...dsa-add-out-of-band-tagging-protocol.patch |   2 +-
+ ...0812-soc-qcom-mdt_loader-support-MPD.patch |  14 +-
+ 24 files changed, 62 insertions(+), 445 deletions(-)
+ delete mode 100644 target/linux/generic/backport-6.12/600-01-v6.14-net-dsa-add-hook-to-determine-whether-EEE-is-support.patch
+ delete mode 100644 target/linux/generic/backport-6.12/600-02-v6.14-net-dsa-provide-implementation-of-.support_eee.patch
+ delete mode 100644 target/linux/generic/backport-6.12/610-02-v6.14-net-dsa-b53-bcm_sf2-implement-.support_eee-method.patch
+ delete mode 100644 target/linux/generic/backport-6.12/610-05-v6.16-net-dsa-b53-do-not-enable-EEE-on-bcm63xx.patch
+ delete mode 100644 target/linux/generic/backport-6.12/621-proc-fix-missing-pde_set_flags.patch
+ delete mode 100644 target/linux/generic/pending-6.12/742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch
 
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-index dc9c10cb73..879eb3c898 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0132-hid-usb-Add-device-quirks-for-Freeway-Airmouse-T3-an.patch
-@@ -32,7 +32,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-  #define USB_VENDOR_ID_BELKIN		0x050d
-  #define USB_DEVICE_ID_FLIP_KVM		0x3201
-  
--@@ -1463,6 +1466,9 @@
-+@@ -1466,6 +1469,9 @@
-  #define USB_VENDOR_ID_XIAOMI		0x2717
-  #define USB_DEVICE_ID_MI_SILENT_MOUSE	0x5014
-  
-@@ -52,7 +52,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_MULTI_TOUCH), HID_QUIRK_MULTI_INPUT },
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_PIXART_USB_OPTICAL_MOUSE), HID_QUIRK_ALWAYS_POLL },
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_CHICONY, USB_DEVICE_ID_CHICONY_PIXART_USB_OPTICAL_MOUSE2), HID_QUIRK_ALWAYS_POLL },
--@@ -211,6 +212,7 @@ static const struct hid_device_id hid_qu
-+@@ -213,6 +214,7 @@ static const struct hid_device_id hid_qu
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_WISEGROUP, USB_DEVICE_ID_QUAD_USB_JOYPAD), HID_QUIRK_NOGET | HID_QUIRK_MULTI_INPUT },
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_XIN_MO, USB_DEVICE_ID_XIN_MO_DUAL_ARCADE), HID_QUIRK_MULTI_INPUT },
-  	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_GROUP_AUDIO), HID_QUIRK_NOGET },
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0347-net-macb-Also-set-DMA-coherent-mask.patch b/target/linux/bcm27xx/patches-6.12/950-0347-net-macb-Also-set-DMA-coherent-mask.patch
-index d275ee438a..70087e1839 100644
+index 70087e1839..ea8d014e60 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0347-net-macb-Also-set-DMA-coherent-mask.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0347-net-macb-Also-set-DMA-coherent-mask.patch
+@@ -199,7 +199,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	snprintf(bp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+  		 bp->pdev->name, bp->pdev->id);
+  	bp->mii_bus->priv = bp;
+-@@ -1641,6 +1658,11 @@ static int macb_rx(struct macb_queue *qu
++@@ -1642,6 +1659,11 @@ static int macb_rx(struct macb_queue *qu
+  
+  		macb_init_rx_ring(queue);
+  		queue_writel(queue, RBQP, queue->rx_ring_dma);
+@@ -211,7 +211,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  
+  		macb_writel(bp, NCR, ctrl | MACB_BIT(RE));
+  
+-@@ -1941,8 +1963,9 @@ static irqreturn_t macb_interrupt(int ir
++@@ -1944,8 +1966,9 @@ static irqreturn_t macb_interrupt(int ir
+  				queue_writel(queue, ISR, MACB_BIT(TCOMP) |
+  							 MACB_BIT(TXUBR));
+  
+@@ -222,19 +222,19 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  				wmb(); // ensure softirq can see update
+  			}
+  
+-@@ -2397,6 +2420,11 @@ static netdev_tx_t macb_start_xmit(struc
++@@ -2401,6 +2424,11 @@ static netdev_tx_t macb_start_xmit(struc
+  	skb_tx_timestamp(skb);
+  
+- 	spin_lock_irq(&bp->lock);
++ 	spin_lock(&bp->lock);
+ +
+ +	/* TSTART write might get dropped, so make the IRQ retrigger a buffer read */
+ +	if (macb_readl(bp, TSR) & MACB_BIT(TGO))
+ +		queue->tx_pending = 1;
+ +
+  	macb_writel(bp, NCR, macb_readl(bp, NCR) | MACB_BIT(TSTART));
+- 	spin_unlock_irq(&bp->lock);
++ 	spin_unlock(&bp->lock);
+  
+-@@ -2803,6 +2831,37 @@ static void macb_configure_dma(struct ma
++@@ -2807,6 +2835,37 @@ static void macb_configure_dma(struct ma
+  	}
+  }
+  
+@@ -272,7 +272,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  static void macb_init_hw(struct macb *bp)
+  {
+  	u32 config;
+-@@ -2831,6 +2890,11 @@ static void macb_init_hw(struct macb *bp
++@@ -2835,6 +2894,11 @@ static void macb_init_hw(struct macb *bp
+  	if (bp->caps & MACB_CAPS_JUMBO)
+  		bp->rx_frm_len_mask = MACB_RX_JFRMLEN_MASK;
+  
+@@ -284,7 +284,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	macb_configure_dma(bp);
+  
+  	/* Enable RX partial store and forward and set watermark */
+-@@ -3195,6 +3259,52 @@ static void gem_get_ethtool_strings(stru
++@@ -3199,6 +3263,52 @@ static void gem_get_ethtool_strings(stru
+  	}
+  }
+  
+@@ -337,7 +337,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  static struct net_device_stats *macb_get_stats(struct net_device *dev)
+  {
+  	struct macb *bp = netdev_priv(dev);
+-@@ -3779,6 +3889,8 @@ static const struct ethtool_ops macb_eth
++@@ -3783,6 +3893,8 @@ static const struct ethtool_ops macb_eth
+  };
+  
+  static const struct ethtool_ops gem_ethtool_ops = {
+@@ -346,7 +346,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	.get_regs_len		= macb_get_regs_len,
+  	.get_regs		= macb_get_regs,
+  	.get_wol		= macb_get_wol,
+-@@ -3788,6 +3900,8 @@ static const struct ethtool_ops gem_etht
++@@ -3792,6 +3904,8 @@ static const struct ethtool_ops gem_etht
+  	.get_ethtool_stats	= gem_get_ethtool_stats,
+  	.get_strings		= gem_get_ethtool_strings,
+  	.get_sset_count		= gem_get_sset_count,
+@@ -355,7 +355,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	.get_link_ksettings     = macb_get_link_ksettings,
+  	.set_link_ksettings     = macb_set_link_ksettings,
+  	.get_ringparam		= macb_get_ringparam,
+-@@ -5109,6 +5223,11 @@ static int macb_probe(struct platform_de
++@@ -5113,6 +5227,11 @@ static int macb_probe(struct platform_de
+  			}
+  		}
+  	}
+@@ -367,7 +367,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	spin_lock_init(&bp->lock);
+  	spin_lock_init(&bp->stats_lock);
+  
+-@@ -5169,6 +5288,21 @@ static int macb_probe(struct platform_de
++@@ -5173,6 +5292,21 @@ static int macb_probe(struct platform_de
+  	else
+  		bp->phy_interface = interface;
+  
 @@ -389,7 +389,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
   	/* IP specific init */
   	err = init(pdev);
   	if (err)
--@@ -5243,6 +5377,19 @@ static void macb_remove(struct platform_
-+@@ -5240,6 +5374,19 @@ static void macb_remove(struct platform_
+-@@ -5240,6 +5374,19 @@ static void macb_remove(struct platform_
++@@ -5244,6 +5378,19 @@ static void macb_remove(struct platform_
   	}
   }
   
@@ -61,476 +150,917 @@ index d275ee438a..70087e1839 100644
   static int __maybe_unused macb_suspend(struct device *dev)
   {
   	struct net_device *netdev = dev_get_drvdata(dev);
--@@ -5496,6 +5643,7 @@ static const struct dev_pm_ops macb_pm_o
-+@@ -5493,6 +5640,7 @@ static const struct dev_pm_ops macb_pm_o
+-@@ -5493,6 +5640,7 @@ static const struct dev_pm_ops macb_pm_o
++@@ -5497,6 +5644,7 @@ static const struct dev_pm_ops macb_pm_o
   static struct platform_driver macb_driver = {
   	.probe		= macb_probe,
   	.remove_new	= macb_remove,
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0356-pinctrl-Add-rp1-driver.patch b/target/linux/bcm27xx/patches-6.12/950-0356-pinctrl-Add-rp1-driver.patch
-index bc6a0dc7eb..46d14efedb 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0356-pinctrl-Add-rp1-driver.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0356-pinctrl-Add-rp1-driver.patch
-@@ -59,7 +59,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0565-net-macb-Add-support-for-Raspberry-Pi-RP1-ethernet-c.patch b/target/linux/bcm27xx/patches-6.12/950-0565-net-macb-Add-support-for-Raspberry-Pi-RP1-ethernet-c.patch
+index 947cb02dda..3e1dce2bad 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0565-net-macb-Add-support-for-Raspberry-Pi-RP1-ethernet-c.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0565-net-macb-Add-support-for-Raspberry-Pi-RP1-ethernet-c.patch
+@@ -15,7 +15,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
  
- --- a/drivers/pinctrl/Kconfig
- +++ b/drivers/pinctrl/Kconfig
--@@ -587,6 +587,13 @@ config PINCTRL_MLXBF3
-+@@ -588,6 +588,13 @@ config PINCTRL_MLXBF3
-  	  each pin. This driver can also be built as a module called
-  	  pinctrl-mlxbf3.
+ --- a/drivers/net/ethernet/cadence/macb_main.c
+ +++ b/drivers/net/ethernet/cadence/macb_main.c
+-@@ -5072,6 +5072,17 @@ static const struct macb_config versal_c
++@@ -5076,6 +5076,17 @@ static const struct macb_config versal_c
+  	.usrio = &macb_default_usrio,
+  };
   
-diff --git a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-index d8c09daf9c..333627af1b 100644
---- a/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-+++ b/target/linux/generic/backport-6.12/620-v6.15-ppp-use-IFF_NO_QUEUE-in-virtual-interfaces.patch
-@@ -69,7 +69,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  #ifdef __KERNEL__
- --- a/net/l2tp/l2tp_ppp.c
- +++ b/net/l2tp/l2tp_ppp.c
--@@ -806,6 +806,7 @@ static int pppol2tp_connect(struct socke
-+@@ -796,6 +796,7 @@ static int pppol2tp_connect(struct socke
-  	po->chan.private = sk;
-  	po->chan.ops	 = &pppol2tp_chan_ops;
-  	po->chan.mtu	 = pppol2tp_tunnel_mtu(tunnel);
-diff --git a/target/linux/generic/backport-6.12/626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch b/target/linux/generic/backport-6.12/626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch
+@@ -33,7 +33,7 @@ Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+  static const struct of_device_id macb_dt_ids[] = {
+  	{ .compatible = "cdns,at91sam9260-macb", .data = &at91sam9260_config },
+  	{ .compatible = "cdns,macb" },
+-@@ -5092,6 +5103,7 @@ static const struct of_device_id macb_dt
++@@ -5096,6 +5107,7 @@ static const struct of_device_id macb_dt
+  	{ .compatible = "microchip,mpfs-macb", .data = &mpfs_config },
+  	{ .compatible = "microchip,sama7g5-gem", .data = &sama7g5_gem_config },
+  	{ .compatible = "microchip,sama7g5-emac", .data = &sama7g5_emac_config },
+diff --git a/target/linux/generic/backport-6.12/600-01-v6.14-net-dsa-add-hook-to-determine-whether-EEE-is-support.patch b/target/linux/generic/backport-6.12/600-01-v6.14-net-dsa-add-hook-to-determine-whether-EEE-is-support.patch
 deleted file mode 100644
-index 3653ccec6c..0000000000
---- a/target/linux/generic/backport-6.12/626-v6.17-net-ipv4-fix-regression-in-local-broadcast-routes.patch
+index 446f918fa0..0000000000
+--- a/target/linux/generic/backport-6.12/600-01-v6.14-net-dsa-add-hook-to-determine-whether-EEE-is-support.patch
++++ /dev/null
+@@ -1,54 +0,0 @@
+-From 9723a77318b7c0cfd06ea207e52a042f8c815318 Mon Sep 17 00:00:00 2001
+-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+-Date: Tue, 10 Dec 2024 14:18:16 +0000
+-Subject: [PATCH] net: dsa: add hook to determine whether EEE is supported
+-
+-Add a hook to determine whether the switch supports EEE. This will
+-return false if the switch does not, or true if it does. If the
+-method is not implemented, we assume (currently) that the switch
+-supports EEE.
+-
+-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+-Link: https://patch.msgid.link/E1tL144-006cZD-El@rmk-PC.armlinux.org.uk
+-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+----
+- include/net/dsa.h | 1 +
+- net/dsa/user.c    | 8 ++++++++
+- 2 files changed, 9 insertions(+)
+-
+---- a/include/net/dsa.h
+-+++ b/include/net/dsa.h
+-@@ -1003,6 +1003,7 @@ struct dsa_switch_ops {
+- 	/*
+- 	 * Port's MAC EEE settings
+- 	 */
+-+	bool	(*support_eee)(struct dsa_switch *ds, int port);
+- 	int	(*set_mac_eee)(struct dsa_switch *ds, int port,
+- 			       struct ethtool_keee *e);
+- 	int	(*get_mac_eee)(struct dsa_switch *ds, int port,
+---- a/net/dsa/user.c
+-+++ b/net/dsa/user.c
+-@@ -1231,6 +1231,10 @@ static int dsa_user_set_eee(struct net_d
+- 	struct dsa_switch *ds = dp->ds;
+- 	int ret;
+- 
+-+	/* Check whether the switch supports EEE */
+-+	if (ds->ops->support_eee && !ds->ops->support_eee(ds, dp->index))
+-+		return -EOPNOTSUPP;
+-+
+- 	/* Port's PHY and MAC both need to be EEE capable */
+- 	if (!dev->phydev || !dp->pl)
+- 		return -ENODEV;
+-@@ -1251,6 +1255,10 @@ static int dsa_user_get_eee(struct net_d
+- 	struct dsa_switch *ds = dp->ds;
+- 	int ret;
+- 
+-+	/* Check whether the switch supports EEE */
+-+	if (ds->ops->support_eee && !ds->ops->support_eee(ds, dp->index))
+-+		return -EOPNOTSUPP;
+-+
+- 	/* Port's PHY and MAC both need to be EEE capable */
+- 	if (!dev->phydev || !dp->pl)
+- 		return -ENODEV;
+diff --git a/target/linux/generic/backport-6.12/600-02-v6.14-net-dsa-provide-implementation-of-.support_eee.patch b/target/linux/generic/backport-6.12/600-02-v6.14-net-dsa-provide-implementation-of-.support_eee.patch
+deleted file mode 100644
+index d7342daa0b..0000000000
+--- a/target/linux/generic/backport-6.12/600-02-v6.14-net-dsa-provide-implementation-of-.support_eee.patch
++++ /dev/null
+@@ -1,53 +0,0 @@
+-From 99379f587278c818777cb4778e2c79c6c1440c65 Mon Sep 17 00:00:00 2001
+-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+-Date: Tue, 10 Dec 2024 14:18:21 +0000
+-Subject: [PATCH] net: dsa: provide implementation of .support_eee()
+-
+-Provide a trivial implementation for the .support_eee() method which
+-switch drivers can use to simply indicate that they support EEE on
+-all their user ports.
+-
+-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+-Link: https://patch.msgid.link/E1tL149-006cZJ-JJ@rmk-PC.armlinux.org.uk
+-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+----
+- include/net/dsa.h |  1 +
+- net/dsa/port.c    | 16 ++++++++++++++++
+- 2 files changed, 17 insertions(+)
+-
+---- a/include/net/dsa.h
+-+++ b/include/net/dsa.h
+-@@ -1399,5 +1399,6 @@ static inline bool dsa_user_dev_check(co
+- 
+- netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, struct net_device *dev);
+- void dsa_port_phylink_mac_change(struct dsa_switch *ds, int port, bool up);
+-+bool dsa_supports_eee(struct dsa_switch *ds, int port);
+- 
+- #endif
+---- a/net/dsa/port.c
+-+++ b/net/dsa/port.c
+-@@ -1589,6 +1589,22 @@ dsa_port_phylink_mac_select_pcs(struct p
+- 	return pcs;
+- }
+- 
+-+/* dsa_supports_eee - indicate that EEE is supported
+-+ * @ds: pointer to &struct dsa_switch
+-+ * @port: port index
+-+ *
+-+ * A default implementation for the .support_eee() DSA operations member,
+-+ * which drivers can use to indicate that they support EEE on all of their
+-+ * user ports.
+-+ *
+-+ * Returns: true
+-+ */
+-+bool dsa_supports_eee(struct dsa_switch *ds, int port)
+-+{
+-+	return true;
+-+}
+-+EXPORT_SYMBOL_GPL(dsa_supports_eee);
+-+
+- static void dsa_port_phylink_mac_config(struct phylink_config *config,
+- 					unsigned int mode,
+- 					const struct phylink_link_state *state)
+diff --git a/target/linux/generic/backport-6.12/610-02-v6.14-net-dsa-b53-bcm_sf2-implement-.support_eee-method.patch b/target/linux/generic/backport-6.12/610-02-v6.14-net-dsa-b53-bcm_sf2-implement-.support_eee-method.patch
+deleted file mode 100644
+index 2658c6861b..0000000000
+--- a/target/linux/generic/backport-6.12/610-02-v6.14-net-dsa-b53-bcm_sf2-implement-.support_eee-method.patch
++++ /dev/null
+@@ -1,69 +0,0 @@
+-From c86692fc2cb77d94dd8c166c2b9017f196d02a84 Mon Sep 17 00:00:00 2001
+-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+-Date: Tue, 10 Dec 2024 14:18:26 +0000
+-Subject: [PATCH] net: dsa: b53/bcm_sf2: implement .support_eee() method
+-
+-Implement the .support_eee() method to indicate that EEE is not
+-supported by two switch variants, rather than making these checks in
+-the .set_mac_eee() and .get_mac_eee() methods.
+-
+-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+-Link: https://patch.msgid.link/E1tL14E-006cZU-Nc@rmk-PC.armlinux.org.uk
+-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+----
+- drivers/net/dsa/b53/b53_common.c | 13 +++++++------
+- drivers/net/dsa/b53/b53_priv.h   |  1 +
+- 2 files changed, 8 insertions(+), 6 deletions(-)
+-
+---- a/drivers/net/dsa/b53/b53_common.c
+-+++ b/drivers/net/dsa/b53/b53_common.c
+-@@ -2387,13 +2387,16 @@ int b53_eee_init(struct dsa_switch *ds,
+- }
+- EXPORT_SYMBOL(b53_eee_init);
+- 
+--int b53_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_keee *e)
+-+bool b53_support_eee(struct dsa_switch *ds, int port)
+- {
+- 	struct b53_device *dev = ds->priv;
+- 
+--	if (is5325(dev) || is5365(dev))
+--		return -EOPNOTSUPP;
+-+	return !is5325(dev) && !is5365(dev);
+-+}
+-+EXPORT_SYMBOL(b53_support_eee);
+- 
+-+int b53_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_keee *e)
+-+{
+- 	return 0;
+- }
+- EXPORT_SYMBOL(b53_get_mac_eee);
+-@@ -2403,9 +2406,6 @@ int b53_set_mac_eee(struct dsa_switch *d
+- 	struct b53_device *dev = ds->priv;
+- 	struct ethtool_keee *p = &dev->ports[port].eee;
+- 
+--	if (is5325(dev) || is5365(dev))
+--		return -EOPNOTSUPP;
+--
+- 	p->eee_enabled = e->eee_enabled;
+- 	b53_eee_enable_set(ds, port, e->eee_enabled);
+- 
+-@@ -2462,6 +2462,7 @@ static const struct dsa_switch_ops b53_s
+- 	.port_setup		= b53_setup_port,
+- 	.port_enable		= b53_enable_port,
+- 	.port_disable		= b53_disable_port,
+-+	.support_eee		= b53_support_eee,
+- 	.get_mac_eee		= b53_get_mac_eee,
+- 	.set_mac_eee		= b53_set_mac_eee,
+- 	.port_bridge_join	= b53_br_join,
+---- a/drivers/net/dsa/b53/b53_priv.h
+-+++ b/drivers/net/dsa/b53/b53_priv.h
+-@@ -387,6 +387,7 @@ int b53_enable_port(struct dsa_switch *d
+- void b53_disable_port(struct dsa_switch *ds, int port);
+- void b53_brcm_hdr_setup(struct dsa_switch *ds, int port);
+- int b53_eee_init(struct dsa_switch *ds, int port, struct phy_device *phy);
+-+bool b53_support_eee(struct dsa_switch *ds, int port);
+- int b53_get_mac_eee(struct dsa_switch *ds, int port, struct ethtool_keee *e);
+- int b53_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_keee *e);
+- 
+diff --git a/target/linux/generic/backport-6.12/610-03-v6.15-net-dsa-b53-mdio-add-support-for-BCM53101.patch b/target/linux/generic/backport-6.12/610-03-v6.15-net-dsa-b53-mdio-add-support-for-BCM53101.patch
+index dd17c8f6aa..6d69ec0648 100644
+--- a/target/linux/generic/backport-6.12/610-03-v6.15-net-dsa-b53-mdio-add-support-for-BCM53101.patch
++++ b/target/linux/generic/backport-6.12/610-03-v6.15-net-dsa-b53-mdio-add-support-for-BCM53101.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+ 
+ --- a/drivers/net/dsa/b53/b53_common.c
+ +++ b/drivers/net/dsa/b53/b53_common.c
+-@@ -2581,6 +2581,19 @@ static const struct b53_chip_data b53_sw
++@@ -2584,6 +2584,19 @@ static const struct b53_chip_data b53_sw
+  		.jumbo_size_reg = B53_JUMBO_MAX_SIZE,
+  	},
+  	{
+@@ -38,7 +38,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  		.chip_id = BCM53115_DEVICE_ID,
+  		.dev_name = "BCM53115",
+  		.vlans = 4096,
+-@@ -2961,6 +2974,7 @@ int b53_switch_detect(struct b53_device
++@@ -2964,6 +2977,7 @@ int b53_switch_detect(struct b53_device
+  			return ret;
+  
+  		switch (id32) {
+diff --git a/target/linux/generic/backport-6.12/610-04-v6.16-net-dsa-b53-implement-setting-ageing-time.patch b/target/linux/generic/backport-6.12/610-04-v6.16-net-dsa-b53-implement-setting-ageing-time.patch
+index 75ad5c5e3e..5c993a6119 100644
+--- a/target/linux/generic/backport-6.12/610-04-v6.16-net-dsa-b53-implement-setting-ageing-time.patch
++++ b/target/linux/generic/backport-6.12/610-04-v6.16-net-dsa-b53-implement-setting-ageing-time.patch
+@@ -40,7 +40,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  	ret = b53_reset_switch(dev);
+  	if (ret) {
+  		dev_err(ds->dev, "failed to reset switch\n");
+-@@ -2441,6 +2446,28 @@ static int b53_get_max_mtu(struct dsa_sw
++@@ -2444,6 +2449,28 @@ static int b53_get_max_mtu(struct dsa_sw
+  	return B53_MAX_MTU;
+  }
+  
+@@ -69,7 +69,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+  static const struct phylink_mac_ops b53_phylink_mac_ops = {
+  	.mac_select_pcs	= b53_phylink_mac_select_pcs,
+  	.mac_config	= b53_phylink_mac_config,
+-@@ -2465,6 +2492,7 @@ static const struct dsa_switch_ops b53_s
++@@ -2468,6 +2495,7 @@ static const struct dsa_switch_ops b53_s
+  	.support_eee		= b53_support_eee,
+  	.get_mac_eee		= b53_get_mac_eee,
+  	.set_mac_eee		= b53_set_mac_eee,
+diff --git a/target/linux/generic/backport-6.12/610-05-v6.16-net-dsa-b53-do-not-enable-EEE-on-bcm63xx.patch b/target/linux/generic/backport-6.12/610-05-v6.16-net-dsa-b53-do-not-enable-EEE-on-bcm63xx.patch
+deleted file mode 100644
+index 39fb229f33..0000000000
+--- a/target/linux/generic/backport-6.12/610-05-v6.16-net-dsa-b53-do-not-enable-EEE-on-bcm63xx.patch
 +++ /dev/null
 @@ -1,47 +0,0 @@
--From 5189446ba995556eaa3755a6e875bc06675b88bd Mon Sep 17 00:00:00 2001
--From: Oscar Maes <oscmaes92@gmail.com>
--Date: Wed, 27 Aug 2025 08:23:21 +0200
--Subject: [PATCH] net: ipv4: fix regression in local-broadcast routes
+-From 1237c2d4a8db79dfd4369bff6930b0e385ed7d5c Mon Sep 17 00:00:00 2001
+-From: Jonas Gorski <jonas.gorski@gmail.com>
+-Date: Mon, 2 Jun 2025 21:39:49 +0200
+-Subject: [PATCH] net: dsa: b53: do not enable EEE on bcm63xx
+-MIME-Version: 1.0
+-Content-Type: text/plain; charset=UTF-8
+-Content-Transfer-Encoding: 8bit
 -
--Commit 9e30ecf23b1b ("net: ipv4: fix incorrect MTU in broadcast routes")
--introduced a regression where local-broadcast packets would have their
--gateway set in __mkroute_output, which was caused by fi = NULL being
--removed.
+-BCM63xx internal switches do not support EEE, but provide multiple RGMII
+-ports where external PHYs may be connected. If one of these PHYs are EEE
+-capable, we may try to enable EEE for the MACs, which then hangs the
+-system on access of the (non-existent) EEE registers.
 -
--Fix this by resetting the fib_info for local-broadcast packets. This
--preserves the intended changes for directed-broadcast packets.
+-Fix this by checking if the switch actually supports EEE before
+-attempting to configure it.
 -
--Cc: stable@vger.kernel.org
--Fixes: 9e30ecf23b1b ("net: ipv4: fix incorrect MTU in broadcast routes")
--Reported-by: Brett A C Sheffield <bacs@librecast.net>
--Closes: https://lore.kernel.org/regressions/20250822165231.4353-4-bacs@librecast.net
--Signed-off-by: Oscar Maes <oscmaes92@gmail.com>
--Reviewed-by: David Ahern <dsahern@kernel.org>
--Link: https://patch.msgid.link/20250827062322.4807-1-oscmaes92@gmail.com
+-Fixes: 22256b0afb12 ("net: dsa: b53: Move EEE functions to b53")
+-Reviewed-by: Florian Fainelli <florian.fainelli@broadcom.com>
+-Tested-by: Álvaro Fernández Rojas <noltari@gmail.com>
+-Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
+-Link: https://patch.msgid.link/20250602193953.1010487-2-jonas.gorski@gmail.com
 -Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ----
-- net/ipv4/route.c | 10 +++++++---
-- 1 file changed, 7 insertions(+), 3 deletions(-)
+- drivers/net/dsa/b53/b53_common.c | 5 ++++-
+- 1 file changed, 4 insertions(+), 1 deletion(-)
 -
----- a/net/ipv4/route.c
--+++ b/net/ipv4/route.c
--@@ -2532,12 +2532,16 @@ static struct rtable *__mkroute_output(c
-- 		    !netif_is_l3_master(dev_out))
-- 			return ERR_PTR(-EINVAL);
+---- a/drivers/net/dsa/b53/b53_common.c
+-+++ b/drivers/net/dsa/b53/b53_common.c
+-@@ -2382,6 +2382,9 @@ int b53_eee_init(struct dsa_switch *ds,
+- {
+- 	int ret;
 - 
---	if (ipv4_is_lbcast(fl4->daddr))
--+	if (ipv4_is_lbcast(fl4->daddr)) {
-- 		type = RTN_BROADCAST;
---	else if (ipv4_is_multicast(fl4->daddr))
+-+	if (!b53_support_eee(ds, port))
+-+		return 0;
 -+
--+		/* reset fi to prevent gateway resolution */
--+		fi = NULL;
--+	} else if (ipv4_is_multicast(fl4->daddr)) {
-- 		type = RTN_MULTICAST;
---	else if (ipv4_is_zeronet(fl4->daddr))
--+	} else if (ipv4_is_zeronet(fl4->daddr)) {
-- 		return ERR_PTR(-EINVAL);
--+	}
+- 	ret = phy_init_eee(phy, false);
+- 	if (ret)
+- 		return 0;
+-@@ -2396,7 +2399,7 @@ bool b53_support_eee(struct dsa_switch *
+- {
+- 	struct b53_device *dev = ds->priv;
 - 
-- 	if (dev_out->flags & IFF_LOOPBACK)
-- 		flags |= RTCF_LOCAL;
-diff --git a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-index c010e87a7b..6b85e59577 100644
---- a/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-+++ b/target/linux/generic/backport-6.12/720-09-v6.14-net-phy-Constify-struct-mdio_device_id.patch
-@@ -502,7 +502,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  	{ }
- --- a/drivers/net/phy/mscc/mscc_main.c
- +++ b/drivers/net/phy/mscc/mscc_main.c
--@@ -2712,7 +2712,7 @@ static struct phy_driver vsc85xx_driver[
-+@@ -2710,7 +2710,7 @@ static struct phy_driver vsc85xx_driver[
+--	return !is5325(dev) && !is5365(dev);
+-+	return !is5325(dev) && !is5365(dev) && !is63xx(dev);
+- }
+- EXPORT_SYMBOL(b53_support_eee);
+- 
+diff --git a/target/linux/generic/backport-6.12/621-proc-fix-missing-pde_set_flags.patch b/target/linux/generic/backport-6.12/621-proc-fix-missing-pde_set_flags.patch
+deleted file mode 100644
+index ba026b9c3a..0000000000
+--- a/target/linux/generic/backport-6.12/621-proc-fix-missing-pde_set_flags.patch
++++ /dev/null
+@@ -1,121 +0,0 @@
+-From: wangzijie <wangzijie1@honor.com>
+-To: <akpm@linux-foundation.org>, <brauner@kernel.org>,
+-	<viro@zeniv.linux.org.uk>, <adobriyan@gmail.com>,
+-	<rick.p.edgecombe@intel.com>, <ast@kernel.org>,
+-	<k.shutemov@gmail.com>, <jirislaby@kernel.org>,
+-	<linux-fsdevel@vger.kernel.org>
+-Cc: <polynomial-c@gmx.de>, <gregkh@linuxfoundation.org>,
+-	<stable@vger.kernel.org>, <regressions@lists.linux.dev>,
+-	wangzijie <wangzijie1@honor.com>
+-Subject: [PATCH v3] proc: fix missing pde_set_flags() for net proc files
+-Date: Thu, 21 Aug 2025 18:58:06 +0800	[thread overview]
+-Message-ID: <20250821105806.1453833-1-wangzijie1@honor.com> (raw)
+-
+-To avoid potential UAF issues during module removal races, we use pde_set_flags()
+-to save proc_ops flags in PDE itself before proc_register(), and then use
+-pde_has_proc_*() helpers instead of directly dereferencing pde->proc_ops->*.
+-
+-However, the pde_set_flags() call was missing when creating net related proc files.
+-This omission caused incorrect behavior which FMODE_LSEEK was being cleared
+-inappropriately in proc_reg_open() for net proc files. Lars reported it in this link[1].
+-
+-Fix this by ensuring pde_set_flags() is called when register proc entry, and add
+-NULL check for proc_ops in pde_set_flags().
+-
+-[1]: https://lore.kernel.org/all/20250815195616.64497967@chagall.paradoxon.rec/
+-
+-Fixes: ff7ec8dc1b64 ("proc: use the same treatment to check proc_lseek as ones for proc_read_iter et.al")
+-Cc: stable@vger.kernel.org
+-Reported-by: Lars Wendler <polynomial-c@gmx.de>
+-Signed-off-by: wangzijie <wangzijie1@honor.com>
+----
+-v3:
+-- followed by Christian's suggestion to stash pde->proc_ops in a local const variable
+-v2:
+-- followed by Jiri's suggestion to refractor code and reformat commit message
+----
+- fs/proc/generic.c | 38 +++++++++++++++++++++-----------------
+- 1 file changed, 21 insertions(+), 17 deletions(-)
+-
+---- a/fs/proc/generic.c
+-+++ b/fs/proc/generic.c
+-@@ -362,6 +362,25 @@ static const struct inode_operations pro
+- 	.setattr	= proc_notify_change,
+- };
+- 
+-+static void pde_set_flags(struct proc_dir_entry *pde)
+-+{
+-+	const struct proc_ops *proc_ops = pde->proc_ops;
+-+
+-+	if (!proc_ops)
+-+		return;
+-+
+-+	if (proc_ops->proc_flags & PROC_ENTRY_PERMANENT)
+-+		pde->flags |= PROC_ENTRY_PERMANENT;
+-+	if (proc_ops->proc_read_iter)
+-+		pde->flags |= PROC_ENTRY_proc_read_iter;
+-+#ifdef CONFIG_COMPAT
+-+	if (proc_ops->proc_compat_ioctl)
+-+		pde->flags |= PROC_ENTRY_proc_compat_ioctl;
+-+#endif
+-+	if (proc_ops->proc_lseek)
+-+		pde->flags |= PROC_ENTRY_proc_lseek;
+-+}
+-+
+- /* returns the registered entry, or frees dp and returns NULL on failure */
+- struct proc_dir_entry *proc_register(struct proc_dir_entry *dir,
+- 		struct proc_dir_entry *dp)
+-@@ -369,6 +388,8 @@ struct proc_dir_entry *proc_register(str
+- 	if (proc_alloc_inum(&dp->low_ino))
+- 		goto out_free_entry;
+- 
+-+	pde_set_flags(dp);
+-+
+- 	write_lock(&proc_subdir_lock);
+- 	dp->parent = dir;
+- 	if (pde_subdir_insert(dir, dp) == false) {
+-@@ -557,20 +578,6 @@ struct proc_dir_entry *proc_create_reg(c
+- 	return p;
+- }
+- 
+--static void pde_set_flags(struct proc_dir_entry *pde)
+--{
+--	if (pde->proc_ops->proc_flags & PROC_ENTRY_PERMANENT)
+--		pde->flags |= PROC_ENTRY_PERMANENT;
+--	if (pde->proc_ops->proc_read_iter)
+--		pde->flags |= PROC_ENTRY_proc_read_iter;
+--#ifdef CONFIG_COMPAT
+--	if (pde->proc_ops->proc_compat_ioctl)
+--		pde->flags |= PROC_ENTRY_proc_compat_ioctl;
+--#endif
+--	if (pde->proc_ops->proc_lseek)
+--		pde->flags |= PROC_ENTRY_proc_lseek;
+--}
+--
+- struct proc_dir_entry *proc_create_data(const char *name, umode_t mode,
+- 		struct proc_dir_entry *parent,
+- 		const struct proc_ops *proc_ops, void *data)
+-@@ -581,7 +588,6 @@ struct proc_dir_entry *proc_create_data(
+- 	if (!p)
+- 		return NULL;
+- 	p->proc_ops = proc_ops;
+--	pde_set_flags(p);
+- 	return proc_register(parent, p);
+- }
+- EXPORT_SYMBOL(proc_create_data);
+-@@ -632,7 +638,6 @@ struct proc_dir_entry *proc_create_seq_p
+- 	p->proc_ops = &proc_seq_ops;
+- 	p->seq_ops = ops;
+- 	p->state_size = state_size;
+--	pde_set_flags(p);
+- 	return proc_register(parent, p);
+- }
+- EXPORT_SYMBOL(proc_create_seq_private);
+-@@ -663,7 +668,6 @@ struct proc_dir_entry *proc_create_singl
+- 		return NULL;
+- 	p->proc_ops = &proc_single_ops;
+- 	p->single_show = show;
+--	pde_set_flags(p);
+- 	return proc_register(parent, p);
+- }
+- EXPORT_SYMBOL(proc_create_single_data);
+diff --git a/target/linux/generic/backport-6.12/721-01-v6.15-net-ethernet-mediatek-add-EEE-support.patch b/target/linux/generic/backport-6.12/721-01-v6.15-net-ethernet-mediatek-add-EEE-support.patch
+index 2ca3f2ef00..c58635a284 100644
+--- a/target/linux/generic/backport-6.12/721-01-v6.15-net-ethernet-mediatek-add-EEE-support.patch
++++ b/target/linux/generic/backport-6.12/721-01-v6.15-net-ethernet-mediatek-add-EEE-support.patch
+@@ -39,7 +39,7 @@ Signed-off-by: Qingfang Deng <dqfext@gmail.com>
+  	mcr |= MAC_MCR_TX_EN | MAC_MCR_RX_EN | MAC_MCR_FORCE_LINK;
+  	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+  }
+-@@ -4506,6 +4516,61 @@ static int mtk_set_pauseparam(struct net
++@@ -4514,6 +4524,61 @@ static int mtk_set_pauseparam(struct net
+  	return phylink_ethtool_set_pauseparam(mac->phylink, pause);
+  }
   
-  module_phy_driver(vsc85xx_driver);
+@@ -101,7 +101,7 @@ Signed-off-by: Qingfang Deng <dqfext@gmail.com>
+  static u16 mtk_select_queue(struct net_device *dev, struct sk_buff *skb,
+  			    struct net_device *sb_dev)
+  {
+-@@ -4538,6 +4603,8 @@ static const struct ethtool_ops mtk_etht
++@@ -4546,6 +4611,8 @@ static const struct ethtool_ops mtk_etht
+  	.set_pauseparam		= mtk_set_pauseparam,
+  	.get_rxnfc		= mtk_get_rxnfc,
+  	.set_rxnfc		= mtk_set_rxnfc,
+@@ -110,7 +110,7 @@ Signed-off-by: Qingfang Deng <dqfext@gmail.com>
+  };
+  
+  static const struct net_device_ops mtk_netdev_ops = {
+-@@ -4598,6 +4665,8 @@ static int mtk_add_mac(struct mtk_eth *e
++@@ -4606,6 +4673,8 @@ static int mtk_add_mac(struct mtk_eth *e
+  	}
+  	mac = netdev_priv(eth->netdev[id]);
+  	eth->mac[id] = mac;
+diff --git a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+index fee5641cbd..842c9b0d30 100644
+--- a/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
++++ b/target/linux/generic/hack-6.12/721-net-add-packet-mangeling.patch
+@@ -52,7 +52,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+   */
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3236,6 +3236,10 @@ static inline int pskb_trim(struct sk_bu
++@@ -3242,6 +3242,10 @@ static inline int pskb_trim(struct sk_bu
+  	return (len < skb->len) ? __pskb_trim(skb, len) : 0;
+  }
+  
+@@ -63,7 +63,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  /**
+   *	pskb_trim_unique - remove end from a paged unique (not cloned) buffer
+   *	@skb: buffer to alter
+-@@ -3401,16 +3405,6 @@ static inline struct sk_buff *dev_alloc_
++@@ -3407,16 +3411,6 @@ static inline struct sk_buff *dev_alloc_
+  }
+  
   
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index e28a8c4870..3dc1a2d8d0 100644
+index 6108288d11..086774e155 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .44
--LINUX_KERNEL_HASH-6.12.44 = b650210ed3027b224969d148aa377452a9aad3ae7f2851abedd31adfef16bdae
-+LINUX_VERSION-6.12 = .45
-+LINUX_KERNEL_HASH-6.12.45 = 8f95a8549cfbdfb89c1181a1f55a971f04dfcd629508a2ed70b777ab92f9db3e
-diff --git a/target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch b/target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch
-deleted file mode 100644
-index b0748acd40..0000000000
---- a/target/linux/mediatek/patches-6.12/051-v6.17-thermal-drivers-mediatek-lvts_thermal-Change-lvts-co.patch
-+++ /dev/null
-@@ -1,77 +0,0 @@
--From 4bbb3598b81eaa329df9c03d9a0cd4d1c70e73a4 Mon Sep 17 00:00:00 2001
--From: Mason Chang <mason-cw.chang@mediatek.com>
--Date: Mon, 26 May 2025 18:26:57 +0800
--Subject: [PATCH 1/3] thermal/drivers/mediatek/lvts_thermal: Change lvts
-- commands array to static const
--
--Change the LVTS commands array to static const in preparation for
--adding different commands.
--
--Signed-off-by: Mason Chang <mason-cw.chang@mediatek.com>
--Link: https://lore.kernel.org/r/20250526102659.30225-2-mason-cw.chang@mediatek.com
--Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
--(cherry picked from commit c5d5a72c01f7faabe7cc0fd63942c18372101daf)
-----
-- drivers/thermal/mediatek/lvts_thermal.c | 29 +++++++++++++------------
-- 1 file changed, 15 insertions(+), 14 deletions(-)
--
----- a/drivers/thermal/mediatek/lvts_thermal.c
--+++ b/drivers/thermal/mediatek/lvts_thermal.c
--@@ -92,6 +92,17 @@
-- 
-- #define LVTS_MINIMUM_THRESHOLD		20000
-- 
--+static const u32 default_conn_cmds[] = { 0xC103FFFF, 0xC502FF55 };
--+/*
--+ * Write device mask: 0xC1030000
--+ */
--+static const u32 default_init_cmds[] = {
--+	0xC1030E01, 0xC1030CFC, 0xC1030A8C, 0xC103098D, 0xC10308F1,
--+	0xC10307A6, 0xC10306B8, 0xC1030500, 0xC1030420, 0xC1030300,
--+	0xC1030030, 0xC10300F6, 0xC1030050, 0xC1030060, 0xC10300AC,
--+	0xC10300FC, 0xC103009D, 0xC10300F1, 0xC10300E1
--+};
--+
-- static int golden_temp = LVTS_GOLDEN_TEMP_DEFAULT;
-- static int golden_temp_offset;
-- 
--@@ -880,7 +891,7 @@ static void lvts_ctrl_monitor_enable(str
--  * each write in the configuration register must be separated by a
--  * delay of 2 us.
--  */
---static void lvts_write_config(struct lvts_ctrl *lvts_ctrl, u32 *cmds, int nr_cmds)
--+static void lvts_write_config(struct lvts_ctrl *lvts_ctrl, const u32 *cmds, int nr_cmds)
-- {
-- 	int i;
-- 
--@@ -963,9 +974,9 @@ static int lvts_ctrl_set_enable(struct l
-- 
-- static int lvts_ctrl_connect(struct device *dev, struct lvts_ctrl *lvts_ctrl)
-- {
---	u32 id, cmds[] = { 0xC103FFFF, 0xC502FF55 };
--+	u32 id;
-- 
---	lvts_write_config(lvts_ctrl, cmds, ARRAY_SIZE(cmds));
--+	lvts_write_config(lvts_ctrl, default_conn_cmds, ARRAY_SIZE(default_conn_cmds));
-- 
-- 	/*
-- 	 * LVTS_ID : Get ID and status of the thermal controller
--@@ -984,17 +995,7 @@ static int lvts_ctrl_connect(struct devi
-- 
-- static int lvts_ctrl_initialize(struct device *dev, struct lvts_ctrl *lvts_ctrl)
-- {
---	/*
---	 * Write device mask: 0xC1030000
---	 */
---	u32 cmds[] = {
---		0xC1030E01, 0xC1030CFC, 0xC1030A8C, 0xC103098D, 0xC10308F1,
---		0xC10307A6, 0xC10306B8, 0xC1030500, 0xC1030420, 0xC1030300,
---		0xC1030030, 0xC10300F6, 0xC1030050, 0xC1030060, 0xC10300AC,
---		0xC10300FC, 0xC103009D, 0xC10300F1, 0xC10300E1
---	};
---
---	lvts_write_config(lvts_ctrl, cmds, ARRAY_SIZE(cmds));
--+	lvts_write_config(lvts_ctrl, default_init_cmds, ARRAY_SIZE(default_init_cmds));
-- 
-- 	return 0;
-- }
-diff --git a/target/linux/mediatek/patches-6.12/052-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-lvts-comma.patch b/target/linux/mediatek/patches-6.12/052-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-lvts-comma.patch
-deleted file mode 100644
-index 8a3ee0b17a..0000000000
---- a/target/linux/mediatek/patches-6.12/052-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-lvts-comma.patch
-+++ /dev/null
-@@ -1,186 +0,0 @@
--From 75d0dd334963fb3e3a85b8ceadd48071daa8165f Mon Sep 17 00:00:00 2001
--From: Mason Chang <mason-cw.chang@mediatek.com>
--Date: Mon, 26 May 2025 18:26:58 +0800
--Subject: [PATCH 2/3] thermal/drivers/mediatek/lvts_thermal: Add lvts commands
-- and their sizes to driver data
--
--Add LVTS commands and their sizes to driver data in preparation for
--adding different commands.
--
--Signed-off-by: Mason Chang <mason-cw.chang@mediatek.com>
--Link: https://lore.kernel.org/r/20250526102659.30225-3-mason-cw.chang@mediatek.com
--Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
--(cherry picked from commit 6203a5e6fd090ed05f6d9b92e33bc7e7679a3dd6)
-----
-- drivers/thermal/mediatek/lvts_thermal.c | 65 ++++++++++++++++++++-----
-- 1 file changed, 52 insertions(+), 13 deletions(-)
--
----- a/drivers/thermal/mediatek/lvts_thermal.c
--+++ b/drivers/thermal/mediatek/lvts_thermal.c
--@@ -92,17 +92,6 @@
-- 
-- #define LVTS_MINIMUM_THRESHOLD		20000
-- 
---static const u32 default_conn_cmds[] = { 0xC103FFFF, 0xC502FF55 };
---/*
--- * Write device mask: 0xC1030000
--- */
---static const u32 default_init_cmds[] = {
---	0xC1030E01, 0xC1030CFC, 0xC1030A8C, 0xC103098D, 0xC10308F1,
---	0xC10307A6, 0xC10306B8, 0xC1030500, 0xC1030420, 0xC1030300,
---	0xC1030030, 0xC10300F6, 0xC1030050, 0xC1030060, 0xC10300AC,
---	0xC10300FC, 0xC103009D, 0xC10300F1, 0xC10300E1
---};
---
-- static int golden_temp = LVTS_GOLDEN_TEMP_DEFAULT;
-- static int golden_temp_offset;
-- 
--@@ -132,7 +121,11 @@ struct lvts_ctrl_data {
-- 
-- struct lvts_data {
-- 	const struct lvts_ctrl_data *lvts_ctrl;
--+	const u32 *conn_cmd;
--+	const u32 *init_cmd;
-- 	int num_lvts_ctrl;
--+	int num_conn_cmd;
--+	int num_init_cmd;
-- 	int temp_factor;
-- 	int temp_offset;
-- 	int gt_calib_bit_offset;
--@@ -974,9 +967,10 @@ static int lvts_ctrl_set_enable(struct l
-- 
-- static int lvts_ctrl_connect(struct device *dev, struct lvts_ctrl *lvts_ctrl)
-- {
--+	const struct lvts_data *lvts_data = lvts_ctrl->lvts_data;
-- 	u32 id;
-- 
---	lvts_write_config(lvts_ctrl, default_conn_cmds, ARRAY_SIZE(default_conn_cmds));
--+	lvts_write_config(lvts_ctrl, lvts_data->conn_cmd, lvts_data->num_conn_cmd);
-- 
-- 	/*
-- 	 * LVTS_ID : Get ID and status of the thermal controller
--@@ -995,7 +989,9 @@ static int lvts_ctrl_connect(struct devi
-- 
-- static int lvts_ctrl_initialize(struct device *dev, struct lvts_ctrl *lvts_ctrl)
-- {
---	lvts_write_config(lvts_ctrl, default_init_cmds, ARRAY_SIZE(default_init_cmds));
--+	const struct lvts_data *lvts_data = lvts_ctrl->lvts_data;
--+
--+	lvts_write_config(lvts_ctrl, lvts_data->init_cmd, lvts_data->num_init_cmd);
-- 
-- 	return 0;
-- }
--@@ -1424,6 +1420,17 @@ static int lvts_resume(struct device *de
-- 	return 0;
-- }
-- 
--+static const u32 default_conn_cmds[] = { 0xC103FFFF, 0xC502FF55 };
--+/*
--+ * Write device mask: 0xC1030000
--+ */
--+static const u32 default_init_cmds[] = {
--+	0xC1030E01, 0xC1030CFC, 0xC1030A8C, 0xC103098D, 0xC10308F1,
--+	0xC10307A6, 0xC10306B8, 0xC1030500, 0xC1030420, 0xC1030300,
--+	0xC1030030, 0xC10300F6, 0xC1030050, 0xC1030060, 0xC10300AC,
--+	0xC10300FC, 0xC103009D, 0xC10300F1, 0xC10300E1
--+};
--+
-- /*
--  * The MT8186 calibration data is stored as packed 3-byte little-endian
--  * values using a weird layout that makes sense only when viewed as a 32-bit
--@@ -1718,7 +1725,11 @@ static const struct lvts_ctrl_data mt819
-- 
-- static const struct lvts_data mt7988_lvts_ap_data = {
-- 	.lvts_ctrl	= mt7988_lvts_ap_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt7988_lvts_ap_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT7988,
-- 	.temp_offset	= LVTS_COEFF_B_MT7988,
-- 	.gt_calib_bit_offset = 24,
--@@ -1726,7 +1737,11 @@ static const struct lvts_data mt7988_lvt
-- 
-- static const struct lvts_data mt8186_lvts_data = {
-- 	.lvts_ctrl	= mt8186_lvts_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8186_lvts_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT7988,
-- 	.temp_offset	= LVTS_COEFF_B_MT7988,
-- 	.gt_calib_bit_offset = 24,
--@@ -1735,7 +1750,11 @@ static const struct lvts_data mt8186_lvt
-- 
-- static const struct lvts_data mt8188_lvts_mcu_data = {
-- 	.lvts_ctrl	= mt8188_lvts_mcu_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8188_lvts_mcu_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 20,
--@@ -1744,7 +1763,11 @@ static const struct lvts_data mt8188_lvt
-- 
-- static const struct lvts_data mt8188_lvts_ap_data = {
-- 	.lvts_ctrl	= mt8188_lvts_ap_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8188_lvts_ap_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 20,
--@@ -1753,7 +1776,11 @@ static const struct lvts_data mt8188_lvt
-- 
-- static const struct lvts_data mt8192_lvts_mcu_data = {
-- 	.lvts_ctrl	= mt8192_lvts_mcu_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8192_lvts_mcu_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 24,
--@@ -1762,7 +1789,11 @@ static const struct lvts_data mt8192_lvt
-- 
-- static const struct lvts_data mt8192_lvts_ap_data = {
-- 	.lvts_ctrl	= mt8192_lvts_ap_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8192_lvts_ap_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 24,
--@@ -1771,7 +1802,11 @@ static const struct lvts_data mt8192_lvt
-- 
-- static const struct lvts_data mt8195_lvts_mcu_data = {
-- 	.lvts_ctrl	= mt8195_lvts_mcu_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8195_lvts_mcu_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 24,
--@@ -1780,7 +1815,11 @@ static const struct lvts_data mt8195_lvt
-- 
-- static const struct lvts_data mt8195_lvts_ap_data = {
-- 	.lvts_ctrl	= mt8195_lvts_ap_data_ctrl,
--+	.conn_cmd	= default_conn_cmds,
--+	.init_cmd	= default_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt8195_lvts_ap_data_ctrl),
--+	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT8195,
-- 	.temp_offset	= LVTS_COEFF_B_MT8195,
-- 	.gt_calib_bit_offset = 24,
-diff --git a/target/linux/mediatek/patches-6.12/053-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-mt7988-lvt.patch b/target/linux/mediatek/patches-6.12/053-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-mt7988-lvt.patch
-deleted file mode 100644
-index 0767933253..0000000000
---- a/target/linux/mediatek/patches-6.12/053-v6.17-thermal-drivers-mediatek-lvts_thermal-Add-mt7988-lvt.patch
-+++ /dev/null
-@@ -1,57 +0,0 @@
--From 744e2e82b28cb28f8cd2cc4ee788a5c950b12aa2 Mon Sep 17 00:00:00 2001
--From: Mason Chang <mason-cw.chang@mediatek.com>
--Date: Mon, 26 May 2025 18:26:59 +0800
--Subject: [PATCH 3/3] thermal/drivers/mediatek/lvts_thermal: Add mt7988 lvts
-- commands
--
--These commands are necessary to avoid severely abnormal and inaccurate
--temperature readings that are caused by using the default commands.
--
--Signed-off-by: Mason Chang <mason-cw.chang@mediatek.com>
--Link: https://lore.kernel.org/r/20250526102659.30225-4-mason-cw.chang@mediatek.com
--Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
--(cherry picked from commit 685a755089f95b7e205c0202567d9a647f9de096)
-----
-- drivers/thermal/mediatek/lvts_thermal.c | 16 ++++++++++++----
-- 1 file changed, 12 insertions(+), 4 deletions(-)
--
----- a/drivers/thermal/mediatek/lvts_thermal.c
--+++ b/drivers/thermal/mediatek/lvts_thermal.c
--@@ -1421,6 +1421,8 @@ static int lvts_resume(struct device *de
-- }
-- 
-- static const u32 default_conn_cmds[] = { 0xC103FFFF, 0xC502FF55 };
--+static const u32 mt7988_conn_cmds[] = { 0xC103FFFF, 0xC502FC55 };
--+
-- /*
--  * Write device mask: 0xC1030000
--  */
--@@ -1431,6 +1433,12 @@ static const u32 default_init_cmds[] = {
-- 	0xC10300FC, 0xC103009D, 0xC10300F1, 0xC10300E1
-- };
-- 
--+static const u32 mt7988_init_cmds[] = {
--+	0xC1030300, 0xC1030420, 0xC1030500, 0xC10307A6, 0xC1030CFC,
--+	0xC1030A8C, 0xC103098D, 0xC10308F1, 0xC1030B04, 0xC1030E01,
--+	0xC10306B8
--+};
--+
-- /*
--  * The MT8186 calibration data is stored as packed 3-byte little-endian
--  * values using a weird layout that makes sense only when viewed as a 32-bit
--@@ -1725,11 +1733,11 @@ static const struct lvts_ctrl_data mt819
-- 
-- static const struct lvts_data mt7988_lvts_ap_data = {
-- 	.lvts_ctrl	= mt7988_lvts_ap_data_ctrl,
---	.conn_cmd	= default_conn_cmds,
---	.init_cmd	= default_init_cmds,
--+	.conn_cmd	= mt7988_conn_cmds,
--+	.init_cmd	= mt7988_init_cmds,
-- 	.num_lvts_ctrl	= ARRAY_SIZE(mt7988_lvts_ap_data_ctrl),
---	.num_conn_cmd	= ARRAY_SIZE(default_conn_cmds),
---	.num_init_cmd	= ARRAY_SIZE(default_init_cmds),
--+	.num_conn_cmd	= ARRAY_SIZE(mt7988_conn_cmds),
--+	.num_init_cmd	= ARRAY_SIZE(mt7988_init_cmds),
-- 	.temp_factor	= LVTS_COEFF_A_MT7988,
-- 	.temp_offset	= LVTS_COEFF_B_MT7988,
-- 	.gt_calib_bit_offset = 24,
-diff --git a/target/linux/qualcommbe/patches-6.12/0010-v6.14-net-phy-add-phy_inband_caps.patch b/target/linux/qualcommbe/patches-6.12/0010-v6.14-net-phy-add-phy_inband_caps.patch
-index 112ea21d90..b9eef83a4b 100644
---- a/target/linux/qualcommbe/patches-6.12/0010-v6.14-net-phy-add-phy_inband_caps.patch
-+++ b/target/linux/qualcommbe/patches-6.12/0010-v6.14-net-phy-add-phy_inband_caps.patch
-@@ -107,7 +107,7 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-  	 * @get_rate_matching: Get the supported type of rate matching for a
-  	 * particular phy interface. This is used by phy consumers to determine
-  	 * whether to advertise lower-speed modes for that interface. It is
--@@ -1839,6 +1865,8 @@ int phy_config_aneg(struct phy_device *p
-+@@ -1840,6 +1866,8 @@ int phy_config_aneg(struct phy_device *p
-  int _phy_start_aneg(struct phy_device *phydev);
-  int phy_start_aneg(struct phy_device *phydev);
-  int phy_aneg_done(struct phy_device *phydev);
-diff --git a/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch b/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-index 8f9a082266..8ace78918c 100644
---- a/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-+++ b/target/linux/starfive/patches-6.12/1011-net-stmmac-use-GFP_DMA32.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Matteo Croce <mcroce@microsoft.com>
+-LINUX_VERSION-6.12 = .45
+-LINUX_KERNEL_HASH-6.12.45 = 8f95a8549cfbdfb89c1181a1f55a971f04dfcd629508a2ed70b777ab92f9db3e
++LINUX_VERSION-6.12 = .46
++LINUX_KERNEL_HASH-6.12.46 = 5550f77b09ea684a540a5e4152e51fecda5b1ec0a7d040597d8df8f91d2d44ec
+diff --git a/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch b/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
+index bb78fc368f..6a5abef682 100644
+--- a/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
++++ b/target/linux/generic/pending-6.12/454-block-add-support-for-notifications.patch
+@@ -149,7 +149,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+ +device_initcall(blk_notifications_init);
+ --- a/include/linux/blkdev.h
+ +++ b/include/linux/blkdev.h
+-@@ -1751,4 +1751,12 @@ static inline bool bdev_can_atomic_write
++@@ -1753,4 +1753,12 @@ static inline bool bdev_can_atomic_write
   
-  	if (priv->dma_cap.host_dma_width <= 32)
-  		gfp |= GFP_DMA32;
--@@ -4789,7 +4789,7 @@ static inline void stmmac_rx_refill(stru
-+@@ -4790,7 +4790,7 @@ static inline void stmmac_rx_refill(stru
-  	struct stmmac_rx_queue *rx_q = &priv->dma_conf.rx_queue[queue];
-  	int dirty = stmmac_rx_dirty(priv, queue);
-  	unsigned int entry = rx_q->dirty_rx;
+  #define DEFINE_IO_COMP_BATCH(name)	struct io_comp_batch name = { }
+  
+diff --git a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+index 57857272f0..895e0a8d8f 100644
+--- a/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
++++ b/target/linux/generic/pending-6.12/655-increase_skb_pad.patch
+@@ -9,7 +9,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -3203,7 +3203,7 @@ static inline int pskb_network_may_pull(
++@@ -3209,7 +3209,7 @@ static inline int pskb_network_may_pull(
+   * NET_IP_ALIGN(2) + ethernet_header(14) + IP_header(20/40) + ports(8)
+   */
+  #ifndef NET_SKB_PAD
+diff --git a/target/linux/generic/pending-6.12/702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch b/target/linux/generic/pending-6.12/702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch
+index 9a059593c9..d476465132 100644
+--- a/target/linux/generic/pending-6.12/702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch
++++ b/target/linux/generic/pending-6.12/702-net-ethernet-mtk_eth_soc-enable-threaded-NAPI.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+ +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -5140,6 +5140,8 @@ static int mtk_probe(struct platform_dev
++@@ -5148,6 +5148,8 @@ static int mtk_probe(struct platform_dev
+  		dev_err(eth->dev, "failed to allocated dummy device\n");
+  		goto err_unreg_netdev;
+  	}
+diff --git a/target/linux/generic/pending-6.12/732-01-net-ethernet-mtk_eth_soc-work-around-issue-with-send.patch b/target/linux/generic/pending-6.12/732-01-net-ethernet-mtk_eth_soc-work-around-issue-with-send.patch
+index f4b07485ea..71b20b9c96 100644
+--- a/target/linux/generic/pending-6.12/732-01-net-ethernet-mtk_eth_soc-work-around-issue-with-send.patch
++++ b/target/linux/generic/pending-6.12/732-01-net-ethernet-mtk_eth_soc-work-around-issue-with-send.patch
+@@ -53,7 +53,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	bool gso = false;
+  	int tx_num;
+  
+-@@ -1634,6 +1651,18 @@ static netdev_tx_t mtk_start_xmit(struct
++@@ -1641,6 +1658,18 @@ static netdev_tx_t mtk_start_xmit(struct
+  		return NETDEV_TX_BUSY;
+  	}
+  
+@@ -72,7 +72,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	/* TSO: fill MSS info in tcp checksum field */
+  	if (skb_is_gso(skb)) {
+  		if (skb_cow_head(skb, 0)) {
+-@@ -1649,8 +1678,14 @@ static netdev_tx_t mtk_start_xmit(struct
++@@ -1656,8 +1685,14 @@ static netdev_tx_t mtk_start_xmit(struct
+  		}
+  	}
+  
+diff --git a/target/linux/generic/pending-6.12/733-01-net-ethernet-mtk_eth_soc-use-napi_build_skb.patch b/target/linux/generic/pending-6.12/733-01-net-ethernet-mtk_eth_soc-use-napi_build_skb.patch
+index 36c1d499d3..c883bf08c0 100644
+--- a/target/linux/generic/pending-6.12/733-01-net-ethernet-mtk_eth_soc-use-napi_build_skb.patch
++++ b/target/linux/generic/pending-6.12/733-01-net-ethernet-mtk_eth_soc-use-napi_build_skb.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+ +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -2151,7 +2151,7 @@ static int mtk_poll_rx(struct napi_struc
++@@ -2159,7 +2159,7 @@ static int mtk_poll_rx(struct napi_struc
+  			if (ret != XDP_PASS)
+  				goto skip_rx;
+  
+@@ -19,7 +19,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  			if (unlikely(!skb)) {
+  				page_pool_put_full_page(ring->page_pool,
+  							page, true);
+-@@ -2189,7 +2189,7 @@ static int mtk_poll_rx(struct napi_struc
++@@ -2197,7 +2197,7 @@ static int mtk_poll_rx(struct napi_struc
+  			dma_unmap_single(eth->dma_dev, ((u64)trxd.rxd1 | addr64),
+  					 ring->buf_size, DMA_FROM_DEVICE);
+  
+diff --git a/target/linux/generic/pending-6.12/734-net-ethernet-mediatek-enlarge-DMA-reserve-buffer.patch b/target/linux/generic/pending-6.12/734-net-ethernet-mediatek-enlarge-DMA-reserve-buffer.patch
+index d9e2873262..ba866f3a0f 100644
+--- a/target/linux/generic/pending-6.12/734-net-ethernet-mediatek-enlarge-DMA-reserve-buffer.patch
++++ b/target/linux/generic/pending-6.12/734-net-ethernet-mediatek-enlarge-DMA-reserve-buffer.patch
+@@ -25,7 +25,7 @@ Signed-off-by: Chad Monroe <chad@monroe.io>
+  /* QDMA Flow Control Register */
+ --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+ +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -3324,12 +3324,14 @@ static int mtk_start_dma(struct mtk_eth
++@@ -3332,12 +3332,14 @@ static int mtk_start_dma(struct mtk_eth
+  		       MTK_TX_BT_32DWORDS | MTK_NDP_CO_PRO |
+  		       MTK_RX_2B_OFFSET | MTK_TX_WB_DDONE;
+  
+diff --git a/target/linux/generic/pending-6.12/737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch b/target/linux/generic/pending-6.12/737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch
+index b03b72b33d..fb1d49a4e3 100644
+--- a/target/linux/generic/pending-6.12/737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch
++++ b/target/linux/generic/pending-6.12/737-net-ethernet-mtk_eth_soc-add-paths-and-SerDes-modes-.patch
+@@ -477,7 +477,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	.mac_finish = mtk_mac_finish,
+  	.mac_link_down = mtk_mac_link_down,
+  	.mac_link_up = mtk_mac_link_up,
+-@@ -3432,6 +3577,9 @@ static int mtk_open(struct net_device *d
++@@ -3440,6 +3585,9 @@ static int mtk_open(struct net_device *d
+  
+  	ppe_num = eth->soc->ppe_num;
+  
+@@ -487,7 +487,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	err = phylink_of_phy_connect(mac->phylink, mac->of_node, 0);
+  	if (err) {
+  		netdev_err(dev, "%s: could not attach PHY: %d\n", __func__,
+-@@ -3579,6 +3727,9 @@ static int mtk_stop(struct net_device *d
++@@ -3587,6 +3735,9 @@ static int mtk_stop(struct net_device *d
+  	for (i = 0; i < ARRAY_SIZE(eth->ppe); i++)
+  		mtk_ppe_stop(eth->ppe[i]);
+  
+@@ -497,7 +497,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	return 0;
+  }
+  
+-@@ -4669,6 +4820,7 @@ static const struct net_device_ops mtk_n
++@@ -4677,6 +4828,7 @@ static const struct net_device_ops mtk_n
+  static int mtk_add_mac(struct mtk_eth *eth, struct device_node *np)
+  {
+  	const __be32 *_id = of_get_property(np, "reg", NULL);
+@@ -505,7 +505,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	phy_interface_t phy_mode;
+  	struct phylink *phylink;
+  	struct mtk_mac *mac;
+-@@ -4707,16 +4859,41 @@ static int mtk_add_mac(struct mtk_eth *e
++@@ -4715,16 +4867,41 @@ static int mtk_add_mac(struct mtk_eth *e
+  	mac->id = id;
+  	mac->hw = eth;
+  	mac->of_node = np;
+@@ -555,7 +555,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	}
+  
+  	memset(mac->hwlro_ip, 0, sizeof(mac->hwlro_ip));
+-@@ -4799,8 +4976,21 @@ static int mtk_add_mac(struct mtk_eth *e
++@@ -4807,8 +4984,21 @@ static int mtk_add_mac(struct mtk_eth *e
+  		phy_interface_zero(mac->phylink_config.supported_interfaces);
+  		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+  			  mac->phylink_config.supported_interfaces);
+@@ -577,7 +577,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	phylink = phylink_create(&mac->phylink_config,
+  				 of_fwnode_handle(mac->of_node),
+  				 phy_mode, &mtk_phylink_ops);
+-@@ -4851,6 +5041,26 @@ free_netdev:
++@@ -4859,6 +5049,26 @@ free_netdev:
+  	return err;
+  }
+  
+@@ -604,7 +604,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  void mtk_eth_set_dma_device(struct mtk_eth *eth, struct device *dma_dev)
+  {
+  	struct net_device *dev, *tmp;
+-@@ -4997,7 +5207,8 @@ static int mtk_probe(struct platform_dev
++@@ -5005,7 +5215,8 @@ static int mtk_probe(struct platform_dev
+  			regmap_write(cci, 0, 3);
+  	}
+  
+@@ -614,7 +614,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  		err = mtk_sgmii_init(eth);
+  
+  		if (err)
+-@@ -5108,6 +5319,24 @@ static int mtk_probe(struct platform_dev
++@@ -5116,6 +5327,24 @@ static int mtk_probe(struct platform_dev
+  		}
+  	}
+  
+@@ -639,7 +639,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+  	if (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_INT)) {
+  		err = devm_request_irq(eth->dev, eth->irq[0],
+  				       mtk_handle_irq, 0,
+-@@ -5218,6 +5447,11 @@ static void mtk_remove(struct platform_d
++@@ -5226,6 +5455,11 @@ static void mtk_remove(struct platform_d
+  		mtk_stop(eth->netdev[i]);
+  		mac = netdev_priv(eth->netdev[i]);
+  		phylink_disconnect_phy(mac->phylink);
+diff --git a/target/linux/generic/pending-6.12/738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch b/target/linux/generic/pending-6.12/738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch
+index 7ec342a20f..bd1e61ddbb 100644
+--- a/target/linux/generic/pending-6.12/738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch
++++ b/target/linux/generic/pending-6.12/738-01-net-ethernet-mtk_eth_soc-reduce-rx-ring-size-for-older.patch
+@@ -30,7 +30,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+ +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -5482,7 +5482,7 @@ static const struct mtk_soc_data mt2701_
++@@ -5490,7 +5490,7 @@ static const struct mtk_soc_data mt2701_
+  		.desc_size = sizeof(struct mtk_rx_dma),
+  		.irq_done_mask = MTK_RX_DONE_INT,
+  		.dma_l4_valid = RX_DMA_L4_VALID,
+@@ -39,7 +39,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+  	},
+-@@ -5510,7 +5510,7 @@ static const struct mtk_soc_data mt7621_
++@@ -5518,7 +5518,7 @@ static const struct mtk_soc_data mt7621_
+  		.desc_size = sizeof(struct mtk_rx_dma),
+  		.irq_done_mask = MTK_RX_DONE_INT,
+  		.dma_l4_valid = RX_DMA_L4_VALID,
+@@ -48,7 +48,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+  	},
+-@@ -5540,7 +5540,7 @@ static const struct mtk_soc_data mt7622_
++@@ -5548,7 +5548,7 @@ static const struct mtk_soc_data mt7622_
+  		.desc_size = sizeof(struct mtk_rx_dma),
+  		.irq_done_mask = MTK_RX_DONE_INT,
+  		.dma_l4_valid = RX_DMA_L4_VALID,
+@@ -57,7 +57,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+  	},
+-@@ -5569,7 +5569,7 @@ static const struct mtk_soc_data mt7623_
++@@ -5577,7 +5577,7 @@ static const struct mtk_soc_data mt7623_
+  		.desc_size = sizeof(struct mtk_rx_dma),
+  		.irq_done_mask = MTK_RX_DONE_INT,
+  		.dma_l4_valid = RX_DMA_L4_VALID,
+@@ -66,7 +66,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+  	},
+-@@ -5595,7 +5595,7 @@ static const struct mtk_soc_data mt7629_
++@@ -5603,7 +5603,7 @@ static const struct mtk_soc_data mt7629_
+  		.desc_size = sizeof(struct mtk_rx_dma),
+  		.irq_done_mask = MTK_RX_DONE_INT,
+  		.dma_l4_valid = RX_DMA_L4_VALID,
+@@ -75,7 +75,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+  	},
+-@@ -5627,7 +5627,7 @@ static const struct mtk_soc_data mt7981_
++@@ -5635,7 +5635,7 @@ static const struct mtk_soc_data mt7981_
+  		.dma_l4_valid = RX_DMA_L4_VALID_V2,
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+@@ -84,7 +84,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	},
+  };
+  
+-@@ -5657,7 +5657,7 @@ static const struct mtk_soc_data mt7986_
++@@ -5665,7 +5665,7 @@ static const struct mtk_soc_data mt7986_
+  		.dma_l4_valid = RX_DMA_L4_VALID_V2,
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+@@ -93,7 +93,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	},
+  };
+  
+-@@ -5710,7 +5710,7 @@ static const struct mtk_soc_data rt5350_
++@@ -5718,7 +5718,7 @@ static const struct mtk_soc_data rt5350_
+  		.dma_l4_valid = RX_DMA_L4_VALID_PDMA,
+  		.dma_max_len = MTK_TX_DMA_BUF_LEN,
+  		.dma_len_offset = 16,
+diff --git a/target/linux/generic/pending-6.12/738-02-net-ethernet-mtk_eth_soc-do-not-enable-page-pool-sta.patch b/target/linux/generic/pending-6.12/738-02-net-ethernet-mtk_eth_soc-do-not-enable-page-pool-sta.patch
+index 26706de6ad..6359848f6f 100644
+--- a/target/linux/generic/pending-6.12/738-02-net-ethernet-mtk_eth_soc-do-not-enable-page-pool-sta.patch
++++ b/target/linux/generic/pending-6.12/738-02-net-ethernet-mtk_eth_soc-do-not-enable-page-pool-sta.patch
+@@ -25,7 +25,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	help
+ --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+ +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -4588,6 +4588,7 @@ static int mtk_get_sset_count(struct net
++@@ -4596,6 +4596,7 @@ static int mtk_get_sset_count(struct net
+  
+  static void mtk_ethtool_pp_stats(struct mtk_eth *eth, u64 *data)
+  {
+@@ -33,7 +33,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  	struct page_pool_stats stats = {};
+  	int i;
+  
+-@@ -4600,6 +4601,7 @@ static void mtk_ethtool_pp_stats(struct
++@@ -4608,6 +4609,7 @@ static void mtk_ethtool_pp_stats(struct
+  		page_pool_get_stats(ring->page_pool, &stats);
+  	}
+  	page_pool_ethtool_stats_get(data, &stats);
+diff --git a/target/linux/generic/pending-6.12/742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch b/target/linux/generic/pending-6.12/742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch
+deleted file mode 100644
+index 20a6a29449..0000000000
+--- a/target/linux/generic/pending-6.12/742-net-ethernet-mtk_eth_soc-fix-tx-vlan-tag-for-llc-pac.patch
++++ /dev/null
+@@ -1,39 +0,0 @@
+-From: Felix Fietkau <nbd@nbd.name>
+-Date: Sun, 31 Aug 2025 20:05:13 +0200
+-Subject: [PATCH] net: ethernet: mtk_eth_soc: fix tx vlan tag for llc packets
+-
+-When sending llc packets with vlan tx offload, the hardware fails to
+-actually add the tag. Deal with this by fixing it up in software.
+-
+-Fixes: 656e705243fd ("net-next: mediatek: add support for MT7623 ethernet")
+-Reported-by: Thibaut VARENE <hacks@slashdirt.org>
+-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+----
+-
+---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+-@@ -1778,6 +1778,13 @@ static netdev_tx_t mtk_start_xmit(struct
+- 	bool gso = false;
+- 	int tx_num;
+- 
+-+	if (skb_vlan_tag_present(skb) &&
+-+	    !eth_proto_is_802_3(eth_hdr(skb)->h_proto)) {
+-+		skb = __vlan_hwaccel_push_inside(skb);
+-+		if (!skb)
+-+			goto dropped;
+-+	}
+-+
+- 	/* normally we can rely on the stack not calling this more than once,
+- 	 * however we have 2 queues running on the same ring so we need to lock
+- 	 * the ring access
+-@@ -1841,8 +1848,9 @@ static netdev_tx_t mtk_start_xmit(struct
+- 
+- drop:
+- 	spin_unlock(&eth->page_lock);
+--	stats->tx_dropped++;
+- 	dev_kfree_skb_any(skb);
+-+dropped:
+-+	stats->tx_dropped++;
+- 	return NETDEV_TX_OK;
+- }
+- 
+diff --git a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
+index 7d4f7a482f..df6f6da017 100644
+--- a/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
++++ b/target/linux/ipq40xx/patches-6.12/701-net-dsa-add-out-of-band-tagging-protocol.patch
+@@ -93,7 +93,7 @@ Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+ +#endif
+ --- a/include/linux/skbuff.h
+ +++ b/include/linux/skbuff.h
+-@@ -4798,6 +4798,9 @@ enum skb_ext_id {
++@@ -4804,6 +4804,9 @@ enum skb_ext_id {
+  #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+  	SKB_EXT_MCTP,
+  #endif
+diff --git a/target/linux/qualcommax/patches-6.12/0812-soc-qcom-mdt_loader-support-MPD.patch b/target/linux/qualcommax/patches-6.12/0812-soc-qcom-mdt_loader-support-MPD.patch
+index e2fa205410..c8d50199b0 100644
+--- a/target/linux/qualcommax/patches-6.12/0812-soc-qcom-mdt_loader-support-MPD.patch
++++ b/target/linux/qualcommax/patches-6.12/0812-soc-qcom-mdt_loader-support-MPD.patch
+@@ -32,7 +32,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  
+  static bool mdt_header_valid(const struct firmware *fw)
+  {
+-@@ -98,6 +108,56 @@ static ssize_t mdt_load_split_segment(vo
++@@ -100,6 +110,56 @@ static ssize_t mdt_load_split_segment(vo
+  	return ret;
+  }
+  
+@@ -89,7 +89,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  /**
+   * qcom_mdt_get_size() - acquire size of the memory region needed to load mdt
+   * @fw:		firmware object for the mdt file
+-@@ -333,7 +393,8 @@ static bool qcom_mdt_bins_are_split(cons
++@@ -335,7 +395,8 @@ static bool qcom_mdt_bins_are_split(cons
+  static int __qcom_mdt_load(struct device *dev, const struct firmware *fw,
+  			   const char *fw_name, int pas_id, void *mem_region,
+  			   phys_addr_t mem_phys, size_t mem_size,
+@@ -99,7 +99,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  {
+  	const struct elf32_phdr *phdrs;
+  	const struct elf32_phdr *phdr;
+-@@ -390,6 +451,14 @@ static int __qcom_mdt_load(struct device
++@@ -392,6 +453,14 @@ static int __qcom_mdt_load(struct device
+  		if (!mdt_phdr_valid(phdr))
+  			continue;
+  
+@@ -114,7 +114,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  		offset = phdr->p_paddr - mem_reloc;
+  		if (offset < 0 || offset + phdr->p_memsz > mem_size) {
+  			dev_err(dev, "segment outside memory range\n");
+-@@ -407,7 +476,11 @@ static int __qcom_mdt_load(struct device
++@@ -409,7 +478,11 @@ static int __qcom_mdt_load(struct device
+  
+  		ptr = mem_region + offset;
+  
+@@ -127,7 +127,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  			/* Firmware is large enough to be non-split */
+  			if (phdr->p_offset + phdr->p_filesz > fw->size) {
+  				dev_err(dev, "file %s segment %d would be truncated\n",
+-@@ -424,7 +497,7 @@ static int __qcom_mdt_load(struct device
++@@ -426,7 +499,7 @@ static int __qcom_mdt_load(struct device
+  				break;
+  		}
+  
+@@ -136,7 +136,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  			memset(ptr + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
+  	}
+  
+-@@ -459,7 +532,7 @@ int qcom_mdt_load(struct device *dev, co
++@@ -461,7 +534,7 @@ int qcom_mdt_load(struct device *dev, co
+  		return ret;
+  
+  	return __qcom_mdt_load(dev, fw, firmware, pas_id, mem_region, mem_phys,
+@@ -145,7 +145,7 @@ Signed-off-by: George Moussalem <george.moussalem@outlook.com>
+  }
+  EXPORT_SYMBOL_GPL(qcom_mdt_load);
+  
+-@@ -482,9 +555,36 @@ int qcom_mdt_load_no_init(struct device
++@@ -484,9 +557,36 @@ int qcom_mdt_load_no_init(struct device
+  			  size_t mem_size, phys_addr_t *reloc_base)
+  {
+  	return __qcom_mdt_load(dev, fw, firmware, pas_id, mem_region, mem_phys,
 -- 
-2.51.0
+2.49.0
 
