@@ -766,6 +766,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acer_predator-w6x is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_teltonika_rutc50 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wn586x3b is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000p-v1 is not set
 CONFIG_PACKAGE_losetup=y
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
