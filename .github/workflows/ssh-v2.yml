@@ -9,11 +9,12 @@ jobs:
             - name: Setup Ubuntu
               run: |
                 sudo apt update
-                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra hardinfo
+                sudo apt install -y nano subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra hardinfo
                 wget https://github.com/HorlogeSkynet/archey4/releases/download/v4.15.0.0/archey4_4.15.0.0-1_all.deb
                 sudo apt install ./archey4_4.15.0.0-1_all.deb
             - name: checkout
               uses: actions/checkout@v4
             - name: Setup tmate session
               uses: mxschmitt/action-tmate@v3
+
 
