@@ -1,17 +1,19 @@
-From 106f6fbd4ea87610698e153674125cc2df92af0e Mon Sep 17 00:00:00 2001
-From: n n <xxx@gnail.com>
-Date: Sun, 5 Jan 2025 07:16:42 -0500
-Subject: [PATCH] fix
+From 032dbee97f275bd69e1dea799d1e72e12b90b0f7 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Sun, 14 Sep 2025 10:52:54 -0300
+Subject: [PATCH] bpi r31
 
 ---
  feeds.conf.default                            |  8 +--
  package/base-files/Makefile                   |  4 --
  .../firmware/wireless-regdb/patches/005.patch | 56 +++++++++++++++++++
  .../hack-6.6/400-fixup-ubi-warning.patch      | 24 ++++++++
+ .../pending-6.12/400-fixup-ubi-warning.patch  | 24 ++++++++
  .../filogic/base-files/etc/board.d/02_network |  2 +-
- 5 files changed, 85 insertions(+), 9 deletions(-)
+ 6 files changed, 109 insertions(+), 9 deletions(-)
  create mode 100644 package/firmware/wireless-regdb/patches/005.patch
  create mode 100644 target/linux/generic/hack-6.6/400-fixup-ubi-warning.patch
+ create mode 100644 target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch
 
 diff --git a/feeds.conf.default b/feeds.conf.default
 index 05f5c8c47c..81cce6074d 100644
@@ -30,7 +32,7 @@ index 05f5c8c47c..81cce6074d 100644
  #src-git targets https://github.com/openwrt/targets.git
  #src-git oldpackages http://git.openwrt.org/packages.git
 diff --git a/package/base-files/Makefile b/package/base-files/Makefile
-index b90ee3a64e..3f63472c45 100644
+index 693d259ee4..756f8329b9 100644
 --- a/package/base-files/Makefile
 +++ b/package/base-files/Makefile
 @@ -121,12 +121,10 @@ endef
@@ -153,11 +155,41 @@ index 0000000000..22d59a92cc
 + 	/* OK, it's not open. Create cache info for it */
 + 	mtdblk->count = 1;
 + 	mutex_init(&mtdblk->cache_mutex);
+diff --git a/target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch b/target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch
+new file mode 100644
+index 0000000000..22d59a92cc
+--- /dev/null
++++ b/target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch
+@@ -0,0 +1,24 @@
++--- a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
+++++ b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
++@@ -42,7 +42,7 @@
++ 		compatible = "pwm-fan";
++ 		#cooling-cells = <2>;
++ 		/* cooling level (0, 1, 2) - pwm inverted */
++-		cooling-levels = <255 96 0>;
+++		cooling-levels = <0 96 255>;
++ 		pwms = <&pwm 0 10000>;
++ 		status = "okay";
++ 	};
++--- a/drivers/mtd/mtdblock.c
+++++ b/drivers/mtd/mtdblock.c
++@@ -261,10 +261,6 @@ static int mtdblock_open(struct mtd_blkt
++ 		return 0;
++ 	}
++ 
++-	if (mtd_type_is_nand(mbd->mtd))
++-		pr_warn_ratelimited("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
++-			mbd->tr->name, mbd->mtd->name);
++-
++ 	/* OK, it's not open. Create cache info for it */
++ 	mtdblk->count = 1;
++ 	mutex_init(&mtdblk->cache_mutex);
 diff --git a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
-index e9f63938b2..94cd652988 100644
+index b8c59a2490..b14ec7bcb5 100644
 --- a/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
 +++ b/target/linux/mediatek/filogic/base-files/etc/board.d/02_network
-@@ -60,7 +60,7 @@ mediatek_setup_interfaces()
+@@ -75,7 +75,7 @@ mediatek_setup_interfaces()
  		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 lan5" eth1
  		;;
  	bananapi,bpi-r3)
@@ -167,5 +199,5 @@ index e9f63938b2..94cd652988 100644
  	bananapi,bpi-r3-mini|\
  	edgecore,eap111|\
 -- 
-2.46.0
+2.48.1
 
