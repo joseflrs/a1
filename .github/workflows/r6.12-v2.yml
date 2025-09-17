@@ -43,7 +43,7 @@ jobs:
                 git apply ms.patch
                 git apply kmod-apk.patch
                 git apply rk-6.12-config.patch
-                git apply 44.patch
+                git apply 44v2.patch
                 git apply 45.patch
                 git apply 46.patch
                 git apply pm.patch
@@ -105,6 +105,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
