@@ -1,0 +1,678 @@
+From efcc4467fdf9553b2c254310d3ad4f8f16596ced Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Tue, 16 Sep 2025 21:08:38 -0300
+Subject: [PATCH] 44v2
+
+---
+ package/boot/uboot-rockchip/Makefile          |  34 +++++
+ ...9-rockchip-add-add-Hugsun-X99-TV-Box.patch | 124 ++++++++++++++++++
+ .../firmware/brcmfmac-sdio-firmware/Makefile  |  61 +++++++++
+ package/firmware/linux-firmware/broadcom-1.mk | 122 +++++++++++++++++
+ package/firmware/linux-firmware/realtek_bt.mk |   8 ++
+ .../armv8/base-files/etc/board.d/01_leds      |   3 +
+ .../armv8/base-files/etc/board.d/02_network   |   2 +-
+ .../armv8/base-files/etc/init.d/resize-rootfs |  10 ++
+ .../base-files/etc/rc.d/S22resize-rootfs      |   1 +
+ .../uci-defaults/01_enable_packet_steering    |   5 +
+ .../armv8/base-files/usr/bin/resize-rootfs.sh |  57 ++++++++
+ target/linux/rockchip/image/armv8.mk          |  46 +++++++
+ .../patches-6.12/500-v6.12-rockpi4a.patch     |  45 +++++++
+ 13 files changed, 517 insertions(+), 1 deletion(-)
+ create mode 100644 package/boot/uboot-rockchip/patches/099-rockchip-add-add-Hugsun-X99-TV-Box.patch
+ create mode 100644 package/firmware/brcmfmac-sdio-firmware/Makefile
+ create mode 100644 package/firmware/linux-firmware/broadcom-1.mk
+ create mode 100644 package/firmware/linux-firmware/realtek_bt.mk
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+ create mode 100755 target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+ create mode 100644 target/linux/rockchip/armv8/base-files/etc/uci-defaults/01_enable_packet_steering
+ create mode 100755 target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+ create mode 100644 target/linux/rockchip/patches-6.12/500-v6.12-rockpi4a.patch
+
+diff --git a/package/boot/uboot-rockchip/Makefile b/package/boot/uboot-rockchip/Makefile
+index c7a4f941b8..11aa702b7e 100644
+--- a/package/boot/uboot-rockchip/Makefile
++++ b/package/boot/uboot-rockchip/Makefile
+@@ -121,6 +121,13 @@ define U-Boot/rk3399/Default
+   ATF:=rk3399_bl31.elf
+ endef
+ 
++define U-Boot/hugsun-x99-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=Hugsun x99
++  BUILD_DEVICES:= \
++    hugsun_hugsun-x99
++endef
++
+ define U-Boot/nanopc-t4-rk3399
+   $(U-Boot/rk3399/Default)
+   NAME:=NanoPC T4
+@@ -128,6 +135,29 @@ define U-Boot/nanopc-t4-rk3399
+     friendlyarm_nanopc-t4
+ endef
+ 
++define U-Boot/nanopi-m4-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi M4
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4
++endef
++
++define U-Boot/nanopi-m4-2gb-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi M4 2GB
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4-2gb
++endef
++
++define U-Boot/nanopi-m4v2-rk3399
++  $(U-Boot/rk3399/Default)
++  NAME:=NanoPi m4v2
++  BUILD_DEVICES:= \
++    friendlyarm_nanopi-m4v2
++  UBOOT_DTS:=rk3399-nanopi-m4.dts
++  UBOOT_CONFIG:=roc-pc-rk3399
++endef
++
+ define U-Boot/nanopi-r4s-rk3399
+   $(U-Boot/rk3399/Default)
+   NAME:=NanoPi R4S
+@@ -346,7 +376,11 @@ define U-Boot/rock-5c-rk3588s
+ endef
+ 
+ UBOOT_TARGETS := \
++  hugsun-x99-rk3399 \
+   nanopc-t4-rk3399 \
++  nanopi-m4-rk3399 \
++  nanopi-m4-2gb-rk3399 \
++  nanopi-m4v2-rk3399 \
+   nanopi-r4s-rk3399 \
+   rock-4c-plus-rk3399 \
+   rock-4se-rk3399 \
+diff --git a/package/boot/uboot-rockchip/patches/099-rockchip-add-add-Hugsun-X99-TV-Box.patch b/package/boot/uboot-rockchip/patches/099-rockchip-add-add-Hugsun-X99-TV-Box.patch
+new file mode 100644
+index 0000000000..dc57335dfe
+--- /dev/null
++++ b/package/boot/uboot-rockchip/patches/099-rockchip-add-add-Hugsun-X99-TV-Box.patch
+@@ -0,0 +1,124 @@
++From cd2c16aff93200a936771ed707870a206cebbf4f Mon Sep 17 00:00:00 2001
++From: Marty Jones <mj8263788@gmail.com>
++Date: Sat, 14 Sep 2024 14:26:12 -0400
++Subject: [PATCH] rockchip: add add Hugsun X99 TV Box
++
++---
++ arch/arm/dts/rk3399-hugsun-x99-u-boot.dtsi | 27 ++++++++
++ configs/hugsun-x99-rk3399_defconfig        | 79 ++++++++++++++++++++++
++ 2 files changed, 106 insertions(+)
++ create mode 100644 arch/arm/dts/rk3399-hugsun-x99-u-boot.dtsi
++ create mode 100644 configs/hugsun-x99-rk3399_defconfig
++
++--- /dev/null
+++++ b/arch/arm/dts/rk3399-hugsun-x99-u-boot.dtsi
++@@ -0,0 +1,27 @@
+++// SPDX-License-Identifier: GPL-2.0+
+++/*
+++ * Copyright (C) 2024
+++ */
+++
+++#include "rk3399-u-boot.dtsi"
+++#include "rk3399-sdram-lpddr3-samsung-4GB-1866.dtsi"
+++
+++&gpio0 {
+++	bootph-pre-ram;
+++};
+++
+++&sdmmc {
+++	pinctrl-0 = <&sdmmc_bus4 &sdmmc_clk &sdmmc_cmd &sdmmc_cd>;
+++};
+++
+++
+++
+++
+++
+++&vcc3v0_sd {
+++	bootph-pre-ram;
+++};
+++
+++&vcc_sd {
+++	regulator-init-microvolt = <3000000>;
+++};
++--- /dev/null
+++++ b/configs/hugsun-x99-rk3399_defconfig
++@@ -0,0 +1,79 @@
+++CONFIG_ARM=y
+++CONFIG_SKIP_LOWLEVEL_INIT=y
+++CONFIG_COUNTER_FREQUENCY=24000000
+++CONFIG_ARCH_ROCKCHIP=y
+++CONFIG_SPL_GPIO=y
+++CONFIG_NR_DRAM_BANKS=1
+++CONFIG_ENV_OFFSET=0x3F8000
+++CONFIG_DEFAULT_DEVICE_TREE="rockchip/rk3399-hugsun-x99"
+++CONFIG_DM_RESET=y
+++CONFIG_ROCKCHIP_RK3399=y
+++CONFIG_TARGET_EVB_RK3399=y
+++CONFIG_DEBUG_UART_BASE=0xFF1A0000
+++CONFIG_DEBUG_UART_CLOCK=24000000
+++CONFIG_SYS_LOAD_ADDR=0x800800
+++CONFIG_PCI=y
+++CONFIG_DEBUG_UART=y
+++CONFIG_AHCI=y
+++CONFIG_DEFAULT_FDT_FILE="rockchip/rk3399-hugsun-x99.dtb"
+++CONFIG_DISPLAY_BOARDINFO_LATE=y
+++CONFIG_SPL_MAX_SIZE=0x40000
+++CONFIG_SPL_PAD_TO=0x7f8000
+++# CONFIG_SPL_RAW_IMAGE_SUPPORT is not set
+++CONFIG_SPL_ATF_NO_PLATFORM_PARAM=y
+++CONFIG_TPL=y
+++CONFIG_CMD_BOOTZ=y
+++CONFIG_CMD_GPT=y
+++CONFIG_CMD_MMC=y
+++CONFIG_CMD_PCI=y
+++CONFIG_CMD_USB=y
+++# CONFIG_CMD_SETEXPR is not set
+++CONFIG_CMD_TIME=y
+++CONFIG_SPL_OF_CONTROL=y
+++CONFIG_OF_SPL_REMOVE_PROPS="clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
+++CONFIG_ENV_IS_IN_MMC=y
+++CONFIG_SYS_RELOC_GD_ENV_ADDR=y
+++CONFIG_SCSI_AHCI=y
+++CONFIG_AHCI_PCI=y
+++CONFIG_ROCKCHIP_GPIO=y
+++CONFIG_SYS_I2C_ROCKCHIP=y
+++CONFIG_ROCKCHIP_IODOMAIN=y
+++CONFIG_MMC_DW=y
+++CONFIG_MMC_DW_ROCKCHIP=y
+++CONFIG_MMC_SDHCI=y
+++CONFIG_MMC_SDHCI_SDMA=y
+++CONFIG_MMC_SDHCI_ROCKCHIP=y
+++CONFIG_PHY_REALTEK=y
+++CONFIG_DM_ETH_PHY=y
+++CONFIG_ETH_DESIGNWARE=y
+++CONFIG_GMAC_ROCKCHIP=y
+++CONFIG_NVME_PCI=y
+++CONFIG_PHY_ROCKCHIP_INNO_USB2=y
+++CONFIG_PHY_ROCKCHIP_TYPEC=y
+++CONFIG_PMIC_RK8XX=y
+++CONFIG_SPL_DM_REGULATOR_FIXED=y
+++CONFIG_REGULATOR_RK8XX=y
+++CONFIG_PWM_ROCKCHIP=y
+++CONFIG_SCSI=y
+++CONFIG_BAUDRATE=1500000
+++CONFIG_DEBUG_UART_SHIFT=2
+++CONFIG_SYS_NS16550_MEM32=y
+++CONFIG_SYSRESET=y
+++CONFIG_USB=y
+++CONFIG_USB_XHCI_HCD=y
+++CONFIG_USB_EHCI_HCD=y
+++CONFIG_USB_EHCI_GENERIC=y
+++CONFIG_USB_DWC3=y
+++CONFIG_USB_DWC3_GENERIC=y
+++CONFIG_USB_KEYBOARD=y
+++CONFIG_USB_HOST_ETHER=y
+++CONFIG_USB_ETHER_ASIX=y
+++CONFIG_USB_ETHER_ASIX88179=y
+++CONFIG_USB_ETHER_MCS7830=y
+++CONFIG_USB_ETHER_RTL8152=y
+++CONFIG_USB_ETHER_SMSC95XX=y
+++CONFIG_VIDEO=y
+++CONFIG_DISPLAY=y
+++CONFIG_VIDEO_ROCKCHIP=y
+++CONFIG_DISPLAY_ROCKCHIP_HDMI=y
+++CONFIG_ERRNO_STR=y
+diff --git a/package/firmware/brcmfmac-sdio-firmware/Makefile b/package/firmware/brcmfmac-sdio-firmware/Makefile
+new file mode 100644
+index 0000000000..999e8f6833
+--- /dev/null
++++ b/package/firmware/brcmfmac-sdio-firmware/Makefile
+@@ -0,0 +1,61 @@
++#
++# Copyright (C) 2019-2020 OpenWrt.org
++#
++# This is free software, licensed under the GNU General Public License v2.
++# See /LICENSE for more information.
++#
++
++include $(TOPDIR)/rules.mk
++
++PKG_NAME:=brcmfmac-sdio-firmware
++PKG_SOURCE_DATE:=2022-07-06
++PKG_SOURCE_VERSION:=afc477e807c407736cfaff6a6188d09197dfbceb
++PKG_MIRROR_HASH:=3272b797f72d6b147d01cb82b72fb755ac0231ec4286b9571825c14e324baecd
++PKG_RELEASE:=1
++
++PKG_SOURCE_PROTO:=git
++PKG_SOURCE_URL:=https://github.com/LibreELEC/brcmfmac_sdio-firmware
++
++PKG_MAINTAINER:=Florian Fainelli <f.fainelli@gmail.com>
++PKG_LICENSE:=Proprietary
++PKG_LICENSE_FILES:=LICENCE.broadcom_bcm43xx
++
++include $(INCLUDE_DIR)/package.mk
++
++define Package/brcmfmac-sdio-firmware-default
++  SECTION:=firmware
++  CATEGORY:=Firmware
++  URL:=https://github.com/LibreELEC/brcmfmac_sdio-firmware
++endef
++
++define Build/Compile
++	true
++endef
++
++define Package/brcmfmac-sdio-firmware-43430-bt
++  $(Package/brcmfmac-sdio-firmware-default)
++  TITLE:=CYW43430 BT firmware and patch RAM
++endef
++
++define Package/brcmfmac-sdio-firmware-43430-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/BCM43430*.hcd \
++		$(1)/lib/firmware/brcm/
++endef
++
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-43430-bt))
++
++define Package/brcmfmac-sdio-firmware-4345-bt
++  $(Package/brcmfmac-sdio-firmware-default)
++  TITLE:=CYW4345 BT firmware and patch RAM
++endef
++
++define Package/brcmfmac-sdio-firmware-4345-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/BCM4345*.hcd \
++		$(1)/lib/firmware/brcm/
++endef
++
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-4345-bt))
+diff --git a/package/firmware/linux-firmware/broadcom-1.mk b/package/firmware/linux-firmware/broadcom-1.mk
+new file mode 100644
+index 0000000000..f592de1c28
+--- /dev/null
++++ b/package/firmware/linux-firmware/broadcom-1.mk
+@@ -0,0 +1,122 @@
++## Broadcom brcmfmac43456 firmware
++
++BRCMFMAC_43456_URL:=https://raw.githubusercontent.com/RPi-Distro/firmware-nonfree/bookworm/debian/config/brcm80211/brcm/
++
++define Download/brcmfmac43456-sdio.bin
++  FILE:=brcmfmac43456-sdio.bin
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=ddf83f2100885b166be52d21c8966db164fdd4e1d816aca2acc67ee9cc28d726
++endef
++
++define Download/brcmfmac43456-sdio.clm_blob
++  FILE:=brcmfmac43456-sdio.clm_blob
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=2dbd7d22fc9af0eb560ceab45b19646d211bc7b34a1dd00c6bfac5dd6ba25e8a
++endef
++
++define Download/brcmfmac43456-sdio.txt
++  FILE:=brcmfmac43456-sdio.txt
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=44e0bb322dc1f39a4b0a89f30ffdd28bc93f7d7aaf534d06d229fe56f6198194
++endef
++
++$(eval $(call Download,brcmfmac43456-sdio.bin))
++$(eval $(call Download,brcmfmac43456-sdio.clm_blob))
++$(eval $(call Download,brcmfmac43456-sdio.txt))
++
++Package/brcmfmac-firmware-43456-rockpi-4 = $(call Package/firmware-default,Broadcom Rock Pi 4 firmware)
++define Package/brcmfmac-firmware-43456-rockpi-4/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.bin
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.clm_blob
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.txt \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-43456-rockpi-4))
++
++## Broadcom NanoPi M4 firmware
++
++BRCMFMAC_4356_URL:=https://raw.githubusercontent.com/armbian/firmware/master/brcm/
++
++define Download/brcmfmac4356-sdio.bin
++  FILE:=brcmfmac4356-sdio.bin
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=cc689fc1b39bd3d1655eff9fcfac60a3bf73fb6a45e77fdbab1e762aeeecf34e
++endef
++
++define Download/brcmfmac4356-sdio.clm_blob
++  FILE:=brcmfmac4356-sdio.clm_blob
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=e048470d674de8865c30521138af248e5f96a9878ac73b707d834698cbf9a08a
++endef
++
++define Download/brcmfmac4356-sdio.txt
++  FILE:=brcmfmac4356-sdio.txt
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=81efd86f47fac54596d3c614872b2997ed0079303136e4c675a8eaa1a39db120
++endef
++
++$(eval $(call Download,brcmfmac4356-sdio.bin))
++$(eval $(call Download,brcmfmac4356-sdio.clm_blob))
++$(eval $(call Download,brcmfmac4356-sdio.txt))
++
++Package/brcmfmac-firmware-4356-nanopi-m4 = $(call Package/firmware-default,Broadcom NanoPi M4 firmware)
++define Package/brcmfmac-firmware-4356-nanopi-m4/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.bin
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.clm_blob
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.AP6356S.txt \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-4356-nanopi-m4))
++
++## Broadcom AP6255 firmware
++
++AP_6255_URL:=https://raw.githubusercontent.com/Infineon/ifx-linux-firmware/refs/heads/master/firmware/
++
++# define Download/cyfmac43455-sdio-minimal.bin
++#   FILE:=cyfmac43455-sdio-minimal.bin
++#   URL:=$(AP_6255_URL)
++#   HASH:=3075cb0bdc4b28ed4f08e01b1a216d0ebc70f4022d9d3272a4a43b3c90456e60
++# endef
++
++define Download/cyfmac43455-sdio.bin
++  FILE:=cyfmac43455-sdio.bin
++  URL:=$(AP_6255_URL)
++  HASH:=eaff8d2b6d2501bb5c477ba343900c7487af915898eac13bc91b33b1285dadce
++endef
++
++define Download/cyfmac43455-sdio.clm_blob
++  FILE:=cyfmac43455-sdio.clm_blob
++  URL:=$(AP_6255_URL)
++  HASH:=8fbe9fc2952e2fbab062a142c1ea3e261cd74604761e12f304781b911df4a328
++endef
++
++# $(eval $(call Download,cyfmac43455-sdio-minimal.bin))
++$(eval $(call Download,cyfmac43455-sdio.bin))
++$(eval $(call Download,cyfmac43455-sdio.clm_blob))
++
++Package/brcmfmac-firmware-ap6255-hugsun-x99 = $(call Package/firmware-default,Broadcom hugsun x99 firmware)
++define Package/brcmfmac-firmware-ap6255-hugsun-x99/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/cyfmac43455-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.bin
++	$(INSTALL_DATA) \
++		$(DL_DIR)/cyfmac43455-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.clm_blob
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/brcm/brcmfmac43455-sdio.acepc-t8.txt \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-ap6255-hugsun-x99))
+diff --git a/package/firmware/linux-firmware/realtek_bt.mk b/package/firmware/linux-firmware/realtek_bt.mk
+new file mode 100644
+index 0000000000..eb8aa87c7d
+--- /dev/null
++++ b/package/firmware/linux-firmware/realtek_bt.mk
+@@ -0,0 +1,8 @@
++Package/realtek-bluetooth-firmware = $(call Package/firmware-default,RealTek bluetooth firmware)
++define Package/realtek-bluetooth-firmware/install
++	$(INSTALL_DIR) $(1)/lib/firmware/rtl_bt
++	$(CP) \
++		$(PKG_BUILD_DIR)/rtl_bt/* \
++		$(1)/lib/firmware/rtl_bt
++endef
++$(eval $(call BuildPackage,realtek-bluetooth-firmware))
+diff --git a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
+index 9c668a64d1..9aa80a8825 100644
+--- a/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
++++ b/target/linux/rockchip/armv8/base-files/etc/board.d/01_leds
+@@ -8,6 +8,9 @@ boardname="${board##*,}"
+ board_config_update
+ 
+ case $board in
++hugsun,x99)
++	ucidef_set_led_netdev "lan" "LAN" "blue:power" "eth0"
++	;;
+ friendlyarm,nanopi-r2c|\
+ friendlyarm,nanopi-r2c-plus|\
+ friendlyarm,nanopi-r2s|\
+diff --git a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+index e9ec50e4d1..b8f92adeb0 100644
+--- a/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
++++ b/target/linux/rockchip/armv8/base-files/etc/board.d/02_network
+@@ -40,7 +40,7 @@ rockchip_setup_interfaces()
+ 		ucidef_set_interfaces_lan_wan 'lan0 lan1 lan2 lan3' 'eth0'
+ 		;;
+ 	*)
+-		ucidef_set_interface_lan 'eth0'
++		ucidef_set_interfaces_lan_wan 'eth0 eth2' 'eth1'
+ 		;;
+ 	esac
+ }
+diff --git a/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs b/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+new file mode 100755
+index 0000000000..8beb0f91fb
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/init.d/resize-rootfs
+@@ -0,0 +1,10 @@
++#!/bin/sh /etc/rc.common
++
++START=22
++start() {
++	rm -rf /etc/rc.d/S22resize-rootfs
++	#service resize-rootfs disable
++	chmod +x /usr/bin/resize-rootfs.sh
++	/usr/bin/resize-rootfs.sh
++}
++
+diff --git a/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs b/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+new file mode 100755
+index 0000000000..051d001b6c
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/rc.d/S22resize-rootfs
+@@ -0,0 +1 @@
++../init.d/resize-rootfs
+diff --git a/target/linux/rockchip/armv8/base-files/etc/uci-defaults/01_enable_packet_steering b/target/linux/rockchip/armv8/base-files/etc/uci-defaults/01_enable_packet_steering
+new file mode 100644
+index 0000000000..114c7e1a46
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/etc/uci-defaults/01_enable_packet_steering
+@@ -0,0 +1,5 @@
++uci -q get network.globals.packet_steering > /dev/null || {
++	uci set network.globals='globals'
++	uci set network.globals.packet_steering=1
++	uci commit network
++}
+diff --git a/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh b/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+new file mode 100755
+index 0000000000..d612ef62ba
+--- /dev/null
++++ b/target/linux/rockchip/armv8/base-files/usr/bin/resize-rootfs.sh
+@@ -0,0 +1,57 @@
++#!/bin/bash
++
++FDISK=$(which fdisk) || { echo "E: You must have fdisk" && exit 1; }
++LOSETUP=$(which losetup) || { echo "E: You must have losetup" && exit 1; }
++roottype=$(findmnt -n -o SOURCE / -o FSTYPE)
++case ${roottype} in
++	overlay)
++		FSCKF2FS=$(which fsck.f2fs) || { echo "E: You must have fsck.ext4" && exit 1; }
++		RESIZE2FS=$(which resize.f2fs) || { echo "E: You must have resize2fs" && exit 1; }
++		rootsource=$(findmnt -n -o SOURCE /rom)			# i.e. /dev/mmcblk0p2
++		[[ ${rootsource} == *mtdblock* ]] && exit 0
++		rootdevice=${rootsource%p*}				# i.e. /dev/mmcblk0
++		partitions=${rootsource##*p}
++
++		# Resizing partitions
++		lastsector=$(${FDISK} -l ${rootdevice} |grep "Disk ${rootdevice}" |awk '{print $7}')
++		lastsector=$(( $lastsector - 1 ))
++		startfrom=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $2}')
++		partend=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $3}')
++		[[ $lastsector -eq $partend ]] && exit 0
++		(echo d; echo $partitions; echo n; echo p; echo ; echo $startfrom; echo $lastsector ; echo w;) | fdisk $rootdevice
++		# Start resizing filesystem
++		LOOP="$(losetup -n -O NAME | sort | sed -n -e "1p")"
++		ROOT="$(losetup -n -O BACK-FILE ${LOOP} | sed -e "s|^|/dev|")"
++		OFFS="$(losetup -n -O OFFSET ${LOOP})"
++		LOOP="$(losetup -f)"
++		${LOSETUP} -o ${OFFS} ${LOOP} ${ROOT}
++		${FSCKF2FS} -y ${LOOP}
++		${RESIZE2FS} ${LOOP}
++		reboot
++		;;
++	ext4)
++		FSCKEXT4=$(which fsck.ext4) || { echo "E: You must have fsck.ext4" && exit 1; }
++		RESIZE2FS=$(which resize2fs) || { echo "E: You must have resize2fs" && exit 1; }
++		rootsource=$(findmnt -n -o SOURCE / | sed 's~\[.*\]~~')		# i.e. /dev/mmcblk0p2
++		rootdevice=${rootsource%p*}					# i.e. /dev/mmcblk0
++		partitions=${rootsource##*p}
++
++		# Resizing partitions
++		lastsector=$(${FDISK} -l ${rootdevice} |grep "Disk ${rootdevice}" |awk '{print $7}')
++		lastsector=$(( $lastsector - 1 ))
++		startfrom=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $2}')
++		partend=$(${FDISK} -l ${rootdevice} |grep ${rootsource} |awk '{print $3}')
++		[[ $lastsector -eq $partend ]] && exit 0
++		(echo d; echo $partitions; echo n; echo p; echo ; echo $startfrom; echo $lastsector ; echo w;) | fdisk $rootdevice
++
++		# Start resizing filesystem
++		LOOP="$(losetup -f)"
++		${LOSETUP} ${LOOP} ${rootsource}
++		${FSCKEXT4} -y -c ${LOOP}
++		${RESIZE2FS} ${LOOP}
++		reboot
++		;;
++esac
++
++exit 0
++
+diff --git a/target/linux/rockchip/image/armv8.mk b/target/linux/rockchip/image/armv8.mk
+index 53881b97ac..195d7b5160 100644
+--- a/target/linux/rockchip/image/armv8.mk
++++ b/target/linux/rockchip/image/armv8.mk
+@@ -25,6 +25,16 @@ define Device/firefly_roc-rk3328-cc
+ endef
+ TARGET_DEVICES += firefly_roc-rk3328-cc
+ 
++define Device/hugsun_hugsun-x99
++  DEVICE_VENDOR := Hugsun
++  DEVICE_MODEL := X99 TV BOX
++  SOC := rk3399
++  SUPPORTED_DEVICES := hugsun,x99
++  DEVICE_PACKAGES := brcmfmac-firmware-ap6255-hugsun-x99 \
++	kmod-brcmfmac brcmfmac-sdio-firmware-43430-bt kmod-usb-net-rtl8152 wpad-basic-mbedtls
++endef
++TARGET_DEVICES += hugsun_hugsun-x99
++
+ define Device/friendlyarm_nanopc-t4
+   DEVICE_VENDOR := FriendlyARM
+   DEVICE_MODEL := NanoPC T4
+@@ -41,6 +51,41 @@ define Device/friendlyarm_nanopc-t6
+ endef
+ TARGET_DEVICES += friendlyarm_nanopc-t6
+ 
++define Device/friendlyarm_nanopi-m4
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4
++  SOC := rk3399
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-basic-mbedtls
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4
++
++define Device/friendlyarm_nanopi-m4-2gb
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4 2GB
++  DEVICE_VARIANT := DDR3
++  SUPPORTED_DEVICES := friendlyarm,nanopi-m4
++  DEVICE_DTS := rockchip/rk3399-nanopi-m4
++  SOC := rk3399
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-basic-mbedtls
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4-2gb
++
++define Device/friendlyarm_nanopi-m4v2
++  DEVICE_VENDOR := FriendlyARM
++  DEVICE_MODEL := NanoPi M4v2
++  SUPPORTED_DEVICES := friendlyarm,nanopi-m4
++  DEVICE_DTS := rockchip/rk3399-nanopi-m4
++  SOC := rk3399
++  DEVICE_PACKAGES := \
++		brcmfmac-firmware-4356-nanopi-m4 \
++		kmod-brcmfmac wpad-basic-mbedtls
++endef
++TARGET_DEVICES += friendlyarm_nanopi-m4v2
++
+ define Device/friendlyarm_nanopi-r2c
+   DEVICE_VENDOR := FriendlyARM
+   DEVICE_MODEL := NanoPi R2C
+@@ -275,6 +320,7 @@ define Device/radxa_rock-pi-4a
+   DEVICE_MODEL := ROCK Pi 4A
+   SOC := rk3399
+   SUPPORTED_DEVICES := radxa,rockpi4a radxa,rockpi4
++  DEVICE_PACKAGES := brcmfmac-firmware-43456-rockpi-4 kmod-brcmfmac wpad-basic-mbedtls
+   UBOOT_DEVICE_NAME := rock-pi-4-rk3399
+ endef
+ TARGET_DEVICES += radxa_rock-pi-4a
+diff --git a/target/linux/rockchip/patches-6.12/500-v6.12-rockpi4a.patch b/target/linux/rockchip/patches-6.12/500-v6.12-rockpi4a.patch
+new file mode 100644
+index 0000000000..d3cf21b918
+--- /dev/null
++++ b/target/linux/rockchip/patches-6.12/500-v6.12-rockpi4a.patch
+@@ -0,0 +1,45 @@
++--- a/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a.dts
+++++ b/arch/arm64/boot/dts/rockchip/rk3399-rock-pi-4a.dts
++@@ -11,6 +11,42 @@
++ / {
++ 	model = "Radxa ROCK Pi 4A";
++ 	compatible = "radxa,rockpi4a", "radxa,rockpi4", "rockchip,rk3399";
+++
+++	aliases {
+++		mmc2 = &sdio0;
+++	};
+++};
+++
+++&sdio0 {
+++	status = "okay";
+++
+++	brcmf: wifi@1 {
+++		compatible = "brcm,bcm4329-fmac";
+++		reg = <1>;
+++		interrupt-parent = <&gpio0>;
+++		interrupts = <RK_PA3 IRQ_TYPE_LEVEL_LOW>;
+++		interrupt-names = "host-wake";
+++		pinctrl-names = "default";
+++		pinctrl-0 = <&wifi_host_wake_l>;
+++	};
+++};
+++
+++&uart0 {
+++	status = "okay";
+++
+++	bluetooth {
+++		compatible = "brcm,bcm4345c5";
+++		clocks = <&rk808 1>;
+++		clock-names = "lpo";
+++		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
+++		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+++		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
+++		max-speed = <1500000>;
+++		pinctrl-names = "default";
+++		pinctrl-0 = <&bt_host_wake_l &bt_wake_l &bt_enable_h>;
+++		vbat-supply = <&vcc3v3_sys>;
+++		vddio-supply = <&vcc_1v8>;
+++	};
++ };
++ 
++ &spi1 {
+-- 
+2.48.1
+
