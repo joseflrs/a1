@@ -1,0 +1,237 @@
+From dbee1acd78139d4265a3e2373876c80aab0d5e3c Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Thu, 18 Sep 2025 14:50:21 +0000
+Subject: [PATCH] kernel: Linux 6.12.48
+
+---
+ ...7xx-Read-modem-line-state-at-startup.patch |  2 +-
+ ...pci-Disable-Host-Memory-Buffer-usage.patch |  6 +-
+ ...-announce-support-for-SER_RS485_RTS_.patch |  2 +-
+ ...ack-to-interpreter-for-programs-with.patch | 97 -------------------
+ target/linux/generic/kernel-6.12              |  4 +-
+ ...les-ignore-EOPNOTSUPP-on-flowtable-d.patch |  2 +-
+ ...crease-max-ports-for-rtl839x-rtl931x.patch |  4 +-
+ ...-precheck-and-delay-for-CQE-pending-.patch |  2 +-
+ 8 files changed, 11 insertions(+), 108 deletions(-)
+ delete mode 100644 target/linux/generic/backport-6.12/630-v6.17-bpf-Allow-fall-back-to-interpreter-for-programs-with.patch
+
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0331-serial-sc16is7xx-Read-modem-line-state-at-startup.patch b/target/linux/bcm27xx/patches-6.12/950-0331-serial-sc16is7xx-Read-modem-line-state-at-startup.patch
+index 57945f6e8b..686aba0ecf 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0331-serial-sc16is7xx-Read-modem-line-state-at-startup.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0331-serial-sc16is7xx-Read-modem-line-state-at-startup.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/drivers/tty/serial/sc16is7xx.c
+ +++ b/drivers/tty/serial/sc16is7xx.c
+-@@ -1206,6 +1206,9 @@ static int sc16is7xx_startup(struct uart
++@@ -1196,6 +1196,9 @@ static int sc16is7xx_startup(struct uart
+  	      SC16IS7XX_IER_MSI_BIT;
+  	sc16is7xx_port_write(port, SC16IS7XX_IER_REG, val);
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch b/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch
+index 5ae8f6c966..a299c6c57e 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0685-nvme-pci-Disable-Host-Memory-Buffer-usage.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/drivers/nvme/host/pci.c
+ +++ b/drivers/nvme/host/pci.c
+-@@ -2103,6 +2103,7 @@ static void nvme_free_host_mem(struct nv
++@@ -2106,6 +2106,7 @@ static void nvme_free_host_mem(struct nv
+  	dev->nr_host_mem_descs = 0;
+  }
+  
+@@ -26,7 +26,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  static int __nvme_alloc_host_mem(struct nvme_dev *dev, u64 preferred,
+  		u32 chunk_size)
+  {
+-@@ -2171,9 +2172,11 @@ out:
++@@ -2174,9 +2175,11 @@ out:
+  	dev->host_mem_descs = NULL;
+  	return -ENOMEM;
+  }
+@@ -38,7 +38,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	u64 min_chunk = min_t(u64, preferred, PAGE_SIZE * MAX_ORDER_NR_PAGES);
+  	u64 hmminds = max_t(u32, dev->ctrl.hmminds * 4096, PAGE_SIZE * 2);
+  	u64 chunk_size;
+-@@ -2186,6 +2189,7 @@ static int nvme_alloc_host_mem(struct nv
++@@ -2189,6 +2192,7 @@ static int nvme_alloc_host_mem(struct nv
+  			nvme_free_host_mem(dev);
+  		}
+  	}
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0702-serial-sc16is7xx-announce-support-for-SER_RS485_RTS_.patch b/target/linux/bcm27xx/patches-6.12/950-0702-serial-sc16is7xx-announce-support-for-SER_RS485_RTS_.patch
+index 5de1b1c4ac..7a8b37a00d 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0702-serial-sc16is7xx-announce-support-for-SER_RS485_RTS_.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0702-serial-sc16is7xx-announce-support-for-SER_RS485_RTS_.patch
+@@ -31,7 +31,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ 
+ --- a/drivers/tty/serial/sc16is7xx.c
+ +++ b/drivers/tty/serial/sc16is7xx.c
+-@@ -1478,7 +1478,7 @@ static int sc16is7xx_setup_mctrl_ports(s
++@@ -1468,7 +1468,7 @@ static int sc16is7xx_setup_mctrl_ports(s
+  }
+  
+  static const struct serial_rs485 sc16is7xx_rs485_supported = {
+diff --git a/target/linux/generic/backport-6.12/630-v6.17-bpf-Allow-fall-back-to-interpreter-for-programs-with.patch b/target/linux/generic/backport-6.12/630-v6.17-bpf-Allow-fall-back-to-interpreter-for-programs-with.patch
+deleted file mode 100644
+index 0100e2b971..0000000000
+--- a/target/linux/generic/backport-6.12/630-v6.17-bpf-Allow-fall-back-to-interpreter-for-programs-with.patch
++++ /dev/null
+@@ -1,97 +0,0 @@
+-From: KaFai Wan <kafai.wan@linux.dev>
+-Date: Tue, 9 Sep 2025 22:46:14 +0800
+-Subject: [PATCH] bpf: Allow fall back to interpreter for programs with stack
+- size <= 512
+-
+-OpenWRT users reported regression on ARMv6 devices after updating to latest
+-HEAD, where tcpdump filter:
+-
+-tcpdump "not ether host 3c37121a2b3c and not ether host 184ecbca2a3a \
+-and not ether host 14130b4d3f47 and not ether host f0f61cf440b7 \
+-and not ether host a84b4dedf471 and not ether host d022be17e1d7 \
+-and not ether host 5c497967208b and not ether host 706655784d5b"
+-
+-fails with warning: "Kernel filter failed: No error information"
+-when using config:
+- # CONFIG_BPF_JIT_ALWAYS_ON is not set
+- CONFIG_BPF_JIT_DEFAULT_ON=y
+-
+-The issue arises because commits:
+-1. "bpf: Fix array bounds error with may_goto" changed default runtime to
+-   __bpf_prog_ret0_warn when jit_requested = 1
+-2. "bpf: Avoid __bpf_prog_ret0_warn when jit fails" returns error when
+-   jit_requested = 1 but jit fails
+-
+-This change restores interpreter fallback capability for BPF programs with
+-stack size <= 512 bytes when jit fails.
+-
+-Reported-by: Felix Fietkau <nbd@nbd.name>
+-Closes: https://lore.kernel.org/bpf/2e267b4b-0540-45d8-9310-e127bf95fc63@nbd.name/
+-Fixes: 6ebc5030e0c5 ("bpf: Fix array bounds error with may_goto")
+-Signed-off-by: KaFai Wan <kafai.wan@linux.dev>
+-Acked-by: Eduard Zingerman <eddyz87@gmail.com>
+-Link: https://lore.kernel.org/r/20250909144614.2991253-1-kafai.wan@linux.dev
+-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+----
+-
+---- a/kernel/bpf/core.c
+-+++ b/kernel/bpf/core.c
+-@@ -2299,8 +2299,7 @@ static unsigned int __bpf_prog_ret0_warn
+- 					 const struct bpf_insn *insn)
+- {
+- 	/* If this handler ever gets executed, then BPF_JIT_ALWAYS_ON
+--	 * is not working properly, or interpreter is being used when
+--	 * prog->jit_requested is not 0, so warn about it!
+-+	 * is not working properly, so warn about it!
+- 	 */
+- 	WARN_ON_ONCE(1);
+- 	return 0;
+-@@ -2401,8 +2400,9 @@ out:
+- 	return ret;
+- }
+- 
+--static void bpf_prog_select_func(struct bpf_prog *fp)
+-+static bool bpf_prog_select_interpreter(struct bpf_prog *fp)
+- {
+-+	bool select_interpreter = false;
+- #ifndef CONFIG_BPF_JIT_ALWAYS_ON
+- 	u32 stack_depth = max_t(u32, fp->aux->stack_depth, 1);
+- 	u32 idx = (round_up(stack_depth, 32) / 32) - 1;
+-@@ -2411,15 +2411,16 @@ static void bpf_prog_select_func(struct
+- 	 * But for non-JITed programs, we don't need bpf_func, so no bounds
+- 	 * check needed.
+- 	 */
+--	if (!fp->jit_requested &&
+--	    !WARN_ON_ONCE(idx >= ARRAY_SIZE(interpreters))) {
+-+	if (idx < ARRAY_SIZE(interpreters)) {
+- 		fp->bpf_func = interpreters[idx];
+-+		select_interpreter = true;
+- 	} else {
+- 		fp->bpf_func = __bpf_prog_ret0_warn;
+- 	}
+- #else
+- 	fp->bpf_func = __bpf_prog_ret0_warn;
+- #endif
+-+	return select_interpreter;
+- }
+- 
+- /**
+-@@ -2438,7 +2439,7 @@ struct bpf_prog *bpf_prog_select_runtime
+- 	/* In case of BPF to BPF calls, verifier did all the prep
+- 	 * work with regards to JITing, etc.
+- 	 */
+--	bool jit_needed = fp->jit_requested;
+-+	bool jit_needed = false;
+- 
+- 	if (fp->bpf_func)
+- 		goto finalize;
+-@@ -2447,7 +2448,8 @@ struct bpf_prog *bpf_prog_select_runtime
+- 	    bpf_prog_has_kfunc_call(fp))
+- 		jit_needed = true;
+- 
+--	bpf_prog_select_func(fp);
+-+	if (!bpf_prog_select_interpreter(fp))
+-+		jit_needed = true;
+- 
+- 	/* eBPF JITs can rewrite the program in case constant
+- 	 * blinding is active. However, in case of error during
+diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
+index db25695394..641b59483e 100644
+--- a/target/linux/generic/kernel-6.12
++++ b/target/linux/generic/kernel-6.12
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.12 = .47
+-LINUX_KERNEL_HASH-6.12.47 = e82fe40871743048226987bd349ef107168b15aab90140e872ca4ed470922e25
++LINUX_VERSION-6.12 = .48
++LINUX_KERNEL_HASH-6.12.48 = 0514ebf5b3226c519facc1c3428f001c008fef1e4ae990332e65f89e22ede7e6
+diff --git a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+index 2ab483d6c4..a2d9a6505c 100644
+--- a/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
++++ b/target/linux/generic/pending-6.12/701-netfilter-nf_tables-ignore-EOPNOTSUPP-on-flowtable-d.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/netfilter/nf_tables_api.c
+ +++ b/net/netfilter/nf_tables_api.c
+-@@ -8638,7 +8638,7 @@ static int nft_register_flowtable_net_ho
++@@ -8666,7 +8666,7 @@ static int nft_register_flowtable_net_ho
+  		err = flowtable->data.type->setup(&flowtable->data,
+  						  hook->ops.dev,
+  						  FLOW_BLOCK_BIND);
+diff --git a/target/linux/realtek/patches-6.12/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch b/target/linux/realtek/patches-6.12/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch
+index f7d2371554..230b8bcd45 100644
+--- a/target/linux/realtek/patches-6.12/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch
++++ b/target/linux/realtek/patches-6.12/700-dsa-mdio-increase-max-ports-for-rtl839x-rtl931x.patch
+@@ -132,7 +132,7 @@ Signed-off-by: Markus Stockhausen <markus.stockhausen@gmx.de>
+  	return 0;
+ --- a/drivers/net/phy/mdio_bus.c
+ +++ b/drivers/net/phy/mdio_bus.c
+-@@ -611,7 +611,7 @@ static int mdiobus_scan_bus_c22(struct m
++@@ -612,7 +612,7 @@ static int mdiobus_scan_bus_c22(struct m
+  	int i;
+  
+  	for (i = 0; i < PHY_MAX_ADDR; i++) {
+@@ -141,7 +141,7 @@ Signed-off-by: Markus Stockhausen <markus.stockhausen@gmx.de>
+  			struct phy_device *phydev;
+  
+  			phydev = mdiobus_scan_c22(bus, i);
+-@@ -627,7 +627,7 @@ static int mdiobus_scan_bus_c45(struct m
++@@ -628,7 +628,7 @@ static int mdiobus_scan_bus_c45(struct m
+  	int i;
+  
+  	for (i = 0; i < PHY_MAX_ADDR; i++) {
+diff --git a/target/linux/starfive/patches-6.12/0013-drivers-nvme-Add-precheck-and-delay-for-CQE-pending-.patch b/target/linux/starfive/patches-6.12/0013-drivers-nvme-Add-precheck-and-delay-for-CQE-pending-.patch
+index 48bce37370..ef84c85305 100644
+--- a/target/linux/starfive/patches-6.12/0013-drivers-nvme-Add-precheck-and-delay-for-CQE-pending-.patch
++++ b/target/linux/starfive/patches-6.12/0013-drivers-nvme-Add-precheck-and-delay-for-CQE-pending-.patch
+@@ -22,7 +22,7 @@ Signed-off-by: Kevin.xie <kevin.xie@starfivetech.com>
+  
+  #include "trace.h"
+  #include "nvme.h"
+-@@ -1153,6 +1154,15 @@ static inline int nvme_poll_cq(struct nv
++@@ -1156,6 +1157,15 @@ static inline int nvme_poll_cq(struct nv
+  {
+  	int found = 0;
+  
+-- 
+2.51.0
+
