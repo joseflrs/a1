@@ -29,6 +29,8 @@ jobs:
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/x86_64-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
                 wget https://downloads.openwrt.org/snapshots/targets/x86/64/config.buildinfo -O .config
                 echo "CONFIG_PACKAGE_luci=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
