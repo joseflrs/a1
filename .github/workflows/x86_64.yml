@@ -20,12 +20,12 @@ jobs:
               run: |
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/kernel.patch openwrt/
+                cp -rf r3/92.patch openwrt/
                 cp -rf r3/pm.patch openwrt/
                 cd openwrt
-                git apply kernel.patch
+                git apply 92.patch
                 wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/19388.patch
                 git apply 19388.patch
-                git apply pm.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
