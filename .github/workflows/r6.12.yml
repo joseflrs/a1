@@ -47,7 +47,6 @@ jobs:
                 git apply 45.patch
                 git apply 46.patch
                 git apply pm.patch
-                git apply rk3599-overclock.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 sed -i '5d' feeds.conf.default
                 ./scripts/feeds update -a
@@ -105,6 +104,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
