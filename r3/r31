@@ -769,6 +769,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wr3000p-v1 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax3000m is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax7800m-6e is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_keenetic_kn-3711 is not set
 CONFIG_PACKAGE_losetup=y
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
