@@ -428,6 +428,7 @@ CONFIG_MODULE_DEFAULT_uboot-envtools=m
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_tplink_ex220-v2 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_sim_simax1800u is not set
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_zbtlink_zbt-wg108 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_asiarf_ap7621-004-v3 is not set
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
 CONFIG_PACKAGE_gawk=y
