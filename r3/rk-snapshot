@@ -495,3 +495,4 @@ CONFIG_PACKAGE_sed=y
 CONFIG_PACKAGE_coreutils-sort=y
 CONFIG_PACKAGE_nftset=y
 CONFIG_PACKAGE_swap-utils=y
+CONFIG_PACKAGE_vsftpd-tls=y
