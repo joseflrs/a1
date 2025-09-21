@@ -26,7 +26,7 @@ jobs:
                 cd openwrt
                 wget https://github.com/mj22226/openwrt/commit/c662df0140448ad793848dcb8c9490ad5657d804.patch
                 git apply c662df0140448ad793848dcb8c9490ad5657d804.patch
-                git apply kernel.patch
+                
                 git apply pm.patch
                 git apply 0001-bpi-r31.patch
                 git apply 01-ip-addr.patch
