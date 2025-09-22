@@ -34,11 +34,11 @@ jobs:
                 cp -rf r3/pm.patch openwrt/
                 cp -rf r3/49-d-fll.patch openwrt/
                 cp -rf r3/rk3599-overclock.patch openwrt/
+                cp -rf r3/mac80211.patch openwrt/
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                wget https://github.com/mj22226/openwrt/commit/c662df0140448ad793848dcb8c9490ad5657d804.patch
-                git apply c662df0140448ad793848dcb8c9490ad5657d804.patch
+                git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
                 git apply kmod-apk.patch
@@ -104,6 +104,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
