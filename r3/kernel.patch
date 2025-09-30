@@ -1,61 +1,64 @@
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch b/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-index 1860bf1737..0491be4369 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0125-xhci-implement-xhci_fixup_endpoint-for-interval-adju.patch
-@@ -14,7 +14,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
+From 877f150f1a2d54316e8e61459c01c0f527a8409f Mon Sep 17 00:00:00 2001
+From: i l <il@l.com>
+Date: Tue, 30 Sep 2025 16:34:52 +0000
+Subject: [PATCH] kernel: Linux 6.12.50
+
+---
+ ...oC-Add-support-for-all-the-downstream-rpi-sound-ca.patch | 2 +-
+ ...22-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch | 4 ++--
+ .../950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch   | 6 +++---
+ ...0-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch | 2 +-
+ ...ivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch | 2 +-
+ ....17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch | 6 +++---
+ target/linux/generic/kernel-6.12                            | 4 ++--
+ .../714-net-phy-sfp-add-support-for-SMBus.patch             | 6 +++---
+ 8 files changed, 16 insertions(+), 16 deletions(-)
+
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch b/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
+index 59105068c1..53487be761 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
+@@ -18626,7 +18626,7 @@ Signed-off-by: j-schambacher <joerg@hifiberry.com>
+  	 * For devices with more than one control interface, we assume the
+ --- a/sound/usb/quirks.c
+ +++ b/sound/usb/quirks.c
+-@@ -2360,6 +2360,8 @@ static const struct usb_audio_quirk_flag
++@@ -2378,6 +2378,8 @@ static const struct usb_audio_quirk_flag
+  		   QUIRK_FLAG_ALIGN_TRANSFER),
+  	DEVICE_FLG(0x534d, 0x2109, /* MacroSilicon MS2109 */
+  		   QUIRK_FLAG_ALIGN_TRANSFER),
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
+index d5a21169bd..d5cbb4e1cb 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
  
- --- a/drivers/usb/host/xhci.c
- +++ b/drivers/usb/host/xhci.c
--@@ -1519,6 +1519,109 @@ static int xhci_check_ep0_maxpacket(stru
-+@@ -1515,6 +1515,109 @@ static int xhci_check_ep0_maxpacket(stru
-  }
-  
-  /*
-@@ -124,7 +124,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.org>
-   * non-error returns are a promise to giveback() the urb later
-   * we drop ownership so next owner (or urb unlink) can get it
+ --- a/net/bluetooth/hci_sync.c
+ +++ b/net/bluetooth/hci_sync.c
+-@@ -4921,6 +4921,7 @@ static const struct {
++@@ -4928,6 +4928,7 @@ static const struct {
    */
--@@ -5390,6 +5493,7 @@ static const struct hc_driver xhci_hc_dr
-+@@ -5386,6 +5489,7 @@ static const struct hc_driver xhci_hc_dr
-  	.endpoint_reset =	xhci_endpoint_reset,
-  	.check_bandwidth =	xhci_check_bandwidth,
-  	.reset_bandwidth =	xhci_reset_bandwidth,
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch b/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-index 1ac575a2ce..e2f7caeaf6 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0127-usb-xhci-drop-and-add-the-endpoint-context-in-xhci_f.patch
-@@ -19,7 +19,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- 
- --- a/drivers/usb/host/xhci.c
- +++ b/drivers/usb/host/xhci.c
--@@ -1608,7 +1608,7 @@ static void xhci_fixup_endpoint(struct u
-+@@ -1604,7 +1604,7 @@ static void xhci_fixup_endpoint(struct u
-  		return;
-  	}
-  	ctrl_ctx->add_flags = xhci_get_endpoint_flag_from_index(ep_index);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch b/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-index f283308934..fad1aafc0f 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0333-xhci-quirks-add-link-TRB-quirk-for-VL805.patch
-@@ -53,7 +53,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (addr == 0) {
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1628,6 +1628,9 @@ struct xhci_hcd {
-+@@ -1631,6 +1631,9 @@ struct xhci_hcd {
-  #define XHCI_ETRON_HOST	BIT_ULL(49)
-  #define XHCI_LIMIT_ENDPOINT_INTERVAL_9 BIT_ULL(50)
-  
+  static int hci_dev_setup_sync(struct hci_dev *hdev)
+  {
+@@ -28,7 +28,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret = 0;
+  	bool invalid_bdaddr;
+  	size_t i;
+-@@ -4949,7 +4950,8 @@ static int hci_dev_setup_sync(struct hci
++@@ -4956,7 +4957,8 @@ static int hci_dev_setup_sync(struct hci
+  			 test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
+  	if (!ret) {
+  		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks) &&
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch b/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
-index 4e1c1bd76b..de71239bd2 100644
+index de71239bd2..56708d6bcb 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch
 @@ -34,7 +34,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
  
  --- a/drivers/usb/host/xhci-mem.c
  +++ b/drivers/usb/host/xhci-mem.c
--@@ -1397,6 +1397,7 @@ int xhci_endpoint_init(struct xhci_hcd *
-+@@ -1383,6 +1383,7 @@ int xhci_endpoint_init(struct xhci_hcd *
+-@@ -1383,6 +1383,7 @@ int xhci_endpoint_init(struct xhci_hcd *
++@@ -1387,6 +1387,7 @@ int xhci_endpoint_init(struct xhci_hcd *
   	unsigned int ep_index;
   	struct xhci_ep_ctx *ep_ctx;
   	struct xhci_ring *ep_ring;
@@ -63,8 +66,8 @@ index 4e1c1bd76b..de71239bd2 100644
   	unsigned int max_packet;
   	enum xhci_ring_type ring_type;
   	u32 max_esit_payload;
--@@ -1406,6 +1407,8 @@ int xhci_endpoint_init(struct xhci_hcd *
-+@@ -1392,6 +1393,8 @@ int xhci_endpoint_init(struct xhci_hcd *
+-@@ -1392,6 +1393,8 @@ int xhci_endpoint_init(struct xhci_hcd *
++@@ -1396,6 +1397,8 @@ int xhci_endpoint_init(struct xhci_hcd *
   	unsigned int mult;
   	unsigned int avg_trb_len;
   	unsigned int err_count = 0;
@@ -72,105 +75,94 @@ index 4e1c1bd76b..de71239bd2 100644
   
   	ep_index = xhci_get_endpoint_index(&ep->desc);
   	ep_ctx = xhci_get_ep_ctx(xhci, virt_dev->in_ctx, ep_index);
--@@ -1441,9 +1444,35 @@ int xhci_endpoint_init(struct xhci_hcd *
-+@@ -1427,9 +1430,35 @@ int xhci_endpoint_init(struct xhci_hcd *
+-@@ -1427,9 +1430,35 @@ int xhci_endpoint_init(struct xhci_hcd *
++@@ -1431,9 +1434,35 @@ int xhci_endpoint_init(struct xhci_hcd *
   
   	mult = xhci_get_endpoint_mult(udev, ep);
   	max_packet = usb_endpoint_maxp(&ep->desc);
-@@ -100,7 +100,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1630,6 +1630,7 @@ struct xhci_hcd {
-+@@ -1633,6 +1633,7 @@ struct xhci_hcd {
-  
-  /* Downstream VLI fixes */
-  #define XHCI_AVOID_DQ_ON_LINK	BIT_ULL(56)
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-index c1731fb1df..2875648984 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
-@@ -144,7 +144,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  	return 0;
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1631,6 +1631,7 @@ struct xhci_hcd {
-+@@ -1634,6 +1634,7 @@ struct xhci_hcd {
-  /* Downstream VLI fixes */
-  #define XHCI_AVOID_DQ_ON_LINK	BIT_ULL(56)
-  #define XHCI_VLI_SS_BULK_OUT_BUG	BIT_ULL(57)
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0401-xhci-Use-more-event-ring-segment-table-entries.patch b/target/linux/bcm27xx/patches-6.12/950-0401-xhci-Use-more-event-ring-segment-table-entries.patch
-index 6baba3b443..f74985e433 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0401-xhci-Use-more-event-ring-segment-table-entries.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0401-xhci-Use-more-event-ring-segment-table-entries.patch
-@@ -21,7 +21,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
+index 2b1d523594..9293edef8d 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
+@@ -15,7 +15,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
  
- --- a/drivers/usb/host/xhci.h
- +++ b/drivers/usb/host/xhci.h
--@@ -1395,7 +1395,7 @@ struct urb_priv {
-+@@ -1398,7 +1398,7 @@ struct urb_priv {
-  };
-  
-  /* Number of Event Ring segments to allocate, when amount is not specified. (spec allows 32k) */
+ --- a/net/bluetooth/hci_sync.c
+ +++ b/net/bluetooth/hci_sync.c
+-@@ -4921,7 +4921,8 @@ static const struct {
++@@ -4928,7 +4928,8 @@ static const struct {
+   */
+  static int hci_dev_setup_sync(struct hci_dev *hdev)
+  {
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0534-drivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch b/target/linux/bcm27xx/patches-6.12/950-0534-drivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch
-index 9a052443c0..49598a723b 100644
+index 49598a723b..9d0a6e2055 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0534-drivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch
 +++ b/target/linux/bcm27xx/patches-6.12/950-0534-drivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch
 @@ -28,7 +28,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
  
  --- a/drivers/usb/host/xhci-mem.c
  +++ b/drivers/usb/host/xhci-mem.c
--@@ -715,6 +715,14 @@ void xhci_setup_streams_ep_input_ctx(str
-+@@ -701,6 +701,14 @@ void xhci_setup_streams_ep_input_ctx(str
+-@@ -701,6 +701,14 @@ void xhci_setup_streams_ep_input_ctx(str
++@@ -705,6 +705,14 @@ void xhci_setup_streams_ep_input_ctx(str
   	ep_ctx->ep_info &= cpu_to_le32(~EP_MAXPSTREAMS_MASK);
   	ep_ctx->ep_info |= cpu_to_le32(EP_MAXPSTREAMS(max_primary_streams)
   				       | EP_HAS_LSA);
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0692-cgroup-Add-cgroup_enable-option.patch b/target/linux/bcm27xx/patches-6.12/950-0692-cgroup-Add-cgroup_enable-option.patch
-index 9ea92a5f32..d44e050e02 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0692-cgroup-Add-cgroup_enable-option.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0692-cgroup-Add-cgroup_enable-option.patch
-@@ -17,7 +17,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+diff --git a/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch b/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
+index dedb5b1a9f..b7d3af572d 100644
+--- a/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
++++ b/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
+@@ -16,9 +16,9 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
  
- --- a/kernel/cgroup/cgroup.c
- +++ b/kernel/cgroup/cgroup.c
--@@ -6887,6 +6887,39 @@ static int __init cgroup_disable(char *s
-+@@ -6916,6 +6916,39 @@ static int __init cgroup_disable(char *s
-  }
-  __setup("cgroup_disable=", cgroup_disable);
+ --- a/drivers/net/phy/sfp.c
+ +++ b/drivers/net/phy/sfp.c
+-@@ -474,6 +474,9 @@ static const struct sfp_quirk sfp_quirks
+- 	SFP_QUIRK("ALCATELLUCENT", "3FE46541AA", sfp_quirk_2500basex,
+- 		  sfp_fixup_nokia),
++@@ -494,6 +494,9 @@ static const struct sfp_quirk sfp_quirks
++ 	// FLYPRO SFP-10GT-CS-30M uses Rollball protocol to talk to the PHY.
++ 	SFP_QUIRK_F("FLYPRO", "SFP-10GT-CS-30M", sfp_fixup_rollball),
   
-diff --git a/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch b/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-index 06b91a6ce6..33f8ca71ad 100644
---- a/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-+++ b/target/linux/bcm27xx/patches-6.12/950-0950-usb-xhci-default-to-Intel-scheme-for-calculating-U1-.patch
-@@ -39,8 +39,8 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
- +
-  static bool td_on_ring(struct xhci_td *td, struct xhci_ring *ring)
-  {
-- 	struct xhci_segment *seg = ring->first_seg;
--@@ -4795,7 +4799,7 @@ static u16 xhci_calculate_u1_timeout(str
-+ 	struct xhci_segment *seg;
-+@@ -4791,7 +4795,7 @@ static u16 xhci_calculate_u1_timeout(str
-  		}
-  	}
-  
-@@ -49,7 +49,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
-  		timeout_ns = xhci_calculate_intel_u1_timeout(udev, desc);
-  	else
-  		timeout_ns = udev->u1_params.sel;
--@@ -4859,7 +4863,7 @@ static u16 xhci_calculate_u2_timeout(str
-+@@ -4855,7 +4859,7 @@ static u16 xhci_calculate_u2_timeout(str
-  		}
-  	}
-  
+ +	// FLYPRO SFP-10GT-CS-30M uses Rollball protocol to talk to the PHY.
+ +	SFP_QUIRK_F("FLYPRO", "SFP-10GT-CS-30M", sfp_fixup_rollball),
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index dd7f683f1a..8fbe4e75fe 100644
+index 438cd31bb8..a6c805bebf 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .48
--LINUX_KERNEL_HASH-6.12.48 = 5bf9eb676751bf48978e38363c772298b41a75336d5038ed6d37012399471db2
-+LINUX_VERSION-6.12 = .49
-+LINUX_KERNEL_HASH-6.12.49 = 234621e146dacce2241049555d550e4f7a6bde67ccd7ef232d47ac8145425526
+-LINUX_VERSION-6.12 = .49
+-LINUX_KERNEL_HASH-6.12.49 = 234621e146dacce2241049555d550e4f7a6bde67ccd7ef232d47ac8145425526
++LINUX_VERSION-6.12 = .50
++LINUX_KERNEL_HASH-6.12.50 = f35ec3e6e6b285b9c330469f84fd739d046629951dc25d7859500785034af11a
+diff --git a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch b/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
+index 62de5a0929..7cddb8bfa6 100644
+--- a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
++++ b/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
+@@ -10,7 +10,7 @@ Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+ 
+ --- a/drivers/net/phy/sfp.c
+ +++ b/drivers/net/phy/sfp.c
+-@@ -694,10 +694,64 @@ static int sfp_i2c_write(struct sfp *sfp
++@@ -716,10 +716,64 @@ static int sfp_i2c_write(struct sfp *sfp
+  	return ret == ARRAY_SIZE(msgs) ? len : 0;
+  }
+  
+@@ -77,7 +77,7 @@ Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+  
+  	sfp->i2c = i2c;
+  	sfp->read = sfp_i2c_read;
+-@@ -729,6 +783,29 @@ static int sfp_i2c_mdiobus_create(struct
++@@ -751,6 +805,29 @@ static int sfp_i2c_mdiobus_create(struct
+  	return 0;
+  }
+  
+@@ -107,7 +107,7 @@ Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+  static void sfp_i2c_mdiobus_destroy(struct sfp *sfp)
+  {
+  	mdiobus_unregister(sfp->i2c_mii);
+-@@ -1903,9 +1980,15 @@ static void sfp_sm_fault(struct sfp *sfp
++@@ -1925,9 +2002,15 @@ static void sfp_sm_fault(struct sfp *sfp
+  
+  static int sfp_sm_add_mdio_bus(struct sfp *sfp)
+  {
 -- 
-2.48.1
+2.51.0
 
