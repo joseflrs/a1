@@ -1,7 +1,7 @@
-From fc7d65cb4a79e67b3c7d74e4a95883e926f4b45a Mon Sep 17 00:00:00 2001
+From 737de7631309d0146f38da580e8f1d0fecac80f8 Mon Sep 17 00:00:00 2001
 From: i l <il@il.com>
 Date: Wed, 17 Sep 2025 16:56:31 -0300
-Subject: mac80211: update to version 6.16.9
+Subject: [PATCH 10/10] mac80211: update to version 6.16.10
 
 ---
  package/kernel/mac80211/Makefile              |   6 +-
@@ -69,7 +69,7 @@ Subject: mac80211: update to version 6.16.9
  delete mode 100644 package/kernel/mac80211/patches/subsys/333-Reapply-wifi-mac80211-Update-skb-s-control-block-key.patch
 
 diff --git a/package/kernel/mac80211/Makefile b/package/kernel/mac80211/Makefile
-index 77a88cf853..079200fda6 100644
+index 77a88cf853..9b7253d615 100644
 --- a/package/kernel/mac80211/Makefile
 +++ b/package/kernel/mac80211/Makefile
 @@ -10,13 +10,13 @@ include $(INCLUDE_DIR)/kernel.mk
@@ -77,15 +77,15 @@ index 77a88cf853..079200fda6 100644
  PKG_NAME:=mac80211
  
 -PKG_VERSION:=6.16
-+PKG_VERSION:=6.16.9
++PKG_VERSION:=6.16.10
  PKG_RELEASE:=1
  PKG_LICENSE:=GPL-2.0-only
  PKG_LICENSE_FILES:=COPYING
  
 -PKG_SOURCE_URL:=@OPENWRT
 -PKG_HASH:=67f11320509dd18e5e2c58cb81e9f6c7d19b09f5229baa5880ed4dab71c19052
-+PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.16.9/
-+PKG_HASH:=6a9f0c2e1cf522be3a6c894f80d30676d42cabfc49133715f3f9117295ce6f78
++PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.16.10-rc1/
++PKG_HASH:=923ee69b1f9b26ba1f67d3593e1eec6c4270fd822bec1cf594377bcf3952cb09
  
  PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
  PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(if $(BUILD_VARIANT),$(PKG_NAME)-$(BUILD_VARIANT)/)backports-$(PKG_VERSION)
@@ -2692,5 +2692,5 @@ index 1f9d6a104b..5331eed2c7 100644
   	nullfunc->duration_id = 0;
   	memcpy(nullfunc->addr1, sta->sta.addr, ETH_ALEN);
 -- 
-2.48.1
+2.51.0
 
