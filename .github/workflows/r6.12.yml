@@ -41,7 +41,6 @@ jobs:
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
-                git apply rk-6.12-config.patch
                 git apply 44.patch
                 git apply pm.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
@@ -101,6 +100,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
