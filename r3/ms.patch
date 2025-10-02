@@ -1,24 +1,43 @@
-From 00697bf768eb262e472110179b50292fc62922e0 Mon Sep 17 00:00:00 2001
-From: Marty Jones <mj8263788@gmail.com>
-Date: Sun, 22 Jun 2025 15:39:43 -0400
-Subject: [PATCH] ms
+From 04d4c2ab061dc378dd1144c0c303bead84ec25bc Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Wed, 1 Oct 2025 12:00:32 -0400
+Subject: [PATCH 04/12] ms
 
 ---
  config/Config-images.in                       |   3 +-
+ feeds.conf.default                            |   8 +-
+ include/rootfs.mk                             |   4 +
  include/target.mk                             |   2 +-
  package/base-files/Makefile                   |   8 +-
  package/base-files/files/bin/config_generate  |  13 +-
  package/base-files/image-config.in            |   4 +-
- .../patches/500-world-regd-5GHz.patch         |  53 ++++++++
- package/network/utils/iwinfo/patches/01.patch | 122 ++++++++++++++++++
- 7 files changed, 187 insertions(+), 18 deletions(-)
+ package/firmware/linux-firmware/broadcom.mk   | 219 ++++++++++++++++++
+ package/firmware/linux-firmware/realtek_bt.mk |   8 +
+ .../patches/500-world-regd-5GHz.patch         |  53 +++++
+ package/kernel/linux/modules/bluetooth.mk     |  11 +-
+ .../patches/001-flow_offloading.patch         |   8 +
+ package/network/utils/iwinfo/patches/01.patch | 122 ++++++++++
+ scripts/projectsmirrors.json                  |   2 +
+ .../bcm27xx/base-files/etc/board.d/02_network |   2 +-
+ .../base-files/etc/init.d/resize-rootfs       |   9 +
+ .../base-files/etc/rc.d/S22resize-rootfs      |   1 +
+ .../base-files/usr/bin/resize-rootfs.sh       |  39 ++++
+ target/linux/bcm27xx/image/Makefile           |   2 +
+ target/linux/bcm27xx/image/config.txt         |   5 +
+ target/linux/bcm27xx/image/distroconfig.txt   |  10 +
+ 21 files changed, 505 insertions(+), 28 deletions(-)
+ create mode 100644 package/firmware/linux-firmware/realtek_bt.mk
+ create mode 100644 package/network/config/firewall4/patches/001-flow_offloading.patch
  create mode 100644 package/network/utils/iwinfo/patches/01.patch
+ create mode 100755 target/linux/bcm27xx/base-files/etc/init.d/resize-rootfs
+ create mode 100755 target/linux/bcm27xx/base-files/etc/rc.d/S22resize-rootfs
+ create mode 100755 target/linux/bcm27xx/base-files/usr/bin/resize-rootfs.sh
 
 diff --git a/config/Config-images.in b/config/Config-images.in
-index 21ce0b8d28..96d5cfe997 100644
+index 208c4838d1..4aa4df1196 100644
 --- a/config/Config-images.in
 +++ b/config/Config-images.in
-@@ -127,7 +127,6 @@ menu "Target Images"
+@@ -144,7 +144,6 @@ menu "Target Images"
  		config TARGET_EXT4_JOURNAL
  			bool "Create a journaling filesystem"
  			depends on TARGET_ROOTFS_EXT4FS
@@ -26,7 +45,7 @@ index 21ce0b8d28..96d5cfe997 100644
  			help
  			  Create an ext4 filesystem with a journal.
  
-@@ -319,7 +318,7 @@ menu "Target Images"
+@@ -336,7 +335,7 @@ menu "Target Images"
  		depends on USES_ROOTFS_PART || TARGET_ROOTFS_EXT4FS
  		default 232 if TARGET_loongarch64
  		default 448 if TARGET_mediatek
@@ -35,8 +54,30 @@ index 21ce0b8d28..96d5cfe997 100644
  		help
  		  Select the root filesystem partition size.
  
+diff --git a/include/rootfs.mk b/include/rootfs.mk
+index 26f249d818..29d4fa8ef2 100644
+--- a/include/rootfs.mk
++++ b/include/rootfs.mk
+@@ -74,6 +74,7 @@ define prepare_rootfs
+ 	fi)
+ 	@mkdir -p $(1)/etc/rc.d
+ 	@mkdir -p $(1)/var/lock
++        @mkdir -p $(1)/www/repo
+ 	@( \
+ 		cd $(1); \
+ 		if [ -n "$(CONFIG_USE_APK)" ]; then \
+@@ -119,6 +120,9 @@ define prepare_rootfs
+ 		$(1)/usr/lib/opkg/info/*.postinst* \
+ 		$(1)/usr/lib/opkg/lists/* \
+ 		$(1)/var/lock/*.lock
++        @(      $(MAKE) package/index; \
++                $(CP) $(TOPDIR)/bin/targets/$(BOARD)/$(SUBTARGET)/packages $(1)/www/repo/packages; \
++        )
+ 	$(call clean_ipkg,$(1))
+ 	$(call mklibs,$(1))
+ 	$(if $(SOURCE_DATE_EPOCH),find $(1)/ -mindepth 1 -execdir touch -hcd "@$(SOURCE_DATE_EPOCH)" "{}" +)
 diff --git a/include/target.mk b/include/target.mk
-index 6eae23d5f6..d62c6650cb 100644
+index fdfda81159..35901a61e2 100644
 --- a/include/target.mk
 +++ b/include/target.mk
 @@ -50,7 +50,7 @@ DEFAULT_PACKAGES.nas:=\
@@ -166,15 +207,256 @@ index 67ef4d415a..a8beb17acd 100644
  	help
  		Broadcast address to which to send preinit network messages, as
  		as failsafe messages
+diff --git a/package/firmware/linux-firmware/broadcom.mk b/package/firmware/linux-firmware/broadcom.mk
+index c37edf211c..2140ae977c 100644
+--- a/package/firmware/linux-firmware/broadcom.mk
++++ b/package/firmware/linux-firmware/broadcom.mk
+@@ -212,3 +212,222 @@ define Package/bnx2x-firmware/install
+ 		$(1)/lib/firmware/bnx2x/
+ endef
+ $(eval $(call BuildPackage,bnx2x-firmware))
++
++
++## Broadcom BRCM43456
++
++BRCMFMAC_43456_URL:=https://raw.githubusercontent.com/RPi-Distro/firmware-nonfree/bookworm/debian/config/brcm80211/brcm/
++
++define Download/brcmfmac43456-sdio.bin
++  FILE:=brcmfmac43456-sdio.bin
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=ddf83f2100885b166be52d21c8966db164fdd4e1d816aca2acc67ee9cc28d726
++endef
++
++define Download/brcmfmac43456-sdio.clm_blob
++  FILE:=brcmfmac43456-sdio.clm_blob
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=2dbd7d22fc9af0eb560ceab45b19646d211bc7b34a1dd00c6bfac5dd6ba25e8a
++endef
++
++define Download/brcmfmac43456-sdio.txt
++  FILE:=brcmfmac43456-sdio.txt
++  URL:=$(BRCMFMAC_43456_URL)
++  HASH:=44e0bb322dc1f39a4b0a89f30ffdd28bc93f7d7aaf534d06d229fe56f6198194
++endef
++
++$(eval $(call Download,brcmfmac43456-sdio.bin))
++$(eval $(call Download,brcmfmac43456-sdio.clm_blob))
++$(eval $(call Download,brcmfmac43456-sdio.txt))
++
++Package/brcmfmac-firmware-43456-rockpi-4 = $(call Package/firmware-default,Broadcom Rock Pi 4 firmware)
++define Package/brcmfmac-firmware-43456-rockpi-4/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.bin
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.clm_blob
++	$(INSTALL_DATA) \
++		$(DL_DIR)/brcmfmac43456-sdio.txt \
++		$(1)/lib/firmware/brcm/brcmfmac43456-sdio.radxa,rockpi4a.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-43456-rockpi-4))
++
++## Broadcom NanoPi M4 firmware
++
++BRCMFMAC_4356_URL:=https://raw.githubusercontent.com/armbian/firmware/master/brcm/
++
++define Download/brcmfmac4356-sdio.bin
++  FILE:=brcmfmac4356-sdio.bin
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=cc689fc1b39bd3d1655eff9fcfac60a3bf73fb6a45e77fdbab1e762aeeecf34e
++endef
++
++define Download/brcmfmac4356-sdio.clm_blob
++  FILE:=brcmfmac4356-sdio.clm_blob
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=e048470d674de8865c30521138af248e5f96a9878ac73b707d834698cbf9a08a
++endef
++
++define Download/brcmfmac4356-sdio.txt
++  FILE:=brcmfmac4356-sdio.txt
++  URL:=$(BRCMFMAC_4356_URL)
++  HASH:=81efd86f47fac54596d3c614872b2997ed0079303136e4c675a8eaa1a39db120
++endef
++
++$(eval $(call Download,brcmfmac4356-sdio.bin))
++$(eval $(call Download,brcmfmac4356-sdio.clm_blob))
++$(eval $(call Download,brcmfmac4356-sdio.txt))
++
++Package/brcmfmac-firmware-4356-nanopi-m4 = $(call Package/firmware-default,Broadcom NanoPi M4 firmware)
++define Package/brcmfmac-firmware-4356-nanopi-m4/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.bin
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/cypress/cyfmac4356-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.clm_blob
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/brcm/brcmfmac4356-sdio.AP6356S.txt \
++		$(1)/lib/firmware/brcm/brcmfmac4356-sdio.friendlyarm,nanopi-m4.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-4356-nanopi-m4))
++
++## Broadcom AP6255 firmware
++
++AP_6255_URL:=https://raw.githubusercontent.com/Infineon/ifx-linux-firmware/refs/heads/master/firmware/
++
++##define Download/cyfmac43455-sdio-minimal.bin
++##  FILE:=cyfmac43455-sdio-minimal.bin
++##  URL:=$(AP_6255_URL)
++##  HASH:=3075cb0bdc4b28ed4f08e01b1a216d0ebc70f4022d9d3272a4a43b3c90456e60
++##endef
++
++define Download/cyfmac43455-sdio.bin
++  FILE:=cyfmac43455-sdio.bin
++  URL:=$(AP_6255_URL)
++  HASH:=eaff8d2b6d2501bb5c477ba343900c7487af915898eac13bc91b33b1285dadce
++endef
++
++define Download/cyfmac43455-sdio.clm_blob
++  FILE:=cyfmac43455-sdio.clm_blob
++  URL:=$(AP_6255_URL)
++  HASH:=8fbe9fc2952e2fbab062a142c1ea3e261cd74604761e12f304781b911df4a328
++endef
++
++##$(eval $(call Download,cyfmac43455-sdio-minimal.bin))
++$(eval $(call Download,cyfmac43455-sdio.bin))
++$(eval $(call Download,cyfmac43455-sdio.clm_blob))
++
++Package/brcmfmac-firmware-ap6255-hugsun-x99 = $(call Package/firmware-default,Broadcom hugsun x99 firmware)
++define Package/brcmfmac-firmware-ap6255-hugsun-x99/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/cyfmac43455-sdio.bin \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.bin
++	$(INSTALL_DATA) \
++		$(DL_DIR)/cyfmac43455-sdio.clm_blob \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.clm_blob
++	$(INSTALL_DATA) \
++		$(PKG_BUILD_DIR)/brcm/brcmfmac43455-sdio.acepc-t8.txt \
++		$(1)/lib/firmware/brcm/brcmfmac43455-sdio.hugsun,x99.txt
++endef
++$(eval $(call BuildPackage,brcmfmac-firmware-ap6255-hugsun-x99))
++
++
++## Broadcom BRCMBCM43430/BCM4345
++
++BRCMFMAC_434_URL:=https://github.com/RPi-Distro/bluez-firmware/raw/refs/heads/bookworm/debian/firmware/broadcom/
++
++define Download/BCM4343A2.hcd
++  FILE:=BCM4343A2.hcd
++  URL:=$(BRCMFMAC_434_URL)
++  HASH:=5f7fb0a863f9ee8874e4ad37ccc69abbc751fdc0257cb3fdd0ba0e89378ff76a
++endef
++
++define Download/BCM4345C0.hcd
++  FILE:=BCM4345C0.hcd
++  URL:=$(BRCMFMAC_434_URL)
++  HASH:=51c45e77ddad91a19e96dc8fb75295b2087c279940df2634b23baf71b6dea42c
++endef
++
++define Download/BCM4345C5.hcd
++  FILE:=BCM4345C5.hcd
++  URL:=$(BRCMFMAC_434_URL)
++  HASH:=fb9f4ec2df5301bd35f416384e103c012c5983024c49aa72fbbaf90177512caa
++endef
++
++define Download/BCM43430A1.hcd
++  FILE:=BCM43430A1.hcd
++  URL:=$(BRCMFMAC_434_URL)
++  HASH:=c096ad4a5c3f06ed7d69eba246bf89ada9acba64a5b6f51b1e9c12f99bb1e1a7
++endef
++
++define Download/BCM43430B0.hcd
++  FILE:=BCM43430B0.hcd
++  URL:=$(BRCMFMAC_434_URL)
++  HASH:=338c2c6631131f516bfc7e64ef0872bd0402e1f98ef9d0c900eef0c814d90a25
++endef
++
++$(eval $(call Download,BCM4343A2.hcd))
++$(eval $(call Download,BCM4345C0.hcd))
++$(eval $(call Download,BCM4345C5.hcd))
++$(eval $(call Download,BCM43430A1.hcd))
++$(eval $(call Download,BCM43430B0.hcd))
++
++Package/brcmfmac-sdio-firmware-4343-bt = $(call Package/firmware-default,CYW4343 BT firmware and patch RAM)
++define Package/brcmfmac-sdio-firmware-4343-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM4343A2.hcd \
++		$(1)/lib/firmware/brcm/BCM4343A2.hcd
++endef
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-4343-bt))
++
++Package/brcmfmac-sdio-firmware-4345-bt = $(call Package/firmware-default,CYW4345 BT firmware and patch RAM)
++define Package/brcmfmac-sdio-firmware-4345-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM4345C0.hcd \
++		$(1)/lib/firmware/brcm/BCM4345C0.hcd
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM4345C5.hcd \
++		$(1)/lib/firmware/brcm/BCM4345C5.hcd
++endef
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-4345-bt))
++
++Package/brcmfmac-sdio-firmware-43430-bt = $(call Package/firmware-default,CYW43430 BT firmware and patch RAM)
++define Package/brcmfmac-sdio-firmware-43430-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM43430A1.hcd \
++		$(1)/lib/firmware/brcm/BCM43430A1.hcd
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM43430B0.hcd \
++		$(1)/lib/firmware/brcm/BCM43430B0.hcd
++endef
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-43430-bt))
++
++## Broadcom BCM4356A2
++
++BRCMFMAC_4356A2_URL:=https://github.com/LibreELEC/brcmfmac_sdio-firmware/raw/refs/heads/master/
++
++define Download/BCM4356A2.hcd
++  FILE:=BCM4356A2.hcd
++  URL:=$(BRCMFMAC_4356A2_URL)
++  HASH:=f1daa6ab28699b72c8e47a34f43c095941c9aa542d0a5f4b55baebc5fd1aae99
++endef
++
++$(eval $(call Download,BCM4356A2.hcd))
++
++Package/brcmfmac-sdio-firmware-4356A2-bt = $(call Package/firmware-default,BCM4356A2 BT firmware and patch RAM)
++define Package/brcmfmac-sdio-firmware-4356A2-bt/install
++	$(INSTALL_DIR) $(1)/lib/firmware/brcm
++	$(INSTALL_DATA) \
++		$(DL_DIR)/BCM4356A2.hcd \
++		$(1)/lib/firmware/brcm/BCM4356A2.hcd
++endef
++$(eval $(call BuildPackage,brcmfmac-sdio-firmware-4356A2-bt))
+diff --git a/package/firmware/linux-firmware/realtek_bt.mk b/package/firmware/linux-firmware/realtek_bt.mk
+new file mode 100644
+index 0000000000..eb8aa87c7d
+--- /dev/null
++++ b/package/firmware/linux-firmware/realtek_bt.mk
+@@ -0,0 +1,8 @@
++Package/realtek-bluetooth-firmware = $(call Package/firmware-default,RealTek bluetooth firmware)
++define Package/realtek-bluetooth-firmware/install
++	$(INSTALL_DIR) $(1)/lib/firmware/rtl_bt
++	$(CP) \
++		$(PKG_BUILD_DIR)/rtl_bt/* \
++		$(1)/lib/firmware/rtl_bt
++endef
++$(eval $(call BuildPackage,realtek-bluetooth-firmware))
 diff --git a/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch b/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
-index 3f6d4c7e8d..ee449f0785 100644
+index 3f6d4c7e8d..d095c2e001 100644
 --- a/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
 +++ b/package/firmware/wireless-regdb/patches/500-world-regd-5GHz.patch
 @@ -14,3 +14,56 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
   	# Channel 52 - 64
   	(5250 - 5330 @ 80), (20), NO-IR, DFS, AUTO-BW
   	# Channel 100 - 144
-+@@ -98,12 +98,10 @@ country AN: DFS-ETSI
++@@ -106,12 +106,10 @@ country AN: DFS-ETSI
 + # Source:
 + # https://www.boletinoficial.gob.ar/detalleAviso/primera/287126/20230524
 + country AR: DFS-FCC
@@ -191,7 +473,7 @@ index 3f6d4c7e8d..ee449f0785 100644
 + 
 + country AS: DFS-FCC
 + 	(2402 - 2472 @ 40), (30)
-+@@ -425,9 +423,8 @@ country CL: DFS-JP
++@@ -446,9 +444,8 @@ country CL: DFS-JP
 + # https://www.miit.gov.cn/cms_files/filemanager/1226211233/attach/20236/d1dc19424d5a4cfe90d631adeee8dd58.pdf
 + # Note: The transmit power for 5250-5350MHz bands can be raised by 3dBm when TPC is implemented
 + country CN: DFS-FCC
@@ -203,7 +485,7 @@ index 3f6d4c7e8d..ee449f0785 100644
 + 	(5725 - 5850 @ 80), (33)
 + 	# 60 GHz band channels 1,4: 28dBm, channels 2,3: 44dBm
 + 	# ref: http://www.miit.gov.cn/n11293472/n11505629/n11506593/n11960250/n11960606/n11960700/n12330791.files/n12330790.pdf
-+@@ -1940,20 +1937,18 @@ country US: DFS-FCC
++@@ -2007,20 +2004,18 @@ country US: DFS-FCC
 + 	(920 - 928 @ 8), (30)
 + 	(2400 - 2472 @ 40), (30)
 + 	# 5.15 ~ 5.25 GHz: 30 dBm for master mode, 23 dBm for clients
@@ -227,6 +509,63 @@ index 3f6d4c7e8d..ee449f0785 100644
 + 	# 60g band
 + 	# reference: section IV-D https://docs.fcc.gov/public/attachments/FCC-16-89A1.pdf
 + 	# channels 1-6 EIRP=40dBm(43dBm peak)
+diff --git a/package/kernel/linux/modules/bluetooth.mk b/package/kernel/linux/modules/bluetooth.mk
+index 3e6b38a88c..352c415f0b 100644
+--- a/package/kernel/linux/modules/bluetooth.mk
++++ b/package/kernel/linux/modules/bluetooth.mk
+@@ -10,7 +10,7 @@ BLUETOOTH_MENU:=Bluetooth Support
+ define KernelPackage/bluetooth
+   SUBMENU:=$(BLUETOOTH_MENU)
+   TITLE:=Bluetooth support
+-  DEPENDS:=+kmod-crypto-hash +kmod-crypto-ecb +kmod-lib-crc16 +kmod-hid +kmod-crypto-cmac +kmod-regmap-core +kmod-crypto-ecdh
++  DEPENDS:=+kmod-crypto-hash +kmod-crypto-ecb +kmod-lib-crc16 +kmod-hid +kmod-crypto-cmac +kmod-regmap-core +kmod-crypto-ecdh +kmod-crypto-hmac +kmod-crypto-sha3 +kmod-crypto-sha512 +kmod-crypto-rng
+   KCONFIG:= \
+ 	CONFIG_BT \
+ 	CONFIG_BT_BREDR=y \
+@@ -38,10 +38,10 @@ $(eval $(call KernelPackage,bluetooth))
+ define KernelPackage/hci-uart
+   SUBMENU:=$(BLUETOOTH_MENU)
+   TITLE:=Bluetooth HCI UART support
+-  DEPENDS:=+kmod-bluetooth
++  DEPENDS:=+kmod-bluetooth +kmod-btusb
+   KCONFIG:= \
+ 	CONFIG_BT_HCIUART \
+-	CONFIG_BT_HCIUART_BCM=n \
++	CONFIG_BT_HCIUART_BCM=y \
+ 	CONFIG_BT_HCIUART_INTEL=n \
+ 	CONFIG_BT_HCIUART_H4 \
+ 	CONFIG_BT_HCIUART_NOKIA=n
+@@ -63,13 +63,14 @@ define KernelPackage/btusb
+   DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-bluetooth +kmod-btmtk
+   KCONFIG:= \
+ 	CONFIG_BT_HCIBTUSB \
+-	CONFIG_BT_HCIBTUSB_BCM=n \
++	CONFIG_BT_HCIBTUSB_BCM=y \
+ 	CONFIG_BT_HCIBTUSB_MTK=y \
+ 	CONFIG_BT_HCIBTUSB_RTL=y
+   FILES:= \
+ 	$(LINUX_DIR)/drivers/bluetooth/btusb.ko \
+ 	$(LINUX_DIR)/drivers/bluetooth/btintel.ko \
+-	$(LINUX_DIR)/drivers/bluetooth/btrtl.ko
++	$(LINUX_DIR)/drivers/bluetooth/btrtl.ko \
++	$(LINUX_DIR)/drivers/bluetooth/btbcm.ko
+   AUTOLOAD:=$(call AutoProbe,btusb)
+ endef
+ 
+diff --git a/package/network/config/firewall4/patches/001-flow_offloading.patch b/package/network/config/firewall4/patches/001-flow_offloading.patch
+new file mode 100644
+index 0000000000..0833ce391e
+--- /dev/null
++++ b/package/network/config/firewall4/patches/001-flow_offloading.patch
+@@ -0,0 +1,8 @@
++--- a/root/etc/config/firewall
+++++ b/root/etc/config/firewall
++@@ -1,4 +1,5 @@
++ config defaults
+++	option flow_offloading	1
++ 	option syn_flood	1
++ 	option input		REJECT
++ 	option output		ACCEPT
 diff --git a/package/network/utils/iwinfo/patches/01.patch b/package/network/utils/iwinfo/patches/01.patch
 new file mode 100644
 index 0000000000..496eda3421
@@ -356,5 +695,4 @@ index 0000000000..496eda3421
 + # FDT compatible strings
 + # "compatible" | txpower offset | frequency offset | ...
 -- 
-2.46.0
-
+2.51.0
