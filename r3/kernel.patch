@@ -131,7 +131,7 @@ index 438cd31bb8..a6c805bebf 100644
 -LINUX_VERSION-6.12 = .49
 -LINUX_KERNEL_HASH-6.12.49 = 234621e146dacce2241049555d550e4f7a6bde67ccd7ef232d47ac8145425526
 +LINUX_VERSION-6.12 = .50
-+LINUX_KERNEL_HASH-6.12.50 = f35ec3e6e6b285b9c330469f84fd739d046629951dc25d7859500785034af11a
++LINUX_KERNEL_HASH-6.12.50 = c435bd74d1c21fc5a950781a50d78bae2b93944144694843359948ad3afc72a5
 diff --git a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch b/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
 index 62de5a0929..7cddb8bfa6 100644
 --- a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
