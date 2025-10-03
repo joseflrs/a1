@@ -22,8 +22,10 @@ jobs:
               run: |
                 git clone https://github.com/openwrt/openwrt.git
                 cd openwrt
-                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-18.1.7/llvm-bpf-18.1.7.Linux-aarch64.tar.zst
-                tar -xvf llvm-bpf-18.1.7.Linux-aarch64.tar.zst
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/20286.patch
+                git apply 20286.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 wget https://mirror-03.infra.openwrt.org/snapshots/targets/rockchip/armv8/config.buildinfo -O .config
@@ -68,5 +70,6 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
