@@ -1,19 +1,3 @@
-From 877f150f1a2d54316e8e61459c01c0f527a8409f Mon Sep 17 00:00:00 2001
-From: i l <il@l.com>
-Date: Tue, 30 Sep 2025 16:34:52 +0000
-Subject: [PATCH] kernel: Linux 6.12.50
-
----
- ...oC-Add-support-for-all-the-downstream-rpi-sound-ca.patch | 2 +-
- ...22-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch | 4 ++--
- .../950-0334-usb-xhci-add-VLI_SS_BULK_OUT_BUG-quirk.patch   | 6 +++---
- ...0-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch | 2 +-
- ...ivers-usb-xhci-set-HID-bit-in-streaming-endpoint-c.patch | 2 +-
- ....17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch | 6 +++---
- target/linux/generic/kernel-6.12                            | 4 ++--
- .../714-net-phy-sfp-add-support-for-SMBus.patch             | 6 +++---
- 8 files changed, 16 insertions(+), 16 deletions(-)
-
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch b/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
 index 59105068c1..53487be761 100644
 --- a/target/linux/bcm27xx/patches-6.12/950-0073-ASoC-Add-support-for-all-the-downstream-rpi-sound-ca.patch
@@ -107,33 +91,50 @@ index 49598a723b..9d0a6e2055 100644
   	ep_ctx->ep_info |= cpu_to_le32(EP_MAXPSTREAMS(max_primary_streams)
   				       | EP_HAS_LSA);
 diff --git a/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch b/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
-index dedb5b1a9f..b7d3af572d 100644
+deleted file mode 100644
+index dedb5b1a9f..0000000000
 --- a/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
-+++ b/target/linux/generic/backport-6.12/787-v6.17-net-sfp-add-quirk-for-FLYPRO-copper-SFP-module.patch
-@@ -16,9 +16,9 @@ Signed-off-by: Jakub Kicinski <kuba@kernel.org>
- 
- --- a/drivers/net/phy/sfp.c
- +++ b/drivers/net/phy/sfp.c
++++ /dev/null
+@@ -1,28 +0,0 @@
+-From ddbf0e78a8b20ec18d314d31336a0230fdc9b394 Mon Sep 17 00:00:00 2001
+-From: Aleksander Jan Bajkowski <olek2@wp.pl>
+-Date: Sun, 31 Aug 2025 12:59:07 +0200
+-Subject: net: sfp: add quirk for FLYPRO copper SFP+ module
+-
+-Add quirk for a copper SFP that identifies itself as "FLYPRO"
+-"SFP-10GT-CS-30M". It uses RollBall protocol to talk to the PHY.
+-
+-Signed-off-by: Aleksander Jan Bajkowski <olek2@wp.pl>
+-Reviewed-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+-Link: https://patch.msgid.link/20250831105910.3174-1-olek2@wp.pl
+-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+----
+- drivers/net/phy/sfp.c | 3 +++
+- 1 file changed, 3 insertions(+)
+-
+---- a/drivers/net/phy/sfp.c
+-+++ b/drivers/net/phy/sfp.c
 -@@ -474,6 +474,9 @@ static const struct sfp_quirk sfp_quirks
 - 	SFP_QUIRK("ALCATELLUCENT", "3FE46541AA", sfp_quirk_2500basex,
 - 		  sfp_fixup_nokia),
-+@@ -494,6 +494,9 @@ static const struct sfp_quirk sfp_quirks
-+ 	// FLYPRO SFP-10GT-CS-30M uses Rollball protocol to talk to the PHY.
-+ 	SFP_QUIRK_F("FLYPRO", "SFP-10GT-CS-30M", sfp_fixup_rollball),
-  
- +	// FLYPRO SFP-10GT-CS-30M uses Rollball protocol to talk to the PHY.
- +	SFP_QUIRK_F("FLYPRO", "SFP-10GT-CS-30M", sfp_fixup_rollball),
+- 
+-+	// FLYPRO SFP-10GT-CS-30M uses Rollball protocol to talk to the PHY.
+-+	SFP_QUIRK_F("FLYPRO", "SFP-10GT-CS-30M", sfp_fixup_rollball),
+-+
+- 	// Fiberstore SFP-10G-T doesn't identify as copper, uses the Rollball
+- 	// protocol to talk to the PHY and needs 4 sec wait before probing the
+- 	// PHY.
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 438cd31bb8..a6c805bebf 100644
+index 438cd31bb8..b729640129 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .50
--LINUX_KERNEL_HASH-6.12.50 = c435bd74d1c21fc5a950781a50d78bae2b93944144694843359948ad3afc72a5
+-LINUX_VERSION-6.12 = .49
+-LINUX_KERNEL_HASH-6.12.49 = 234621e146dacce2241049555d550e4f7a6bde67ccd7ef232d47ac8145425526
 +LINUX_VERSION-6.12 = .51
 +LINUX_KERNEL_HASH-6.12.51 = b01f006d6829ac1fb112bf1d1df1509107becb34682ddf4d5ad2c0ccf74d6ce2
 diff --git a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch b/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
-index 62de5a0929..7cddb8bfa6 100644
+index 62de5a0929..cfdbd0254b 100644
 --- a/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
 +++ b/target/linux/realtek/patches-6.12/714-net-phy-sfp-add-support-for-SMBus.patch
 @@ -10,7 +10,7 @@ Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
@@ -141,7 +142,7 @@ index 62de5a0929..7cddb8bfa6 100644
  --- a/drivers/net/phy/sfp.c
  +++ b/drivers/net/phy/sfp.c
 -@@ -694,10 +694,64 @@ static int sfp_i2c_write(struct sfp *sfp
-+@@ -716,10 +716,64 @@ static int sfp_i2c_write(struct sfp *sfp
++@@ -713,10 +713,64 @@ static int sfp_i2c_write(struct sfp *sfp
   	return ret == ARRAY_SIZE(msgs) ? len : 0;
   }
   
@@ -150,7 +151,7 @@ index 62de5a0929..7cddb8bfa6 100644
   	sfp->i2c = i2c;
   	sfp->read = sfp_i2c_read;
 -@@ -729,6 +783,29 @@ static int sfp_i2c_mdiobus_create(struct
-+@@ -751,6 +805,29 @@ static int sfp_i2c_mdiobus_create(struct
++@@ -748,6 +802,29 @@ static int sfp_i2c_mdiobus_create(struct
   	return 0;
   }
   
@@ -159,10 +160,7 @@ index 62de5a0929..7cddb8bfa6 100644
   {
   	mdiobus_unregister(sfp->i2c_mii);
 -@@ -1903,9 +1980,15 @@ static void sfp_sm_fault(struct sfp *sfp
-+@@ -1925,9 +2002,15 @@ static void sfp_sm_fault(struct sfp *sfp
++@@ -1922,9 +1999,15 @@ static void sfp_sm_fault(struct sfp *sfp
   
   static int sfp_sm_add_mdio_bus(struct sfp *sfp)
   {
--- 
-2.51.0
-
