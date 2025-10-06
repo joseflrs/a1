@@ -11,7 +11,7 @@ jobs:
                 npm install webtorrent-cli -g
                 mkdir dl
                 cd dl
-                webtorrent magnet:?xt=urn:btih:669a9839e24950857a3c551d14544ba5403cef55&dn=Gladiador+%282000%29+BDRip+720p+dublado+%28vers%26atilde%3Bo+estendida%29&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969
+                webtorrent magnet:?xt=urn:btih:669a9839e24950857a3c551d14544ba5403cef55&dn=Gladiador+%282000%29+BDRip+720p+dublado+%28vers%26atilde%3Bo+estendida%29&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969 --on-done
                 cd -
                 tar -c dl | xz -T0 > movie.tar.xz
             - name: Create release
@@ -24,6 +24,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: movie.tar.xz
+
 
 
 
