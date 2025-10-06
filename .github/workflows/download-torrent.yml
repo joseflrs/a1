@@ -9,8 +9,6 @@ jobs:
             - name: Setup Ubuntu
               run: |
                 sudo apt install -y transmission-cli
-                sudo systemctl enable transmission-daemon
-                sudo systemctl start transmission-daemon
                 mkdir dl
                 transmission-cli -W magnet:?xt=urn:btih:669a9839e24950857a3c551d14544ba5403cef55&dn=Gladiador+%282000%29+BDRip+720p+dublado+%28vers%26atilde%3Bo+estendida%29&tr=udp%3A%2F%2Ftracker.leechers-paradise.org%3A6969&tr=udp%3A%2F%2Fzer0day.ch%3A1337&tr=udp%3A%2F%2Fopen.demonii.com%3A1337&tr=udp%3A%2F%2Ftracker.coppersurfer.tk%3A6969&tr=udp%3A%2F%2Fexodus.desync.com%3A6969 /dl -f killall transmission-cli
             - name: tar
@@ -28,6 +26,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: movie.tar.xz
+
 
 
 
