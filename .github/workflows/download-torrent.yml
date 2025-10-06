@@ -16,8 +16,8 @@ jobs:
                 tar -c dl | xz -T0 > movie.tar.xz
 
             - name: Create release
-               uses: ncipollo/release-action@v1.14.0
-               with:
+              uses: ncipollo/release-action@v1.14.0
+              with:
                 allowUpdates: true
                 name: Movie ${{ env.D }}
                 tag: movie-${{ env.D }}
@@ -25,6 +25,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: movie.tar.xz
+
 
 
 
