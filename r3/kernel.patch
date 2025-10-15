@@ -1,9 +1,499 @@
+From 4934f65d63704da3125c842cc33303e011b663e7 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Wed, 15 Oct 2025 08:42:45 -0400
+Subject: [PATCH] kernel
+
+---
+ ...ci_sync-Add-fallback-bd-address-prop.patch |  4 +-
+ ...5-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch |  6 +-
+ ...th-hci_sync-Fix-crash-on-NULL-parent.patch |  2 +-
+ .../902-snand-mtk-bmt-support.patch           |  6 +-
+ ...-race-condition-in-RPC-handle-list-a.patch | 69 +++++++++++++++
+ .../generic/hack-6.12/253-ksmbd-config.patch  |  2 +-
+ ...onnection-limiting-mechanism-to-ipv6.patch | 83 -------------------
+ ...it-repeated-connections-from-clients.patch | 62 --------------
+ target/linux/generic/kernel-6.12              |  4 +-
+ .../203-kallsyms_uncompressed.patch           |  2 +-
+ .../pending-6.12/920-mangle_bootargs.patch    |  2 +-
+ ...rng-add-driver-for-MediaTek-TRNG-SMC.patch |  2 +-
+ ...-q6v5-Add-multipd-interrupts-support.patch |  6 +-
+ ...dd-support-for-rk3588-s-standalone-T.patch |  2 +-
+ ...chip-naneng-combo-add-rk3576-support.patch |  4 +-
+ ...ve-JH7100-Random-Number-Generator-dr.patch |  2 +-
+ 16 files changed, 91 insertions(+), 167 deletions(-)
+ create mode 100644 target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
+ delete mode 100644 target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
+ delete mode 100644 target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
+
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
+index d5cbb4e1cb..81e8d31c1b 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
+@@ -20,7 +20,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/net/bluetooth/hci_sync.c
+ +++ b/net/bluetooth/hci_sync.c
+-@@ -4928,6 +4928,7 @@ static const struct {
++@@ -4930,6 +4930,7 @@ static const struct {
+   */
+  static int hci_dev_setup_sync(struct hci_dev *hdev)
+  {
+@@ -28,7 +28,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+  	int ret = 0;
+  	bool invalid_bdaddr;
+  	size_t i;
+-@@ -4956,7 +4957,8 @@ static int hci_dev_setup_sync(struct hci
++@@ -4958,7 +4959,8 @@ static int hci_dev_setup_sync(struct hci
+  			 test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
+  	if (!ret) {
+  		if (test_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks) &&
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
+index 2875648984..9abbcd0bae 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0335-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch
+@@ -75,7 +75,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	if (pdev->vendor == PCI_VENDOR_ID_ASMEDIA &&
+ --- a/drivers/usb/host/xhci-ring.c
+ +++ b/drivers/usb/host/xhci-ring.c
+-@@ -3664,6 +3664,48 @@ static int xhci_align_td(struct xhci_hcd
++@@ -3661,6 +3661,48 @@ static int xhci_align_td(struct xhci_hcd
+  	return 1;
+  }
+  
+@@ -124,7 +124,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  /* This is very similar to what ehci-q.c qtd_fill() does */
+  int xhci_queue_bulk_tx(struct xhci_hcd *xhci, gfp_t mem_flags,
+  		struct urb *urb, int slot_id, unsigned int ep_index)
+-@@ -3818,6 +3860,8 @@ int xhci_queue_bulk_tx(struct xhci_hcd *
++@@ -3815,6 +3857,8 @@ int xhci_queue_bulk_tx(struct xhci_hcd *
+  	}
+  
+  	check_trb_math(urb, enqd_len);
+@@ -133,7 +133,7 @@ Signed-off-by: Jonathan Bell <jonathan@raspberrypi.com>
+  	giveback_first_trb(xhci, slot_id, ep_index, urb->stream_id,
+  			start_cycle, start_trb);
+  	return 0;
+-@@ -3966,6 +4010,8 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *
++@@ -3963,6 +4007,8 @@ int xhci_queue_ctrl_tx(struct xhci_hcd *
+  			/* Event on completion */
+  			field | TRB_IOC | TRB_TYPE(TRB_STATUS) | ep_ring->cycle_state);
+  
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
+index 9293edef8d..cb98eb72fb 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0502-Bluetooth-hci_sync-Fix-crash-on-NULL-parent.patch
+@@ -15,7 +15,7 @@ Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+ 
+ --- a/net/bluetooth/hci_sync.c
+ +++ b/net/bluetooth/hci_sync.c
+-@@ -4928,7 +4928,8 @@ static const struct {
++@@ -4930,7 +4930,8 @@ static const struct {
+   */
+  static int hci_dev_setup_sync(struct hci_dev *hdev)
+  {
+diff --git a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
+index f715652319..eb77fde066 100644
+--- a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
++++ b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
+@@ -8,7 +8,7 @@
+  
+  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
+  {
+-@@ -1530,6 +1531,7 @@ static int spinand_probe(struct spi_mem
++@@ -1574,6 +1575,7 @@ static int spinand_probe(struct spi_mem
+  	if (ret)
+  		return ret;
+  
+@@ -16,7 +16,7 @@
+  	ret = mtd_device_register(mtd, NULL, 0);
+  	if (ret)
+  		goto err_spinand_cleanup;
+-@@ -1537,6 +1539,7 @@ static int spinand_probe(struct spi_mem
++@@ -1581,6 +1583,7 @@ static int spinand_probe(struct spi_mem
+  	return 0;
+  
+  err_spinand_cleanup:
+@@ -24,7 +24,7 @@
+  	spinand_cleanup(spinand);
+  
+  	return ret;
+-@@ -1555,6 +1558,7 @@ static int spinand_remove(struct spi_mem
++@@ -1599,6 +1602,7 @@ static int spinand_remove(struct spi_mem
+  	if (ret)
+  		return ret;
+  
+diff --git a/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch b/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
+new file mode 100644
+index 0000000000..e22d0b7a58
+--- /dev/null
++++ b/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
+@@ -0,0 +1,69 @@
++From 5b1d27d12e4b52af066c3d800d02c377b1f86e88 Mon Sep 17 00:00:00 2001
++From: Marty Jones <mj8263788@gmail.com>
++Date: Mon, 13 Oct 2025 23:43:40 -0400
++Subject: [PATCH] Revert "ksmbd: Fix race condition in RPC handle list access"
++
++This reverts commit 3659c6222d008cee23d8e2b0b19a64b912162118.
++---
++ fs/smb/server/mgmt/user_session.c | 26 +++++++++-----------------
++ 1 file changed, 9 insertions(+), 17 deletions(-)
++
++--- a/fs/smb/server/mgmt/user_session.c
+++++ b/fs/smb/server/mgmt/user_session.c
++@@ -104,32 +104,29 @@ int ksmbd_session_rpc_open(struct ksmbd_
++ 	if (!entry)
++ 		return -ENOMEM;
++ 
+++	down_read(&sess->rpc_lock);
++ 	entry->method = method;
++ 	entry->id = id = ksmbd_ipc_id_alloc();
++ 	if (id < 0)
++ 		goto free_entry;
++-
++-	down_write(&sess->rpc_lock);
++ 	old = xa_store(&sess->rpc_handle_list, id, entry, KSMBD_DEFAULT_GFP);
++-	if (xa_is_err(old)) {
++-		up_write(&sess->rpc_lock);
+++	if (xa_is_err(old))
++ 		goto free_id;
++-	}
++ 
++ 	resp = ksmbd_rpc_open(sess, id);
++-	if (!resp) {
++-		xa_erase(&sess->rpc_handle_list, entry->id);
++-		up_write(&sess->rpc_lock);
++-		goto free_id;
++-	}
+++	if (!resp)
+++		goto erase_xa;
++ 
++-	up_write(&sess->rpc_lock);
+++	up_read(&sess->rpc_lock);
++ 	kvfree(resp);
++ 	return id;
+++erase_xa:
+++	xa_erase(&sess->rpc_handle_list, entry->id);
++ free_id:
++ 	ksmbd_rpc_id_free(entry->id);
++ free_entry:
++ 	kfree(entry);
+++	up_read(&sess->rpc_lock);
++ 	return -EINVAL;
++ }
++ 
++@@ -147,14 +144,9 @@ void ksmbd_session_rpc_close(struct ksmb
++ int ksmbd_session_rpc_method(struct ksmbd_session *sess, int id)
++ {
++ 	struct ksmbd_session_rpc *entry;
++-	int method;
++ 
++-	down_read(&sess->rpc_lock);
++ 	entry = xa_load(&sess->rpc_handle_list, id);
++-	method = entry ? entry->method : 0;
++-	up_read(&sess->rpc_lock);
++-
++-	return method;
+++	return entry ? entry->method : 0;
++ }
++ 
++ void ksmbd_session_destroy(struct ksmbd_session *sess)
+diff --git a/target/linux/generic/hack-6.12/253-ksmbd-config.patch b/target/linux/generic/hack-6.12/253-ksmbd-config.patch
+index d5474d9799..d9587fbe84 100644
+--- a/target/linux/generic/hack-6.12/253-ksmbd-config.patch
++++ b/target/linux/generic/hack-6.12/253-ksmbd-config.patch
+@@ -10,7 +10,7 @@ Subject: [PATCH] Kconfig: add tristate for OID and ASNI string
+ 
+ --- a/init/Kconfig
+ +++ b/init/Kconfig
+-@@ -2062,7 +2062,7 @@ config PADATA
++@@ -2063,7 +2063,7 @@ config PADATA
+  	bool
+  
+  config ASN1
+diff --git a/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch b/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
+deleted file mode 100644
+index 60d919fa78..0000000000
+--- a/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
++++ /dev/null
+@@ -1,83 +0,0 @@
+-From 7220ecc26a9a8e6766eb9ec7cd90fbba048ce7b3 Mon Sep 17 00:00:00 2001
+-From: Andrea Pesaresi <andreapesaresi82@gmail.com>
+-Date: Tue, 30 Sep 2025 19:35:36 +0200
+-Subject: Revert "ksmbd: extend the connection limiting mechanism to support
+- IPv6"
+-
+-This reverts commit d9e157fcfebc126cd19b2333a6417a840c24e529.
+----
+- fs/smb/server/connection.h    |  7 +------
+- fs/smb/server/transport_tcp.c | 26 +++-----------------------
+- 2 files changed, 4 insertions(+), 29 deletions(-)
+-
+---- a/fs/smb/server/connection.h
+-+++ b/fs/smb/server/connection.h
+-@@ -46,12 +46,7 @@ struct ksmbd_conn {
+- 	struct mutex			srv_mutex;
+- 	int				status;
+- 	unsigned int			cli_cap;
+--	union {
+--		__be32			inet_addr;
+--#if IS_ENABLED(CONFIG_IPV6)
+--		u8			inet6_addr[16];
+--#endif
+--	};
+-+	__be32				inet_addr;
+- 	char				*request_buf;
+- 	struct ksmbd_transport		*transport;
+- 	struct nls_table		*local_nls;
+---- a/fs/smb/server/transport_tcp.c
+-+++ b/fs/smb/server/transport_tcp.c
+-@@ -87,14 +87,7 @@ static struct tcp_transport *alloc_trans
+- 		return NULL;
+- 	}
+- 
+--#if IS_ENABLED(CONFIG_IPV6)
+--	if (client_sk->sk->sk_family == AF_INET6)
+--		memcpy(&conn->inet6_addr, &client_sk->sk->sk_v6_daddr, 16);
+--	else
+--		conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
+--#else
+- 	conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
+--#endif
+- 	conn->transport = KSMBD_TRANS(t);
+- 	KSMBD_TRANS(t)->conn = conn;
+- 	KSMBD_TRANS(t)->ops = &ksmbd_tcp_transport_ops;
+-@@ -238,6 +231,7 @@ static int ksmbd_kthread_fn(void *p)
+- {
+- 	struct socket *client_sk = NULL;
+- 	struct interface *iface = (struct interface *)p;
+-+	struct inet_sock *csk_inet;
+- 	struct ksmbd_conn *conn;
+- 	int ret;
+- 
+-@@ -260,27 +254,13 @@ static int ksmbd_kthread_fn(void *p)
+- 		/*
+- 		 * Limits repeated connections from clients with the same IP.
+- 		 */
+-+		csk_inet = inet_sk(client_sk->sk);
+- 		down_read(&conn_list_lock);
+- 		list_for_each_entry(conn, &conn_list, conns_list)
+--#if IS_ENABLED(CONFIG_IPV6)
+--			if (client_sk->sk->sk_family == AF_INET6) {
+--				if (memcmp(&client_sk->sk->sk_v6_daddr,
+--					   &conn->inet6_addr, 16) == 0) {
+--					ret = -EAGAIN;
+--					break;
+--				}
+--			} else if (inet_sk(client_sk->sk)->inet_daddr ==
+--				 conn->inet_addr) {
+-+			if (csk_inet->inet_daddr == conn->inet_addr) {
+- 				ret = -EAGAIN;
+- 				break;
+- 			}
+--#else
+--			if (inet_sk(client_sk->sk)->inet_daddr ==
+--			    conn->inet_addr) {
+--				ret = -EAGAIN;
+--				break;
+--			}
+--#endif
+- 		up_read(&conn_list_lock);
+- 		if (ret == -EAGAIN)
+- 			continue;
+diff --git a/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch b/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
+deleted file mode 100644
+index 2c993b1bb5..0000000000
+--- a/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
++++ /dev/null
+@@ -1,62 +0,0 @@
+-From 575b789e36cf4bfa85ba5b649673ede9b4c7b5d0 Mon Sep 17 00:00:00 2001
+-From: Andrea Pesaresi <andreapesaresi82@gmail.com>
+-Date: Tue, 30 Sep 2025 22:36:12 +0200
+-Subject: Revert "ksmbd: limit repeated connections from clients with the same
+- IP"
+-
+-This reverts commit fa1c47af4ff641cf9197ecdb1f8240cbb30389c1.
+----
+- fs/smb/server/connection.h    |  1 -
+- fs/smb/server/transport_tcp.c | 17 -----------------
+- 2 files changed, 18 deletions(-)
+-
+---- a/fs/smb/server/connection.h
+-+++ b/fs/smb/server/connection.h
+-@@ -46,7 +46,6 @@ struct ksmbd_conn {
+- 	struct mutex			srv_mutex;
+- 	int				status;
+- 	unsigned int			cli_cap;
+--	__be32				inet_addr;
+- 	char				*request_buf;
+- 	struct ksmbd_transport		*transport;
+- 	struct nls_table		*local_nls;
+---- a/fs/smb/server/transport_tcp.c
+-+++ b/fs/smb/server/transport_tcp.c
+-@@ -87,7 +87,6 @@ static struct tcp_transport *alloc_trans
+- 		return NULL;
+- 	}
+- 
+--	conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
+- 	conn->transport = KSMBD_TRANS(t);
+- 	KSMBD_TRANS(t)->conn = conn;
+- 	KSMBD_TRANS(t)->ops = &ksmbd_tcp_transport_ops;
+-@@ -231,8 +230,6 @@ static int ksmbd_kthread_fn(void *p)
+- {
+- 	struct socket *client_sk = NULL;
+- 	struct interface *iface = (struct interface *)p;
+--	struct inet_sock *csk_inet;
+--	struct ksmbd_conn *conn;
+- 	int ret;
+- 
+- 	while (!kthread_should_stop()) {
+-@@ -251,20 +248,6 @@ static int ksmbd_kthread_fn(void *p)
+- 			continue;
+- 		}
+- 
+--		/*
+--		 * Limits repeated connections from clients with the same IP.
+--		 */
+--		csk_inet = inet_sk(client_sk->sk);
+--		down_read(&conn_list_lock);
+--		list_for_each_entry(conn, &conn_list, conns_list)
+--			if (csk_inet->inet_daddr == conn->inet_addr) {
+--				ret = -EAGAIN;
+--				break;
+--			}
+--		up_read(&conn_list_lock);
+--		if (ret == -EAGAIN)
+--			continue;
+--
+- 		if (server_conf.max_connections &&
+- 		    atomic_inc_return(&active_num_conn) >= server_conf.max_connections) {
+- 			pr_info_ratelimited("Limit the maximum number of connections(%u)\n",
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 477c1b5d40..e87c74fc05 100644
+index 477c1b5d40..025f59067d 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .51
 -LINUX_KERNEL_HASH-6.12.51 = 2d55ad149ca7d9ef82595c669430650030cbf9afbbeb42e5cd9b4ba3cc1a7221
-+LINUX_VERSION-6.12 = .52
-+LINUX_KERNEL_HASH-6.12.52 = b4850cf670a032c70f38b713a27d62046c5f747caf028c5f50b18f98606a9eb1
++LINUX_VERSION-6.12 = .53
++LINUX_KERNEL_HASH-6.12.53 = 663507accae673afcf4e210b4ae8d4352e61d926202e5da3f04bf71ca1d2c0b5
+diff --git a/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch b/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch
+index 9855ce03c8..0efafb4e83 100644
+--- a/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch
++++ b/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch
+@@ -14,7 +14,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/init/Kconfig
+ +++ b/init/Kconfig
+-@@ -1533,6 +1533,17 @@ config SYSCTL_ARCH_UNALIGN_ALLOW
++@@ -1534,6 +1534,17 @@ config SYSCTL_ARCH_UNALIGN_ALLOW
+  	  the unaligned access emulation.
+  	  see arch/parisc/kernel/unaligned.c for reference
+  
+diff --git a/target/linux/generic/pending-6.12/920-mangle_bootargs.patch b/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
+index 04f5be3f74..d3b92ba65c 100644
+--- a/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
++++ b/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
+@@ -13,7 +13,7 @@ Signed-off-by: Imre Kaloz <kaloz@openwrt.org>
+ 
+ --- a/init/Kconfig
+ +++ b/init/Kconfig
+-@@ -1887,6 +1887,15 @@ config ARCH_HAS_MEMBARRIER_CALLBACKS
++@@ -1888,6 +1888,15 @@ config ARCH_HAS_MEMBARRIER_CALLBACKS
+  config ARCH_HAS_MEMBARRIER_SYNC_CORE
+  	bool
+  
+diff --git a/target/linux/mediatek/patches-6.12/320-hwrng-add-driver-for-MediaTek-TRNG-SMC.patch b/target/linux/mediatek/patches-6.12/320-hwrng-add-driver-for-MediaTek-TRNG-SMC.patch
+index e738883800..3d7ca7c3e2 100644
+--- a/target/linux/mediatek/patches-6.12/320-hwrng-add-driver-for-MediaTek-TRNG-SMC.patch
++++ b/target/linux/mediatek/patches-6.12/320-hwrng-add-driver-for-MediaTek-TRNG-SMC.patch
+@@ -18,7 +18,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
+ 
+ --- a/drivers/char/hw_random/Kconfig
+ +++ b/drivers/char/hw_random/Kconfig
+-@@ -451,6 +451,23 @@ config HW_RANDOM_MTK
++@@ -452,6 +452,23 @@ config HW_RANDOM_MTK
+  
+  	  If unsure, say Y.
+  
+diff --git a/target/linux/qualcommax/patches-6.12/0804-remoteproc-qcom-q6v5-Add-multipd-interrupts-support.patch b/target/linux/qualcommax/patches-6.12/0804-remoteproc-qcom-q6v5-Add-multipd-interrupts-support.patch
+index 4e955435b2..0238ba828a 100644
+--- a/target/linux/qualcommax/patches-6.12/0804-remoteproc-qcom-q6v5-Add-multipd-interrupts-support.patch
++++ b/target/linux/qualcommax/patches-6.12/0804-remoteproc-qcom-q6v5-Add-multipd-interrupts-support.patch
+@@ -47,7 +47,7 @@ Signed-off-by: Manikanta Mylavarapu <quic_mmanikan@quicinc.com>
+  
+  /**
+   * qcom_q6v5_wait_for_start() - wait for remote processor start signal
+-@@ -177,7 +179,17 @@ static irqreturn_t q6v5_handover_interru
++@@ -174,7 +176,17 @@ static irqreturn_t q6v5_handover_interru
+  	return IRQ_HANDLED;
+  }
+  
+@@ -66,7 +66,7 @@ Signed-off-by: Manikanta Mylavarapu <quic_mmanikan@quicinc.com>
+  {
+  	struct qcom_q6v5 *q6v5 = data;
+  
+-@@ -185,6 +197,7 @@ static irqreturn_t q6v5_stop_interrupt(i
++@@ -182,6 +194,7 @@ static irqreturn_t q6v5_stop_interrupt(i
+  
+  	return IRQ_HANDLED;
+  }
+@@ -74,7 +74,7 @@ Signed-off-by: Manikanta Mylavarapu <quic_mmanikan@quicinc.com>
+  
+  /**
+   * qcom_q6v5_request_stop() - request the remote processor to stop
+-@@ -215,6 +228,28 @@ int qcom_q6v5_request_stop(struct qcom_q
++@@ -212,6 +225,28 @@ int qcom_q6v5_request_stop(struct qcom_q
+  EXPORT_SYMBOL_GPL(qcom_q6v5_request_stop);
+  
+  /**
+diff --git a/target/linux/rockchip/patches-6.12/031-06-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch b/target/linux/rockchip/patches-6.12/031-06-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+index 9ae621a54a..1ad406cd6f 100644
+--- a/target/linux/rockchip/patches-6.12/031-06-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
++++ b/target/linux/rockchip/patches-6.12/031-06-v6.15-hwrng-rockchip-add-support-for-rk3588-s-standalone-T.patch
+@@ -52,7 +52,7 @@ Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+ 
+ --- a/drivers/char/hw_random/Kconfig
+ +++ b/drivers/char/hw_random/Kconfig
+-@@ -580,7 +580,8 @@ config HW_RANDOM_ROCKCHIP
++@@ -581,7 +581,8 @@ config HW_RANDOM_ROCKCHIP
+  	default HW_RANDOM
+  	help
+  	  This driver provides kernel-side support for the True Random Number
+diff --git a/target/linux/rockchip/patches-6.12/036-05-v6.14-phy-rockchip-naneng-combo-add-rk3576-support.patch b/target/linux/rockchip/patches-6.12/036-05-v6.14-phy-rockchip-naneng-combo-add-rk3576-support.patch
+index 4f466c42d5..c9c3f3cbb5 100644
+--- a/target/linux/rockchip/patches-6.12/036-05-v6.14-phy-rockchip-naneng-combo-add-rk3576-support.patch
++++ b/target/linux/rockchip/patches-6.12/036-05-v6.14-phy-rockchip-naneng-combo-add-rk3576-support.patch
+@@ -75,7 +75,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  	struct combphy_reg pipe_clk_25m;
+  	struct combphy_reg pipe_clk_100m;
+  	struct combphy_reg pipe_phymode_sel;
+-@@ -587,6 +602,266 @@ static const struct rockchip_combphy_cfg
++@@ -599,6 +614,266 @@ static const struct rockchip_combphy_cfg
+  	.combphy_cfg	= rk3568_combphy_cfg,
+  };
+  
+@@ -342,7 +342,7 @@ Signed-off-by: Vinod Koul <vkoul@kernel.org>
+  static int rk3588_combphy_cfg(struct rockchip_combphy_priv *priv)
+  {
+  	const struct rockchip_combphy_grfcfg *cfg = priv->cfg->grfcfg;
+-@@ -779,6 +1054,10 @@ static const struct of_device_id rockchi
++@@ -791,6 +1066,10 @@ static const struct of_device_id rockchi
+  		.data = &rk3568_combphy_cfgs,
+  	},
+  	{
+diff --git a/target/linux/starfive/patches-6.12/1015-hwrng-Add-StarFive-JH7100-Random-Number-Generator-dr.patch b/target/linux/starfive/patches-6.12/1015-hwrng-Add-StarFive-JH7100-Random-Number-Generator-dr.patch
+index 1b81a0148e..549f7f8646 100644
+--- a/target/linux/starfive/patches-6.12/1015-hwrng-Add-StarFive-JH7100-Random-Number-Generator-dr.patch
++++ b/target/linux/starfive/patches-6.12/1015-hwrng-Add-StarFive-JH7100-Random-Number-Generator-dr.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+ 
+ --- a/drivers/char/hw_random/Kconfig
+ +++ b/drivers/char/hw_random/Kconfig
+-@@ -322,6 +322,19 @@ config HW_RANDOM_POWERNV
++@@ -323,6 +323,19 @@ config HW_RANDOM_POWERNV
+  
+  	  If unsure, say Y.
+  
+-- 
+2.51.0
+
