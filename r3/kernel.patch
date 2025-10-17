@@ -1,29 +1,82 @@
-From 4934f65d63704da3125c842cc33303e011b663e7 Mon Sep 17 00:00:00 2001
+From 06f3ad0a824e8c1bc08d07219b599304d44a9746 Mon Sep 17 00:00:00 2001
 From: i l <il@il.com>
-Date: Wed, 15 Oct 2025 08:42:45 -0400
-Subject: [PATCH] kernel
+Date: Fri, 10 Oct 2025 15:44:24 +0000
+Subject: [PATCH 1/4] kernel: Linux 6.12.52
+
+
 
 ---
- ...ci_sync-Add-fallback-bd-address-prop.patch |  4 +-
- ...5-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch |  6 +-
- ...th-hci_sync-Fix-crash-on-NULL-parent.patch |  2 +-
- .../902-snand-mtk-bmt-support.patch           |  6 +-
- ...-race-condition-in-RPC-handle-list-a.patch | 69 +++++++++++++++
- .../generic/hack-6.12/253-ksmbd-config.patch  |  2 +-
- ...onnection-limiting-mechanism-to-ipv6.patch | 83 -------------------
- ...it-repeated-connections-from-clients.patch | 62 --------------
- target/linux/generic/kernel-6.12              |  4 +-
- .../203-kallsyms_uncompressed.patch           |  2 +-
- .../pending-6.12/920-mangle_bootargs.patch    |  2 +-
- ...rng-add-driver-for-MediaTek-TRNG-SMC.patch |  2 +-
- ...-q6v5-Add-multipd-interrupts-support.patch |  6 +-
- ...dd-support-for-rk3588-s-standalone-T.patch |  2 +-
- ...chip-naneng-combo-add-rk3576-support.patch |  4 +-
- ...ve-JH7100-Random-Number-Generator-dr.patch |  2 +-
- 16 files changed, 91 insertions(+), 167 deletions(-)
- create mode 100644 target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
- delete mode 100644 target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
- delete mode 100644 target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
+ .../econet/patches-6.12/902-snand-mtk-bmt-support.patch     | 6 +++---
+ target/linux/generic/kernel-6.12                            | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
+index f715652319..eb77fde066 100644
+--- a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
++++ b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
+@@ -8,7 +8,7 @@
+  
+  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
+  {
+-@@ -1530,6 +1531,7 @@ static int spinand_probe(struct spi_mem
++@@ -1574,6 +1575,7 @@ static int spinand_probe(struct spi_mem
+  	if (ret)
+  		return ret;
+  
+@@ -16,7 +16,7 @@
+  	ret = mtd_device_register(mtd, NULL, 0);
+  	if (ret)
+  		goto err_spinand_cleanup;
+-@@ -1537,6 +1539,7 @@ static int spinand_probe(struct spi_mem
++@@ -1581,6 +1583,7 @@ static int spinand_probe(struct spi_mem
+  	return 0;
+  
+  err_spinand_cleanup:
+@@ -24,7 +24,7 @@
+  	spinand_cleanup(spinand);
+  
+  	return ret;
+-@@ -1555,6 +1558,7 @@ static int spinand_remove(struct spi_mem
++@@ -1599,6 +1602,7 @@ static int spinand_remove(struct spi_mem
+  	if (ret)
+  		return ret;
+  
+diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
+index 477c1b5d40..e644449731 100644
+--- a/target/linux/generic/kernel-6.12
++++ b/target/linux/generic/kernel-6.12
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.12 = .51
+-LINUX_KERNEL_HASH-6.12.51 = 2d55ad149ca7d9ef82595c669430650030cbf9afbbeb42e5cd9b4ba3cc1a7221
++LINUX_VERSION-6.12 = .52
++LINUX_KERNEL_HASH-6.12.52 = b4850cf670a032c70f38b713a27d62046c5f747caf028c5f50b18f98606a9eb1
+-- 
+2.51.0
+
+
+From 60a4f6a181310a1480f6646c54f57364bf3e51d4 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Mon, 13 Oct 2025 19:30:23 +0000
+Subject: [PATCH 2/4] kernel: Linux 6.12.53
+
+
+
+---
+ ...ci_sync-Add-fallback-bd-address-prop.patch |   4 +-
+ ...5-usb-xhci-add-XHCI_VLI_HUB_TT_QUIRK.patch |   6 +-
+ ...th-hci_sync-Fix-crash-on-NULL-parent.patch |   2 +-
+ ...mbd-add-max-ip-connections-parameter.patch | 119 ------------------
+ .../generic/hack-6.12/253-ksmbd-config.patch  |   2 +-
+ target/linux/generic/kernel-6.12              |   4 +-
+ .../203-kallsyms_uncompressed.patch           |   2 +-
+ .../pending-6.12/920-mangle_bootargs.patch    |   2 +-
+ ...rng-add-driver-for-MediaTek-TRNG-SMC.patch |   2 +-
+ ...-q6v5-Add-multipd-interrupts-support.patch |   6 +-
+ ...dd-support-for-rk3588-s-standalone-T.patch |   2 +-
+ ...chip-naneng-combo-add-rk3576-support.patch |   4 +-
+ ...ve-JH7100-Random-Number-Generator-dr.patch |   2 +-
+ 13 files changed, 19 insertions(+), 138 deletions(-)
+ delete mode 100644 target/linux/generic/backport-6.12/541-v6.18-ksmbd-add-max-ip-connections-parameter.patch
 
 diff --git a/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch b/target/linux/bcm27xx/patches-6.12/950-0322-Bluetooth-hci_sync-Add-fallback-bd-address-prop.patch
 index d5cbb4e1cb..81e8d31c1b 100644
@@ -91,112 +144,131 @@ index 9293edef8d..cb98eb72fb 100644
    */
   static int hci_dev_setup_sync(struct hci_dev *hdev)
   {
-diff --git a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
-index f715652319..eb77fde066 100644
---- a/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
-+++ b/target/linux/econet/patches-6.12/902-snand-mtk-bmt-support.patch
-@@ -8,7 +8,7 @@
-  
-  static int spinand_read_reg_op(struct spinand_device *spinand, u8 reg, u8 *val)
-  {
--@@ -1530,6 +1531,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1574,6 +1575,7 @@ static int spinand_probe(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-@@ -16,7 +16,7 @@
-  	ret = mtd_device_register(mtd, NULL, 0);
-  	if (ret)
-  		goto err_spinand_cleanup;
--@@ -1537,6 +1539,7 @@ static int spinand_probe(struct spi_mem
-+@@ -1581,6 +1583,7 @@ static int spinand_probe(struct spi_mem
-  	return 0;
-  
-  err_spinand_cleanup:
-@@ -24,7 +24,7 @@
-  	spinand_cleanup(spinand);
-  
-  	return ret;
--@@ -1555,6 +1558,7 @@ static int spinand_remove(struct spi_mem
-+@@ -1599,6 +1602,7 @@ static int spinand_remove(struct spi_mem
-  	if (ret)
-  		return ret;
-  
-diff --git a/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch b/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
-new file mode 100644
-index 0000000000..e22d0b7a58
---- /dev/null
-+++ b/target/linux/generic/backport-6.12/0001-Revert-ksmbd-Fix-race-condition-in-RPC-handle-list-a.patch
-@@ -0,0 +1,69 @@
-+From 5b1d27d12e4b52af066c3d800d02c377b1f86e88 Mon Sep 17 00:00:00 2001
-+From: Marty Jones <mj8263788@gmail.com>
-+Date: Mon, 13 Oct 2025 23:43:40 -0400
-+Subject: [PATCH] Revert "ksmbd: Fix race condition in RPC handle list access"
-+
-+This reverts commit 3659c6222d008cee23d8e2b0b19a64b912162118.
-+---
-+ fs/smb/server/mgmt/user_session.c | 26 +++++++++-----------------
-+ 1 file changed, 9 insertions(+), 17 deletions(-)
-+
-+--- a/fs/smb/server/mgmt/user_session.c
-++++ b/fs/smb/server/mgmt/user_session.c
-+@@ -104,32 +104,29 @@ int ksmbd_session_rpc_open(struct ksmbd_
-+ 	if (!entry)
-+ 		return -ENOMEM;
-+ 
-++	down_read(&sess->rpc_lock);
-+ 	entry->method = method;
-+ 	entry->id = id = ksmbd_ipc_id_alloc();
-+ 	if (id < 0)
-+ 		goto free_entry;
-+-
-+-	down_write(&sess->rpc_lock);
-+ 	old = xa_store(&sess->rpc_handle_list, id, entry, KSMBD_DEFAULT_GFP);
-+-	if (xa_is_err(old)) {
-+-		up_write(&sess->rpc_lock);
-++	if (xa_is_err(old))
-+ 		goto free_id;
-+-	}
-+ 
-+ 	resp = ksmbd_rpc_open(sess, id);
-+-	if (!resp) {
-+-		xa_erase(&sess->rpc_handle_list, entry->id);
-+-		up_write(&sess->rpc_lock);
-+-		goto free_id;
-+-	}
-++	if (!resp)
-++		goto erase_xa;
-+ 
-+-	up_write(&sess->rpc_lock);
-++	up_read(&sess->rpc_lock);
-+ 	kvfree(resp);
-+ 	return id;
-++erase_xa:
-++	xa_erase(&sess->rpc_handle_list, entry->id);
-+ free_id:
-+ 	ksmbd_rpc_id_free(entry->id);
-+ free_entry:
-+ 	kfree(entry);
-++	up_read(&sess->rpc_lock);
-+ 	return -EINVAL;
-+ }
-+ 
-+@@ -147,14 +144,9 @@ void ksmbd_session_rpc_close(struct ksmb
-+ int ksmbd_session_rpc_method(struct ksmbd_session *sess, int id)
-+ {
-+ 	struct ksmbd_session_rpc *entry;
-+-	int method;
-+ 
-+-	down_read(&sess->rpc_lock);
-+ 	entry = xa_load(&sess->rpc_handle_list, id);
-+-	method = entry ? entry->method : 0;
-+-	up_read(&sess->rpc_lock);
-+-
-+-	return method;
-++	return entry ? entry->method : 0;
-+ }
-+ 
-+ void ksmbd_session_destroy(struct ksmbd_session *sess)
+diff --git a/target/linux/generic/backport-6.12/541-v6.18-ksmbd-add-max-ip-connections-parameter.patch b/target/linux/generic/backport-6.12/541-v6.18-ksmbd-add-max-ip-connections-parameter.patch
+deleted file mode 100644
+index 7520b2f2e3..0000000000
+--- a/target/linux/generic/backport-6.12/541-v6.18-ksmbd-add-max-ip-connections-parameter.patch
++++ /dev/null
+@@ -1,119 +0,0 @@
+-From d8b6dc9256762293048bf122fc11c4e612d0ef5d Mon Sep 17 00:00:00 2001
+-From: Namjae Jeon <linkinjeon@kernel.org>
+-Date: Wed, 1 Oct 2025 09:25:35 +0900
+-Subject: ksmbd: add max ip connections parameter
+-
+-This parameter set the maximum number of connections per ip address.
+-The default is 8.
+-
+-Cc: stable@vger.kernel.org
+-Fixes: c0d41112f1a5 ("ksmbd: extend the connection limiting mechanism to support IPv6")
+-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+-Signed-off-by: Steve French <stfrench@microsoft.com>
+----
+- fs/smb/server/ksmbd_netlink.h |  5 +++--
+- fs/smb/server/server.h        |  1 +
+- fs/smb/server/transport_ipc.c |  3 +++
+- fs/smb/server/transport_tcp.c | 27 ++++++++++++++++-----------
+- 4 files changed, 23 insertions(+), 13 deletions(-)
+-
+-(limited to 'fs/smb')
+-
+---- a/fs/smb/server/ksmbd_netlink.h
+-+++ b/fs/smb/server/ksmbd_netlink.h
+-@@ -112,10 +112,11 @@ struct ksmbd_startup_request {
+- 	__u32	smbd_max_io_size;	/* smbd read write size */
+- 	__u32	max_connections;	/* Number of maximum simultaneous connections */
+- 	__s8	bind_interfaces_only;
+--	__s8	reserved[503];		/* Reserved room */
+-+	__u32	max_ip_connections;	/* Number of maximum connection per ip address */
+-+	__s8	reserved[499];		/* Reserved room */
+- 	__u32	ifc_list_sz;		/* interfaces list size */
+- 	__s8	____payload[];
+--};
+-+} __packed;
+- 
+- #define KSMBD_STARTUP_CONFIG_INTERFACES(s)	((s)->____payload)
+- 
+---- a/fs/smb/server/server.h
+-+++ b/fs/smb/server/server.h
+-@@ -43,6 +43,7 @@ struct ksmbd_server_config {
+- 	unsigned int		auth_mechs;
+- 	unsigned int		max_connections;
+- 	unsigned int		max_inflight_req;
+-+	unsigned int		max_ip_connections;
+- 
+- 	char			*conf[SERVER_CONF_WORK_GROUP + 1];
+- 	struct task_struct	*dh_task;
+---- a/fs/smb/server/transport_ipc.c
+-+++ b/fs/smb/server/transport_ipc.c
+-@@ -335,6 +335,9 @@ static int ipc_server_config_on_startup(
+- 	if (req->max_connections)
+- 		server_conf.max_connections = req->max_connections;
+- 
+-+	if (req->max_ip_connections)
+-+		server_conf.max_ip_connections = req->max_ip_connections;
+-+
+- 	ret = ksmbd_set_netbios_name(req->netbios_name);
+- 	ret |= ksmbd_set_server_string(req->server_string);
+- 	ret |= ksmbd_set_work_group(req->work_group);
+---- a/fs/smb/server/transport_tcp.c
+-+++ b/fs/smb/server/transport_tcp.c
+-@@ -240,6 +240,7 @@ static int ksmbd_kthread_fn(void *p)
+- 	struct interface *iface = (struct interface *)p;
+- 	struct ksmbd_conn *conn;
+- 	int ret;
+-+	unsigned int max_ip_conns;
+- 
+- 	while (!kthread_should_stop()) {
+- 		mutex_lock(&iface->sock_release_lock);
+-@@ -257,34 +258,38 @@ static int ksmbd_kthread_fn(void *p)
+- 			continue;
+- 		}
+- 
+-+		if (!server_conf.max_ip_connections)
+-+			goto skip_max_ip_conns_limit;
+-+
+- 		/*
+- 		 * Limits repeated connections from clients with the same IP.
+- 		 */
+-+		max_ip_conns = 0;
+- 		down_read(&conn_list_lock);
+--		list_for_each_entry(conn, &conn_list, conns_list)
+-+		list_for_each_entry(conn, &conn_list, conns_list) {
+- #if IS_ENABLED(CONFIG_IPV6)
+- 			if (client_sk->sk->sk_family == AF_INET6) {
+- 				if (memcmp(&client_sk->sk->sk_v6_daddr,
+--					   &conn->inet6_addr, 16) == 0) {
+--					ret = -EAGAIN;
+--					break;
+--				}
+-+					   &conn->inet6_addr, 16) == 0)
+-+					max_ip_conns++;
+- 			} else if (inet_sk(client_sk->sk)->inet_daddr ==
+--				 conn->inet_addr) {
+--				ret = -EAGAIN;
+--				break;
+--			}
+-+				 conn->inet_addr)
+-+				max_ip_conns++;
+- #else
+- 			if (inet_sk(client_sk->sk)->inet_daddr ==
+--			    conn->inet_addr) {
+-+			    conn->inet_addr)
+-+				max_ip_conns++;
+-+#endif
+-+			if (server_conf.max_ip_connections <= max_ip_conns) {
+- 				ret = -EAGAIN;
+- 				break;
+- 			}
+--#endif
+-+		}
+- 		up_read(&conn_list_lock);
+- 		if (ret == -EAGAIN)
+- 			continue;
+- 
+-+skip_max_ip_conns_limit:
+- 		if (server_conf.max_connections &&
+- 		    atomic_inc_return(&active_num_conn) >= server_conf.max_connections) {
+- 			pr_info_ratelimited("Limit the maximum number of connections(%u)\n",
 diff --git a/target/linux/generic/hack-6.12/253-ksmbd-config.patch b/target/linux/generic/hack-6.12/253-ksmbd-config.patch
 index d5474d9799..d9587fbe84 100644
 --- a/target/linux/generic/hack-6.12/253-ksmbd-config.patch
@@ -210,170 +282,13 @@ index d5474d9799..d9587fbe84 100644
   	bool
   
   config ASN1
-diff --git a/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch b/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
-deleted file mode 100644
-index 60d919fa78..0000000000
---- a/target/linux/generic/hack-6.12/940-Revert-ksmbd-extend-the-connection-limiting-mechanism-to-ipv6.patch
-+++ /dev/null
-@@ -1,83 +0,0 @@
--From 7220ecc26a9a8e6766eb9ec7cd90fbba048ce7b3 Mon Sep 17 00:00:00 2001
--From: Andrea Pesaresi <andreapesaresi82@gmail.com>
--Date: Tue, 30 Sep 2025 19:35:36 +0200
--Subject: Revert "ksmbd: extend the connection limiting mechanism to support
-- IPv6"
--
--This reverts commit d9e157fcfebc126cd19b2333a6417a840c24e529.
-----
-- fs/smb/server/connection.h    |  7 +------
-- fs/smb/server/transport_tcp.c | 26 +++-----------------------
-- 2 files changed, 4 insertions(+), 29 deletions(-)
--
----- a/fs/smb/server/connection.h
--+++ b/fs/smb/server/connection.h
--@@ -46,12 +46,7 @@ struct ksmbd_conn {
-- 	struct mutex			srv_mutex;
-- 	int				status;
-- 	unsigned int			cli_cap;
---	union {
---		__be32			inet_addr;
---#if IS_ENABLED(CONFIG_IPV6)
---		u8			inet6_addr[16];
---#endif
---	};
--+	__be32				inet_addr;
-- 	char				*request_buf;
-- 	struct ksmbd_transport		*transport;
-- 	struct nls_table		*local_nls;
----- a/fs/smb/server/transport_tcp.c
--+++ b/fs/smb/server/transport_tcp.c
--@@ -87,14 +87,7 @@ static struct tcp_transport *alloc_trans
-- 		return NULL;
-- 	}
-- 
---#if IS_ENABLED(CONFIG_IPV6)
---	if (client_sk->sk->sk_family == AF_INET6)
---		memcpy(&conn->inet6_addr, &client_sk->sk->sk_v6_daddr, 16);
---	else
---		conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
---#else
-- 	conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
---#endif
-- 	conn->transport = KSMBD_TRANS(t);
-- 	KSMBD_TRANS(t)->conn = conn;
-- 	KSMBD_TRANS(t)->ops = &ksmbd_tcp_transport_ops;
--@@ -238,6 +231,7 @@ static int ksmbd_kthread_fn(void *p)
-- {
-- 	struct socket *client_sk = NULL;
-- 	struct interface *iface = (struct interface *)p;
--+	struct inet_sock *csk_inet;
-- 	struct ksmbd_conn *conn;
-- 	int ret;
-- 
--@@ -260,27 +254,13 @@ static int ksmbd_kthread_fn(void *p)
-- 		/*
-- 		 * Limits repeated connections from clients with the same IP.
-- 		 */
--+		csk_inet = inet_sk(client_sk->sk);
-- 		down_read(&conn_list_lock);
-- 		list_for_each_entry(conn, &conn_list, conns_list)
---#if IS_ENABLED(CONFIG_IPV6)
---			if (client_sk->sk->sk_family == AF_INET6) {
---				if (memcmp(&client_sk->sk->sk_v6_daddr,
---					   &conn->inet6_addr, 16) == 0) {
---					ret = -EAGAIN;
---					break;
---				}
---			} else if (inet_sk(client_sk->sk)->inet_daddr ==
---				 conn->inet_addr) {
--+			if (csk_inet->inet_daddr == conn->inet_addr) {
-- 				ret = -EAGAIN;
-- 				break;
-- 			}
---#else
---			if (inet_sk(client_sk->sk)->inet_daddr ==
---			    conn->inet_addr) {
---				ret = -EAGAIN;
---				break;
---			}
---#endif
-- 		up_read(&conn_list_lock);
-- 		if (ret == -EAGAIN)
-- 			continue;
-diff --git a/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch b/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
-deleted file mode 100644
-index 2c993b1bb5..0000000000
---- a/target/linux/generic/hack-6.12/941-Revert-ksmbd-limit-repeated-connections-from-clients.patch
-+++ /dev/null
-@@ -1,62 +0,0 @@
--From 575b789e36cf4bfa85ba5b649673ede9b4c7b5d0 Mon Sep 17 00:00:00 2001
--From: Andrea Pesaresi <andreapesaresi82@gmail.com>
--Date: Tue, 30 Sep 2025 22:36:12 +0200
--Subject: Revert "ksmbd: limit repeated connections from clients with the same
-- IP"
--
--This reverts commit fa1c47af4ff641cf9197ecdb1f8240cbb30389c1.
-----
-- fs/smb/server/connection.h    |  1 -
-- fs/smb/server/transport_tcp.c | 17 -----------------
-- 2 files changed, 18 deletions(-)
--
----- a/fs/smb/server/connection.h
--+++ b/fs/smb/server/connection.h
--@@ -46,7 +46,6 @@ struct ksmbd_conn {
-- 	struct mutex			srv_mutex;
-- 	int				status;
-- 	unsigned int			cli_cap;
---	__be32				inet_addr;
-- 	char				*request_buf;
-- 	struct ksmbd_transport		*transport;
-- 	struct nls_table		*local_nls;
----- a/fs/smb/server/transport_tcp.c
--+++ b/fs/smb/server/transport_tcp.c
--@@ -87,7 +87,6 @@ static struct tcp_transport *alloc_trans
-- 		return NULL;
-- 	}
-- 
---	conn->inet_addr = inet_sk(client_sk->sk)->inet_daddr;
-- 	conn->transport = KSMBD_TRANS(t);
-- 	KSMBD_TRANS(t)->conn = conn;
-- 	KSMBD_TRANS(t)->ops = &ksmbd_tcp_transport_ops;
--@@ -231,8 +230,6 @@ static int ksmbd_kthread_fn(void *p)
-- {
-- 	struct socket *client_sk = NULL;
-- 	struct interface *iface = (struct interface *)p;
---	struct inet_sock *csk_inet;
---	struct ksmbd_conn *conn;
-- 	int ret;
-- 
-- 	while (!kthread_should_stop()) {
--@@ -251,20 +248,6 @@ static int ksmbd_kthread_fn(void *p)
-- 			continue;
-- 		}
-- 
---		/*
---		 * Limits repeated connections from clients with the same IP.
---		 */
---		csk_inet = inet_sk(client_sk->sk);
---		down_read(&conn_list_lock);
---		list_for_each_entry(conn, &conn_list, conns_list)
---			if (csk_inet->inet_daddr == conn->inet_addr) {
---				ret = -EAGAIN;
---				break;
---			}
---		up_read(&conn_list_lock);
---		if (ret == -EAGAIN)
---			continue;
---
-- 		if (server_conf.max_connections &&
-- 		    atomic_inc_return(&active_num_conn) >= server_conf.max_connections) {
-- 			pr_info_ratelimited("Limit the maximum number of connections(%u)\n",
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 477c1b5d40..025f59067d 100644
+index e644449731..025f59067d 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .51
--LINUX_KERNEL_HASH-6.12.51 = 2d55ad149ca7d9ef82595c669430650030cbf9afbbeb42e5cd9b4ba3cc1a7221
+-LINUX_VERSION-6.12 = .52
+-LINUX_KERNEL_HASH-6.12.52 = b4850cf670a032c70f38b713a27d62046c5f747caf028c5f50b18f98606a9eb1
 +LINUX_VERSION-6.12 = .53
 +LINUX_KERNEL_HASH-6.12.53 = 663507accae673afcf4e210b4ae8d4352e61d926202e5da3f04bf71ca1d2c0b5
 diff --git a/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch b/target/linux/generic/pending-6.12/203-kallsyms_uncompressed.patch
@@ -494,6 +409,335 @@ index 1b81a0148e..549f7f8646 100644
   
   	  If unsure, say Y.
   
+-- 
+2.51.0
+
+
+From db1ca43a7f66a9d37d07ab4ff3b75e4e201ad4b8 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Thu, 16 Oct 2025 22:05:04 -0400
+Subject: [PATCH 3/4] kernel: ksmbd: fix recursive locking in RPC handle list
+ access
+
+
+---
+ ...ive-locking-in-RPC-handle-list-acces.patch | 149 ++++++++++++++++++
+ 1 file changed, 149 insertions(+)
+ create mode 100644 target/linux/generic/backport-6.12/542-v6.18-ksmbd-fix-recursive-locking-in-RPC-handle-list-acces.patch
+
+diff --git a/target/linux/generic/backport-6.12/542-v6.18-ksmbd-fix-recursive-locking-in-RPC-handle-list-acces.patch b/target/linux/generic/backport-6.12/542-v6.18-ksmbd-fix-recursive-locking-in-RPC-handle-list-acces.patch
+new file mode 100644
+index 0000000000..f9f0f4a778
+--- /dev/null
++++ b/target/linux/generic/backport-6.12/542-v6.18-ksmbd-fix-recursive-locking-in-RPC-handle-list-acces.patch
+@@ -0,0 +1,149 @@
++From 88f170814fea74911ceab798a43cbd7c5599bed4 Mon Sep 17 00:00:00 2001
++From: Marios Makassikis <mmakassikis@freebox.fr>
++Date: Wed, 15 Oct 2025 09:25:46 +0200
++Subject: [PATCH] ksmbd: fix recursive locking in RPC handle list access
++
++Since commit 305853cce3794 ("ksmbd: Fix race condition in RPC handle list
++access"), ksmbd_session_rpc_method() attempts to lock sess->rpc_lock.
++
++This causes hung connections / tasks when a client attempts to open
++a named pipe. Using Samba's rpcclient tool:
++
++ $ rpcclient //192.168.1.254 -U user%password
++ $ rpcclient $> srvinfo
++ <connection hung here>
++
++Kernel side:
++  "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
++  task:kworker/0:0 state:D stack:0 pid:5021 tgid:5021 ppid:2 flags:0x00200000
++  Workqueue: ksmbd-io handle_ksmbd_work
++  Call trace:
++  __schedule from schedule+0x3c/0x58
++  schedule from schedule_preempt_disabled+0xc/0x10
++  schedule_preempt_disabled from rwsem_down_read_slowpath+0x1b0/0x1d8
++  rwsem_down_read_slowpath from down_read+0x28/0x30
++  down_read from ksmbd_session_rpc_method+0x18/0x3c
++  ksmbd_session_rpc_method from ksmbd_rpc_open+0x34/0x68
++  ksmbd_rpc_open from ksmbd_session_rpc_open+0x194/0x228
++  ksmbd_session_rpc_open from create_smb2_pipe+0x8c/0x2c8
++  create_smb2_pipe from smb2_open+0x10c/0x27ac
++  smb2_open from handle_ksmbd_work+0x238/0x3dc
++  handle_ksmbd_work from process_scheduled_works+0x160/0x25c
++  process_scheduled_works from worker_thread+0x16c/0x1e8
++  worker_thread from kthread+0xa8/0xb8
++  kthread from ret_from_fork+0x14/0x38
++  Exception stack(0x8529ffb0 to 0x8529fff8)
++
++The task deadlocks because the lock is already held:
++  ksmbd_session_rpc_open
++    down_write(&sess->rpc_lock)
++    ksmbd_rpc_open
++      ksmbd_session_rpc_method
++        down_read(&sess->rpc_lock)   <-- deadlock
++
++Adjust ksmbd_session_rpc_method() callers to take the lock when necessary.
++
++Fixes: 305853cce3794 ("ksmbd: Fix race condition in RPC handle list access")
++Signed-off-by: Marios Makassikis <mmakassikis@freebox.fr>
++Acked-by: Namjae Jeon <linkinjeon@kernel.org>
++Signed-off-by: Steve French <stfrench@microsoft.com>
++---
++ fs/smb/server/mgmt/user_session.c |  7 ++-----
++ fs/smb/server/smb2pdu.c           |  9 ++++++++-
++ fs/smb/server/transport_ipc.c     | 12 ++++++++++++
++ 3 files changed, 22 insertions(+), 6 deletions(-)
++
++--- a/fs/smb/server/mgmt/user_session.c
+++++ b/fs/smb/server/mgmt/user_session.c
++@@ -147,14 +147,11 @@ void ksmbd_session_rpc_close(struct ksmb
++ int ksmbd_session_rpc_method(struct ksmbd_session *sess, int id)
++ {
++ 	struct ksmbd_session_rpc *entry;
++-	int method;
++ 
++-	down_read(&sess->rpc_lock);
+++	lockdep_assert_held(&sess->rpc_lock);
++ 	entry = xa_load(&sess->rpc_handle_list, id);
++-	method = entry ? entry->method : 0;
++-	up_read(&sess->rpc_lock);
++ 
++-	return method;
+++	return entry ? entry->method : 0;
++ }
++ 
++ void ksmbd_session_destroy(struct ksmbd_session *sess)
++--- a/fs/smb/server/smb2pdu.c
+++++ b/fs/smb/server/smb2pdu.c
++@@ -4623,8 +4623,15 @@ static int smb2_get_info_file_pipe(struc
++ 	 * pipe without opening it, checking error condition here
++ 	 */
++ 	id = req->VolatileFileId;
++-	if (!ksmbd_session_rpc_method(sess, id))
+++
+++	lockdep_assert_not_held(&sess->rpc_lock);
+++
+++	down_read(&sess->rpc_lock);
+++	if (!ksmbd_session_rpc_method(sess, id)) {
+++		up_read(&sess->rpc_lock);
++ 		return -ENOENT;
+++	}
+++	up_read(&sess->rpc_lock);
++ 
++ 	ksmbd_debug(SMB, "FileInfoClass %u, FileId 0x%llx\n",
++ 		    req->FileInfoClass, req->VolatileFileId);
++--- a/fs/smb/server/transport_ipc.c
+++++ b/fs/smb/server/transport_ipc.c
++@@ -825,6 +825,9 @@ struct ksmbd_rpc_command *ksmbd_rpc_writ
++ 	if (!msg)
++ 		return NULL;
++ 
+++	lockdep_assert_not_held(&sess->rpc_lock);
+++
+++	down_read(&sess->rpc_lock);
++ 	msg->type = KSMBD_EVENT_RPC_REQUEST;
++ 	req = (struct ksmbd_rpc_command *)msg->payload;
++ 	req->handle = handle;
++@@ -833,6 +836,7 @@ struct ksmbd_rpc_command *ksmbd_rpc_writ
++ 	req->flags |= KSMBD_RPC_WRITE_METHOD;
++ 	req->payload_sz = payload_sz;
++ 	memcpy(req->payload, payload, payload_sz);
+++	up_read(&sess->rpc_lock);
++ 
++ 	resp = ipc_msg_send_request(msg, req->handle);
++ 	ipc_msg_free(msg);
++@@ -849,6 +853,9 @@ struct ksmbd_rpc_command *ksmbd_rpc_read
++ 	if (!msg)
++ 		return NULL;
++ 
+++	lockdep_assert_not_held(&sess->rpc_lock);
+++
+++	down_read(&sess->rpc_lock);
++ 	msg->type = KSMBD_EVENT_RPC_REQUEST;
++ 	req = (struct ksmbd_rpc_command *)msg->payload;
++ 	req->handle = handle;
++@@ -856,6 +863,7 @@ struct ksmbd_rpc_command *ksmbd_rpc_read
++ 	req->flags |= rpc_context_flags(sess);
++ 	req->flags |= KSMBD_RPC_READ_METHOD;
++ 	req->payload_sz = 0;
+++	up_read(&sess->rpc_lock);
++ 
++ 	resp = ipc_msg_send_request(msg, req->handle);
++ 	ipc_msg_free(msg);
++@@ -876,6 +884,9 @@ struct ksmbd_rpc_command *ksmbd_rpc_ioct
++ 	if (!msg)
++ 		return NULL;
++ 
+++	lockdep_assert_not_held(&sess->rpc_lock);
+++
+++	down_read(&sess->rpc_lock);
++ 	msg->type = KSMBD_EVENT_RPC_REQUEST;
++ 	req = (struct ksmbd_rpc_command *)msg->payload;
++ 	req->handle = handle;
++@@ -884,6 +895,7 @@ struct ksmbd_rpc_command *ksmbd_rpc_ioct
++ 	req->flags |= KSMBD_RPC_IOCTL_METHOD;
++ 	req->payload_sz = payload_sz;
++ 	memcpy(req->payload, payload, payload_sz);
+++	up_read(&sess->rpc_lock);
++ 
++ 	resp = ipc_msg_send_request(msg, req->handle);
++ 	ipc_msg_free(msg);
+-- 
+2.51.0
+
+
+From 651b4a20afe5ec06fef7e8db5501963bc9492e96 Mon Sep 17 00:00:00 2001
+From: i l <il@il.com>
+Date: Fri, 17 Oct 2025 17:34:22 +0000
+Subject: [PATCH 4/4] kernel: Linux 6.12.54
+
+
+
+---
+ .../patches-6.12/950-0018-arm64-setup-Fix-build-warning.patch | 2 +-
+ ...-media-mc-add-debugfs-node-to-keep-track-of-requests.patch | 4 ++--
+ ...net-page_pool-try-to-free-deferred-skbs-while-waitin.patch | 4 ++--
+ target/linux/generic/kernel-6.12                              | 4 ++--
+ ...PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch | 4 ++--
+ target/linux/generic/pending-6.12/920-mangle_bootargs.patch   | 4 ++--
+ ...ARM-decompressor-support-for-ATAGs-rootblock-parsing.patch | 2 +-
+ .../300-mvebu-Mangle-bootloader-s-kernel-arguments.patch      | 2 +-
+ 8 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0018-arm64-setup-Fix-build-warning.patch b/target/linux/bcm27xx/patches-6.12/950-0018-arm64-setup-Fix-build-warning.patch
+index 0867cda6de..cca6e76064 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0018-arm64-setup-Fix-build-warning.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0018-arm64-setup-Fix-build-warning.patch
+@@ -13,7 +13,7 @@ Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+ @@ -214,9 +214,9 @@ static void __init request_standard_reso
+  	size_t res_size;
+  
+- 	kernel_code.start   = __pa_symbol(_stext);
++ 	kernel_code.start   = __pa_symbol(_text);
+ -	kernel_code.end     = __pa_symbol(__init_begin - 1);
+ +	kernel_code.end     = __pa_symbol(__init_begin) - 1;
+  	kernel_data.start   = __pa_symbol(_sdata);
+diff --git a/target/linux/bcm27xx/patches-6.12/950-0830-media-mc-add-debugfs-node-to-keep-track-of-requests.patch b/target/linux/bcm27xx/patches-6.12/950-0830-media-mc-add-debugfs-node-to-keep-track-of-requests.patch
+index 0e31e290e7..7ad80a032c 100644
+--- a/target/linux/bcm27xx/patches-6.12/950-0830-media-mc-add-debugfs-node-to-keep-track-of-requests.patch
++++ b/target/linux/bcm27xx/patches-6.12/950-0830-media-mc-add-debugfs-node-to-keep-track-of-requests.patch
+@@ -88,7 +88,7 @@ Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+  /* Called when the last user of the media device exits. */
+  static void media_devnode_release(struct device *cd)
+  {
+-@@ -236,6 +239,7 @@ int __must_check media_devnode_register(
++@@ -231,6 +234,7 @@ int __must_check media_devnode_register(
+  	if (devnode->parent)
+  		devnode->dev.parent = devnode->parent;
+  	dev_set_name(&devnode->dev, "media%d", devnode->minor);
+@@ -96,7 +96,7 @@ Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+  	device_initialize(&devnode->dev);
+  
+  	/* Part 2: Initialize the character device */
+-@@ -313,6 +317,7 @@ static int __init media_devnode_init(voi
++@@ -309,6 +313,7 @@ static int __init media_devnode_init(voi
+  
+  static void __exit media_devnode_exit(void)
+  {
+diff --git a/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch b/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
+index 5db35ac9a5..405c8efcee 100644
+--- a/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
++++ b/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
+@@ -16,7 +16,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+ 
+ --- a/net/core/page_pool.c
+ +++ b/net/core/page_pool.c
+-@@ -1124,7 +1124,7 @@ static void page_pool_release_retry(stru
++@@ -1154,7 +1154,7 @@ static void page_pool_release_retry(stru
+  	struct delayed_work *dwq = to_delayed_work(wq);
+  	struct page_pool *pool = container_of(dwq, typeof(*pool), release_dw);
+  	void *netdev;
+@@ -25,7 +25,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
+  
+  	inflight = page_pool_release(pool);
+  	/* In rare cases, a driver bug may cause inflight to go negative.
+-@@ -1136,6 +1136,17 @@ static void page_pool_release_retry(stru
++@@ -1166,6 +1166,17 @@ static void page_pool_release_retry(stru
+  	if (inflight <= 0)
+  		return;
+  
+diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
+index 025f59067d..e142500660 100644
+--- a/target/linux/generic/kernel-6.12
++++ b/target/linux/generic/kernel-6.12
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.12 = .53
+-LINUX_KERNEL_HASH-6.12.53 = 663507accae673afcf4e210b4ae8d4352e61d926202e5da3f04bf71ca1d2c0b5
++LINUX_VERSION-6.12 = .54
++LINUX_KERNEL_HASH-6.12.54 = 6d38c38d2a287a2313d193a91875837189ac94e7a25ed1f97b17ba591f4e994c
+diff --git a/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch b/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch
+index edb15e9d0a..e5f54d7214 100644
+--- a/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch
++++ b/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch
+@@ -68,7 +68,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+  
+  /* show configuration fields */
+  #define pci_config_attr(field, format_string)				\
+-@@ -1533,12 +1535,32 @@ static const struct attribute_group pci_
++@@ -1551,12 +1553,32 @@ static const struct attribute_group pci_
+  	.is_visible = resource_resize_is_visible,
+  };
+  
+@@ -102,7 +102,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+  }
+  
+  /**
+-@@ -1559,21 +1581,23 @@ static int __init pci_sysfs_init(void)
++@@ -1577,21 +1599,23 @@ static int __init pci_sysfs_init(void)
+  {
+  	struct pci_dev *pdev = NULL;
+  	struct pci_bus *pbus = NULL;
+diff --git a/target/linux/generic/pending-6.12/920-mangle_bootargs.patch b/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
+index d3b92ba65c..3bf2fce4fb 100644
+--- a/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
++++ b/target/linux/generic/pending-6.12/920-mangle_bootargs.patch
+@@ -31,7 +31,7 @@ Signed-off-by: Imre Kaloz <kaloz@openwrt.org>
+  	help
+ --- a/init/main.c
+ +++ b/init/main.c
+-@@ -621,6 +621,29 @@ static inline void setup_nr_cpu_ids(void
++@@ -633,6 +633,29 @@ static inline void setup_nr_cpu_ids(void
+  static inline void smp_prepare_cpus(unsigned int maxcpus) { }
+  #endif
+  
+@@ -61,7 +61,7 @@ Signed-off-by: Imre Kaloz <kaloz@openwrt.org>
+  /*
+   * We need to store the untouched command line for future reference.
+   * We also need to store the touched command line since the parameter
+-@@ -927,6 +950,7 @@ void start_kernel(void)
++@@ -939,6 +962,7 @@ void start_kernel(void)
+  	jump_label_init();
+  	static_call_init();
+  	early_security_init();
+diff --git a/target/linux/ipq806x/patches-6.12/902-ARM-decompressor-support-for-ATAGs-rootblock-parsing.patch b/target/linux/ipq806x/patches-6.12/902-ARM-decompressor-support-for-ATAGs-rootblock-parsing.patch
+index f12f88414d..f2fb62baa1 100644
+--- a/target/linux/ipq806x/patches-6.12/902-ARM-decompressor-support-for-ATAGs-rootblock-parsing.patch
++++ b/target/linux/ipq806x/patches-6.12/902-ARM-decompressor-support-for-ATAGs-rootblock-parsing.patch
+@@ -177,7 +177,7 @@ Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+  #include <linux/percpu.h>
+  #include <linux/kmod.h>
+  #include <linux/kprobes.h>
+-@@ -961,6 +962,17 @@ void start_kernel(void)
++@@ -973,6 +974,17 @@ void start_kernel(void)
+  
+  	pr_notice("Kernel command line: %s\n", saved_command_line);
+  	/* parameters may set static keys */
+diff --git a/target/linux/mvebu/patches-6.12/300-mvebu-Mangle-bootloader-s-kernel-arguments.patch b/target/linux/mvebu/patches-6.12/300-mvebu-Mangle-bootloader-s-kernel-arguments.patch
+index 2d01b48f69..b0a9a31232 100644
+--- a/target/linux/mvebu/patches-6.12/300-mvebu-Mangle-bootloader-s-kernel-arguments.patch
++++ b/target/linux/mvebu/patches-6.12/300-mvebu-Mangle-bootloader-s-kernel-arguments.patch
+@@ -258,7 +258,7 @@ Signed-off-by: Michael Gray <michael.gray@lantisproject.com>
+  static int kernel_init(void *);
+  
+  /*
+-@@ -960,6 +964,18 @@ void start_kernel(void)
++@@ -972,6 +976,18 @@ void start_kernel(void)
+  	boot_cpu_hotplug_init();
+  
+  	pr_notice("Kernel command line: %s\n", saved_command_line);
 -- 
 2.51.0
 
