@@ -667,7 +667,7 @@ index 025f59067d..e142500660 100644
 -LINUX_VERSION-6.12 = .53
 -LINUX_KERNEL_HASH-6.12.53 = 663507accae673afcf4e210b4ae8d4352e61d926202e5da3f04bf71ca1d2c0b5
 +LINUX_VERSION-6.12 = .54
-+LINUX_KERNEL_HASH-6.12.54 = 6d38c38d2a287a2313d193a91875837189ac94e7a25ed1f97b17ba591f4e994c
++LINUX_KERNEL_HASH-6.12.54 = 1b0dcd3390efeec44e528748609bafcf36eae895bb68c8f62ac5e5940943de62
 diff --git a/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch b/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch
 index edb15e9d0a..e5f54d7214 100644
 --- a/target/linux/generic/pending-6.12/812-PCI-sysfs-enforce-single-creation-of-sysfs-entry-for.patch
