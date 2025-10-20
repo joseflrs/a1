@@ -637,28 +637,6 @@ index 0e31e290e7..7ad80a032c 100644
   
   static void __exit media_devnode_exit(void)
   {
-diff --git a/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch b/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
-index 5db35ac9a5..405c8efcee 100644
---- a/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
-+++ b/target/linux/generic/hack-6.12/610-net-page_pool-try-to-free-deferred-skbs-while-waitin.patch
-@@ -16,7 +16,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- 
- --- a/net/core/page_pool.c
- +++ b/net/core/page_pool.c
--@@ -1124,7 +1124,7 @@ static void page_pool_release_retry(stru
-+@@ -1154,7 +1154,7 @@ static void page_pool_release_retry(stru
-  	struct delayed_work *dwq = to_delayed_work(wq);
-  	struct page_pool *pool = container_of(dwq, typeof(*pool), release_dw);
-  	void *netdev;
-@@ -25,7 +25,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  
-  	inflight = page_pool_release(pool);
-  	/* In rare cases, a driver bug may cause inflight to go negative.
--@@ -1136,6 +1136,17 @@ static void page_pool_release_retry(stru
-+@@ -1166,6 +1166,17 @@ static void page_pool_release_retry(stru
-  	if (inflight <= 0)
-  		return;
-  
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
 index 025f59067d..e142500660 100644
 --- a/target/linux/generic/kernel-6.12
