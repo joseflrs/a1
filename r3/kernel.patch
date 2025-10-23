@@ -573,7 +573,7 @@ index 1b89660b42..a9642e95d0 100644
 -LINUX_VERSION-6.12 = .54
 -LINUX_KERNEL_HASH-6.12.54 = 1b0dcd3390efeec44e528748609bafcf36eae895bb68c8f62ac5e5940943de62
 +LINUX_VERSION-6.12 = .55
-+LINUX_KERNEL_HASH-6.12.55 = 66428a88000ffd8d9f0545e38ab7ced13dde511b8cb5b84617dd74d5adf4051d
++LINUX_KERNEL_HASH-6.12.55 = 328f8f4608a653063a5fd82d29b17163faab2825fa419fa85b961740a342fb9f
 diff --git a/target/linux/generic/pending-6.12/666-Add-support-for-MAP-E-FMRs-mesh-mode.patch b/target/linux/generic/pending-6.12/666-Add-support-for-MAP-E-FMRs-mesh-mode.patch
 index 8c7fab9462..951e7f7e24 100644
 --- a/target/linux/generic/pending-6.12/666-Add-support-for-MAP-E-FMRs-mesh-mode.patch
