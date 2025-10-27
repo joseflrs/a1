@@ -773,6 +773,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asiarf_ap7986-003 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_totolink_x6000r is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_buffalo_wsr-6000ax8 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_konka_komi-a31 is not set
 CONFIG_PACKAGE_losetup=y
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
