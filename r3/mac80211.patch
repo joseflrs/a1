@@ -1,6 +1,6 @@
-From 4c8ad06d76057d56bdde60d04fdb06e218428fb1 Mon Sep 17 00:00:00 2001
+From a5852eaaa2e16d45f987b449ecf515e89b2fd07a Mon Sep 17 00:00:00 2001
 From: i l <il@il.com>
-Date: Sun, 19 Oct 2025 18:59:10 -0400
+Date: Tue, 4 Nov 2025 17:20:35 -0400
 Subject: [PATCH] mac80211: update to version 6.16.12
 
 ---
@@ -11,9 +11,10 @@ Subject: [PATCH] mac80211: update to version 6.16.12
  ...h10k-Try-to-get-mac-address-from-dts.patch |   2 +-
  ...k-always-use-mac80211-loss-detection.patch |   2 +-
  .../991-ath10k-support-flush_sta-method.patch |   4 +-
+ ...k_mac_op_flush_sta-to-properly-flush.patch |   4 +-
  ...apped-ce-accessing-issue-on-64bit-OS.patch |   4 +-
  ...h11k-add-multipd-support-for-QCN6122.patch |   2 +-
- ...alized_flag_for_deinit-ed_srng_lists.patch |  92 ----
+ ...alized_flag_for_deinit-ed_srng_lists.patch |   8 +-
  ...ic_in_ath11k_mac_op_set_bitrate_mask.patch |  67 ---
  ...h11k-fix_dest_ring-buffer_corruption.patch |  83 ----
  ...1k-fix_source_ring-buffer_corruption.patch |  56 ---
@@ -62,8 +63,7 @@ Subject: [PATCH] mac80211: update to version 6.16.12
  ...llow-scanning-while-on-radar-channel.patch |  14 +-
  ...out-part-of-ieee80211_calc_expected_.patch |   2 +-
  ...d-MLO-support-to-ieee80211_probe_cli.patch |   6 +-
- 58 files changed, 1218 insertions(+), 901 deletions(-)
- delete mode 100644 package/kernel/mac80211/patches/ath11k/940-ath11k-clear_initialized_flag_for_deinit-ed_srng_lists.patch
+ 59 files changed, 1224 insertions(+), 815 deletions(-)
  delete mode 100644 package/kernel/mac80211/patches/ath11k/941-ath11k-fix_sleeping-in-atomic_in_ath11k_mac_op_set_bitrate_mask.patch
  delete mode 100644 package/kernel/mac80211/patches/ath11k/942-ath11k-fix_dest_ring-buffer_corruption.patch
  delete mode 100644 package/kernel/mac80211/patches/ath11k/943-ath11k-fix_source_ring-buffer_corruption.patch
@@ -208,6 +208,28 @@ index a0f6eed7cd..9e6616ee2e 100644
   	if (!ar->hw_params.hw_ops->set_coverage_class)
   		ar->ops->set_coverage_class = NULL;
   
+diff --git a/package/kernel/mac80211/patches/ath11k/453-ath11k-add-ath11k_mac_op_flush_sta-to-properly-flush.patch b/package/kernel/mac80211/patches/ath11k/453-ath11k-add-ath11k_mac_op_flush_sta-to-properly-flush.patch
+index baba7ef3c6..7a5c654806 100644
+--- a/package/kernel/mac80211/patches/ath11k/453-ath11k-add-ath11k_mac_op_flush_sta-to-properly-flush.patch
++++ b/package/kernel/mac80211/patches/ath11k/453-ath11k-add-ath11k_mac_op_flush_sta-to-properly-flush.patch
+@@ -31,7 +31,7 @@ Signed-off-by: Florian Maurer <f.maurer@outlook.de>
+ 
+ --- a/drivers/net/wireless/ath/ath11k/mac.c
+ +++ b/drivers/net/wireless/ath/ath11k/mac.c
+-@@ -8248,6 +8248,23 @@ static void ath11k_mac_op_flush(struct i
++@@ -8326,6 +8326,23 @@ static void ath11k_mac_op_flush(struct i
+  	ath11k_mac_flush_tx_complete(ar);
+  }
+  
+@@ -55,7 +55,7 @@ Signed-off-by: Florian Maurer <f.maurer@outlook.de>
+  static bool
+  ath11k_mac_has_single_legacy_rate(struct ath11k *ar,
+  				  enum nl80211_band band,
+-@@ -9823,6 +9840,7 @@ static const struct ieee80211_ops ath11k
++@@ -9916,6 +9933,7 @@ static const struct ieee80211_ops ath11k
+  	.set_bitrate_mask		= ath11k_mac_op_set_bitrate_mask,
+  	.get_survey			= ath11k_mac_op_get_survey,
+  	.flush				= ath11k_mac_op_flush,
 diff --git a/package/kernel/mac80211/patches/ath11k/910-ath11k-fix-remapped-ce-accessing-issue-on-64bit-OS.patch b/package/kernel/mac80211/patches/ath11k/910-ath11k-fix-remapped-ce-accessing-issue-on-64bit-OS.patch
 index 5878fa08df..bff4e1b8a5 100644
 --- a/package/kernel/mac80211/patches/ath11k/910-ath11k-fix-remapped-ce-accessing-issue-on-64bit-OS.patch
@@ -244,106 +266,31 @@ index e67e4a7e8b..1a6b77131e 100644
   	wait_queue_head_t peer_mapping_wq;
   	u8 mac_addr[ETH_ALEN];
 diff --git a/package/kernel/mac80211/patches/ath11k/940-ath11k-clear_initialized_flag_for_deinit-ed_srng_lists.patch b/package/kernel/mac80211/patches/ath11k/940-ath11k-clear_initialized_flag_for_deinit-ed_srng_lists.patch
-deleted file mode 100644
-index e092e9d2aa..0000000000
+index e092e9d2aa..cb82decba9 100644
 --- a/package/kernel/mac80211/patches/ath11k/940-ath11k-clear_initialized_flag_for_deinit-ed_srng_lists.patch
-+++ /dev/null
-@@ -1,92 +0,0 @@
--From 16872194c80f2724472fc207991712895ac8a230 Mon Sep 17 00:00:00 2001
--From: Sergey Senozhatsky <senozhatsky@chromium.org>
--Date: Thu, 12 Jun 2025 17:45:06 +0900
--Subject: wifi: ath11k: clear initialized flag for deinit-ed srng lists
--
--[ Upstream commit a5b46aa7cf5f05c213316a018e49a8e086efd98e ]
--
--In a number of cases we see kernel panics on resume due
--to ath11k kernel page fault, which happens under the
--following circumstances:
--
--1) First ath11k_hal_dump_srng_stats() call
--
-- Last interrupt received for each group:
-- ath11k_pci 0000:01:00.0: group_id 0 22511ms before
-- ath11k_pci 0000:01:00.0: group_id 1 14440788ms before
-- [..]
-- ath11k_pci 0000:01:00.0: failed to receive control response completion, polling..
-- ath11k_pci 0000:01:00.0: Service connect timeout
-- ath11k_pci 0000:01:00.0: failed to connect to HTT: -110
-- ath11k_pci 0000:01:00.0: failed to start core: -110
-- ath11k_pci 0000:01:00.0: firmware crashed: MHI_CB_EE_RDDM
-- ath11k_pci 0000:01:00.0: already resetting count 2
-- ath11k_pci 0000:01:00.0: failed to wait wlan mode request (mode 4): -110
-- ath11k_pci 0000:01:00.0: qmi failed to send wlan mode off: -110
-- ath11k_pci 0000:01:00.0: failed to reconfigure driver on crash recovery
-- [..]
--
--2) At this point reconfiguration fails (we have 2 resets) and
--  ath11k_core_reconfigure_on_crash() calls ath11k_hal_srng_deinit()
--  which destroys srng lists.  However, it does not reset per-list
--  ->initialized flag.
--
--3) Second ath11k_hal_dump_srng_stats() call sees stale ->initialized
--  flag and attempts to dump srng stats:
--
-- Last interrupt received for each group:
-- ath11k_pci 0000:01:00.0: group_id 0 66785ms before
-- ath11k_pci 0000:01:00.0: group_id 1 14485062ms before
-- ath11k_pci 0000:01:00.0: group_id 2 14485062ms before
-- ath11k_pci 0000:01:00.0: group_id 3 14485062ms before
-- ath11k_pci 0000:01:00.0: group_id 4 14780845ms before
-- ath11k_pci 0000:01:00.0: group_id 5 14780845ms before
-- ath11k_pci 0000:01:00.0: group_id 6 14485062ms before
-- ath11k_pci 0000:01:00.0: group_id 7 66814ms before
-- ath11k_pci 0000:01:00.0: group_id 8 68997ms before
-- ath11k_pci 0000:01:00.0: group_id 9 67588ms before
-- ath11k_pci 0000:01:00.0: group_id 10 69511ms before
-- BUG: unable to handle page fault for address: ffffa007404eb010
-- #PF: supervisor read access in kernel mode
-- #PF: error_code(0x0000) - not-present page
-- PGD 100000067 P4D 100000067 PUD 10022d067 PMD 100b01067 PTE 0
-- Oops: 0000 [#1] PREEMPT SMP NOPTI
-- RIP: 0010:ath11k_hal_dump_srng_stats+0x2b4/0x3b0 [ath11k]
-- Call Trace:
-- <TASK>
-- ? __die_body+0xae/0xb0
-- ? page_fault_oops+0x381/0x3e0
-- ? exc_page_fault+0x69/0xa0
-- ? asm_exc_page_fault+0x22/0x30
-- ? ath11k_hal_dump_srng_stats+0x2b4/0x3b0 [ath11k (HASH:6cea 4)]
-- ath11k_qmi_driver_event_work+0xbd/0x1050 [ath11k (HASH:6cea 4)]
-- worker_thread+0x389/0x930
-- kthread+0x149/0x170
--
--Clear per-list ->initialized flag in ath11k_hal_srng_deinit().
--
--Signed-off-by: Sergey Senozhatsky <senozhatsky@chromium.org>
--Reviewed-by: Baochen Qiang <quic_bqiang@quicinc.com>
--Fixes: 5118935b1bc2 ("ath11k: dump SRNG stats during FW assert")
--Link: https://patch.msgid.link/20250612084551.702803-1-senozhatsky@chromium.org
--Signed-off-by: Jeff Johnson <jeff.johnson@oss.qualcomm.com>
--Signed-off-by: Sasha Levin <sashal@kernel.org>
-----
-- drivers/net/wireless/ath/ath11k/hal.c | 4 ++++
-- 1 file changed, 4 insertions(+)
--
--(limited to 'drivers/net/wireless/ath/ath11k')
--
----- a/drivers/net/wireless/ath/ath11k/hal.c
--+++ b/drivers/net/wireless/ath/ath11k/hal.c
++++ b/package/kernel/mac80211/patches/ath11k/940-ath11k-clear_initialized_flag_for_deinit-ed_srng_lists.patch
+@@ -79,8 +79,8 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
+ 
+ --- a/drivers/net/wireless/ath/ath11k/hal.c
+ +++ b/drivers/net/wireless/ath/ath11k/hal.c
 -@@ -1341,6 +1341,10 @@ EXPORT_SYMBOL(ath11k_hal_srng_init);
 - void ath11k_hal_srng_deinit(struct ath11k_base *ab)
-- {
-- 	struct ath11k_hal *hal = &ab->hal;
--+	int i;
--+
--+	for (i = 0; i < HAL_SRNG_RING_ID_MAX; i++)
--+		ab->hal.srng_list[i].initialized = 0;
-- 
++@@ -1206,6 +1206,10 @@ void ath11k_hal_srng_get_shadow_config(s
++ 				       u32 **cfg, u32 *len)
+  {
+  	struct ath11k_hal *hal = &ab->hal;
+ +	int i;
+@@ -88,5 +88,5 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
+ +	for (i = 0; i < HAL_SRNG_RING_ID_MAX; i++)
+ +		ab->hal.srng_list[i].initialized = 0;
+  
 - 	ath11k_hal_unregister_srng_key(ab);
 - 	ath11k_hal_free_cont_rdp(ab);
++ 	*len = hal->num_shadow_reg_configured;
++ 	*cfg = hal->shadow_reg_addr;
 diff --git a/package/kernel/mac80211/patches/ath11k/941-ath11k-fix_sleeping-in-atomic_in_ath11k_mac_op_set_bitrate_mask.patch b/package/kernel/mac80211/patches/ath11k/941-ath11k-fix_sleeping-in-atomic_in_ath11k_mac_op_set_bitrate_mask.patch
 deleted file mode 100644
-index 8340216106..0000000000
+index 2fa7123b6d..0000000000
 --- a/package/kernel/mac80211/patches/ath11k/941-ath11k-fix_sleeping-in-atomic_in_ath11k_mac_op_set_bitrate_mask.patch
 +++ /dev/null
 @@ -1,67 +0,0 @@
@@ -388,7 +335,7 @@ index 8340216106..0000000000
 -
 ---- a/drivers/net/wireless/ath/ath11k/mac.c
 -+++ b/drivers/net/wireless/ath/ath11k/mac.c
--@@ -8740,9 +8740,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+-@@ -8757,9 +8757,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
 - 				    arvif->vdev_id, ret);
 - 			return ret;
 - 		}
@@ -401,7 +348,7 @@ index 8340216106..0000000000
 - 	} else if (ath11k_mac_bitrate_mask_get_single_nss(ar, arvif, band, mask,
 - 							  &single_nss)) {
 - 		rate = WMI_FIXED_RATE_NONE;
--@@ -8809,9 +8809,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
+-@@ -8826,9 +8826,9 @@ ath11k_mac_op_set_bitrate_mask(struct ie
 - 		}
 - 
 - 		mutex_lock(&ar->conf_mutex);
@@ -634,7 +581,7 @@ index e0e5348392..0000000000
 - 					   (unsigned long)ab->mem,
 diff --git a/package/kernel/mac80211/patches/ath11k/945-ath11k-fix_group_data_packet_drops_during_rekey.patch b/package/kernel/mac80211/patches/ath11k/945-ath11k-fix_group_data_packet_drops_during_rekey.patch
 deleted file mode 100644
-index b7b66ef5da..0000000000
+index 8e7e8b9b00..0000000000
 --- a/package/kernel/mac80211/patches/ath11k/945-ath11k-fix_group_data_packet_drops_during_rekey.patch
 +++ /dev/null
 @@ -1,237 +0,0 @@
@@ -853,7 +800,7 @@ index b7b66ef5da..0000000000
 - }
 - 
 - static u32 ath11k_mac_ieee80211_sta_bw_to_wmi(struct ath11k *ar,
--@@ -9536,6 +9614,21 @@ static int ath11k_mac_station_add(struct
+-@@ -9553,6 +9631,21 @@ static int ath11k_mac_station_add(struct
 - 		goto exit;
 - 	}
 - 
