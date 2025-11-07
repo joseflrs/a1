@@ -11,14 +11,14 @@ jobs:
                 sudo apt update
                 sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
             - name: Setup Go
-              uses: actions/setup-go@v5
+              uses: actions/setup-go@main
               with:
-                go-version: '1.24.4'
+                go-version: '1.25.4'
                 cache: false
             - name: Go Version
               run: go version
             - name: checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@main
             - name: Build
               run: |
                 git clone https://github.com/openwrt/openwrt.git
@@ -39,7 +39,7 @@ jobs:
                 git config --global user.name 'M Z'
                 cd openwrt
                 git apply mac80211.patch
-                git apply kernel.patch
+                # git apply kernel.patch
                 git apply ms.patch
                 git apply 44v2.patch
                 git apply pm.patch
@@ -57,9 +57,11 @@ jobs:
                 wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
                 wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
                 wget https://github.com/mj22226/packages/commit/41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
+                wget https://github.com/mj22226/packages/commit/002334b3e5c8eb6969141aa243a10a835fee1d18.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
+                git apply 002334b3e5c8eb6969141aa243a10a835fee1d18.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -89,14 +91,14 @@ jobs:
                 rm -rf bin/targets/rockchip/armv8/packages
                 echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
             - name: Delete tag
-              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              uses: ClementTsang/delete-tag-and-release@main
               with:
                 delete_release: true
                 tag_name: r6-12v2
               env:
                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Create release
-              uses: ncipollo/release-action@v1.14.0
+              uses: ncipollo/release-action@main
               with:
                 allowUpdates: true
                 name: R6 v6.12v2 Firmware Images ${{ env.D }}
@@ -105,3 +107,4 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
