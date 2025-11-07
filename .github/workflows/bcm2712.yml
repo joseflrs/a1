@@ -38,6 +38,7 @@ jobs:
                 wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2712/config.buildinfo -O .config
                 echo "CONFIG_BUILD_LOG=y" >> .config
                 echo "CONFIG_PACKAGE_luci=y" >> .config
+                echo "CONFIG_PACKAGE_tini=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.23.5/arm64/bin"' >> .config
                 make defconfig
