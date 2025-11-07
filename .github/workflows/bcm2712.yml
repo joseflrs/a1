@@ -30,6 +30,7 @@ jobs:
                 cd  feeds/packages
                 wget https://github.com/mj22226/packages/commit/002334b3e5c8eb6969141aa243a10a835fee1d18.patch
                 git apply 002334b3e5c8eb6969141aa243a10a835fee1d18.patch
+                cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/bcm2712-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
