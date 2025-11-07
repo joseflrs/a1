@@ -169,70 +169,10 @@ index c1aed9b3dc..2384dfeca0 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .55
--LINUX_KERNEL_HASH-6.12.55 = 328f8f4608a653063a5fd82d29b17163faab2825fa419fa85b961740a342fb9f
-+LINUX_VERSION-6.12 = .57
-+LINUX_KERNEL_HASH-6.12.57 = 165ca1c37c4607b90e731996b7c1e3311285167d13deeedf08f3f1f0b9d2541a
-diff --git a/target/linux/mediatek/patches-6.12/810-tty-serial-8250_mtk-enable-baud-clock.patch b/target/linux/mediatek/patches-6.12/810-tty-serial-8250_mtk-enable-baud-clock.patch
-deleted file mode 100644
-index 70a457270d2739..00000000000000
---- a/target/linux/mediatek/patches-6.12/810-tty-serial-8250_mtk-enable-baud-clock.patch
-+++ /dev/null
-@@ -1,54 +0,0 @@
--From e924479ebc284f591e90049c03aeef6da7786318 Mon Sep 17 00:00:00 2001
--From: Daniel Golle <daniel@makrotopia.org>
--Date: Mon, 15 Sep 2025 12:05:06 +0100
--Subject: [PATCH] tty: serial: 8250_mtk: enable baud clock
--
--Some MediaTek SoCs got a gated UART baud clock, which currently gets
--disabled as the clk subsystem believes it would be unused. This results in
--the uart freezing right after "clk: Disabling unused clocks" on those
--platforms.
--
--To fix this request the baud clock to be prepared and enabled during probe,
--and also prepare and enable the baud clock when resume the port while
--disabling and unpreparing it when suspending.
--
--Fixes: e32a83c70cf9 ("serial: 8250-mtk: modify mtk uart power and clock management")
--Signed-off-by: Daniel Golle <daniel@makrotopia.org>
-----
-- drivers/tty/serial/8250/8250_mtk.c | 6 ++++--
-- 1 file changed, 4 insertions(+), 2 deletions(-)
--
----- a/drivers/tty/serial/8250/8250_mtk.c
--+++ b/drivers/tty/serial/8250/8250_mtk.c
--@@ -435,6 +435,7 @@ static int __maybe_unused mtk8250_runtim
-- 	while
-- 		(serial_in(up, MTK_UART_DEBUG0));
-- 
--+	clk_disable_unprepare(data->uart_clk);
-- 	clk_disable_unprepare(data->bus_clk);
-- 
-- 	return 0;
--@@ -445,6 +446,7 @@ static int __maybe_unused mtk8250_runtim
-- 	struct mtk8250_data *data = dev_get_drvdata(dev);
-- 
-- 	clk_prepare_enable(data->bus_clk);
--+	clk_prepare_enable(data->uart_clk);
-- 
-- 	return 0;
-- }
--@@ -475,13 +477,13 @@ static int mtk8250_probe_of(struct platf
-- 	int dmacnt;
-- #endif
-- 
---	data->uart_clk = devm_clk_get(&pdev->dev, "baud");
--+	data->uart_clk = devm_clk_get_enabled(&pdev->dev, "baud");
-- 	if (IS_ERR(data->uart_clk)) {
-- 		/*
-- 		 * For compatibility with older device trees try unnamed
-- 		 * clk when no baud clk can be found.
-- 		 */
---		data->uart_clk = devm_clk_get(&pdev->dev, NULL);
--+		data->uart_clk = devm_clk_get_enabled(&pdev->dev, NULL);
-- 		if (IS_ERR(data->uart_clk)) {
-- 			dev_warn(&pdev->dev, "Can't get uart clock\n");
-- 			return PTR_ERR(data->uart_clk);
+-LINUX_VERSION-6.12 = .57
+-LINUX_KERNEL_HASH-6.12.57 = 165ca1c37c4607b90e731996b7c1e3311285167d13deeedf08f3f1f0b9d2541a
++LINUX_VERSION-6.12 = .58
++LINUX_KERNEL_HASH-6.12.58 = a0a0577142410608c66a4d0d70f3043f37a64b225e2623aa0f9e15a7ef51785e
 -- 
 2.51.0
 
