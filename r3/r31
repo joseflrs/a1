@@ -778,6 +778,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_acer_predator-w6x-stock is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bananapi_bpi-r4-lite is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mediatek_mt7987a-rfb is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_be450 is not set
 CONFIG_PACKAGE_losetup=y
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
