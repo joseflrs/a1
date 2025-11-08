@@ -3,9 +3,6 @@ From: i l <il@il.com>
 Date: Tue, 4 Nov 2025 19:41:35 -0400
 Subject: [PATCH 01/14] kernel
 
----
-
-
 diff --git a/target/linux/generic/backport-6.12/612-01-v6.17-net-dsa-tag_brcm-legacy-reorganize-functions.patch b/target/linux/generic/backport-6.12/612-01-v6.17-net-dsa-tag_brcm-legacy-reorganize-functions.patch
 deleted file mode 100644
 index 23d4929eaa..0000000000
