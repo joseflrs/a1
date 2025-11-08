@@ -58,10 +58,12 @@ jobs:
                 wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
                 wget https://github.com/mj22226/packages/commit/41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
                 wget https://github.com/mj22226/packages/commit/002334b3e5c8eb6969141aa243a10a835fee1d18.patch
+                wget https://github.com/mj22226/packages/commit/6aeb43eb9b9af76da29e4d8e2563975221858f79.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
                 git apply 002334b3e5c8eb6969141aa243a10a835fee1d18.patch
+                git apply 6aeb43eb9b9af76da29e4d8e2563975221858f79.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -107,4 +109,5 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
