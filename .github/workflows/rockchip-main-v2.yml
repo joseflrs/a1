@@ -24,6 +24,8 @@ jobs:
                 cd openwrt
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
                 wget https://mirror-03.infra.openwrt.org/snapshots/targets/rockchip/armv8/config.buildinfo -O .config
                 echo "CONFIG_PACKAGE_luci=y" >> .config
                 echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
@@ -60,5 +62,6 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
