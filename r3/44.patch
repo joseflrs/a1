@@ -279,8 +279,8 @@ index 3d6367a5b0..e469cc704d 100644
 --- a/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity
 +++ b/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity
 @@ -72,5 +72,9 @@ radxa,rock-5c)
- 	set_interface_core 10 "eth1"
- 	set_interface_core 20 "eth2"
+ 	set_interface_core 10 "lan"
+ 	set_interface_core 20 "wan"
  	;;
 +xunlong,orangepi-5-plus)
 +	set_interface_core 20 "eth0"
