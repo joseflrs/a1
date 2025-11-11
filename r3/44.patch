@@ -275,16 +275,23 @@ index e9ec50e4d1..e0fa08fcd3 100644
  	esac
  }
 diff --git a/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity b/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity
-index 3d6367a5b0..e469cc704d 100644
+index 86fd721c81..029bdcfdd8 100644
 --- a/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity
 +++ b/target/linux/rockchip/armv8/base-files/etc/hotplug.d/net/40-net-smp-affinity
-@@ -72,5 +72,9 @@ radxa,rock-5c)
+@@ -77,5 +77,16 @@ radxa,e52c)
  	set_interface_core 10 "lan"
  	set_interface_core 20 "wan"
  	;;
 +xunlong,orangepi-5-plus)
 +	set_interface_core 20 "eth0"
 +	set_interface_core 40 "eth1"
++	;;
++friendlyarm,nanopi-m4|\
++hugsun,x99|\
++radxa,rockpi4a)
++	set_interface_core 10 "eth0"
++	set_interface_core 20 "eth1" "xhci-hcd:usb[0-9]+"
++	set_interface_core 40 "eth2" "xhci-hcd:usb[0-9]+"
 +	;;
  esac
  
