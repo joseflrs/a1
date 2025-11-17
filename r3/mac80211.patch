@@ -1,7 +1,7 @@
-From a5852eaaa2e16d45f987b449ecf515e89b2fd07a Mon Sep 17 00:00:00 2001
+From 35a8dd980e5ae9af1244dea9e0abc8c92ebc1a49 Mon Sep 17 00:00:00 2001
 From: i l <il@il.com>
-Date: Tue, 4 Nov 2025 17:20:35 -0400
-Subject: [PATCH] mac80211: update to version 6.16.12
+Date: Sat, 18 Nov 2023 18:59:46 -0300
+Subject: [PATCH 09/11] mac80211: update
 
 ---
  package/kernel/mac80211/Makefile              |   6 +-
@@ -34,6 +34,7 @@ Subject: [PATCH] mac80211: update to version 6.16.12
  ...ed-NSS-bandwidth-support-for-160-MHz.patch |   8 +-
  ...fer-a-ccode-from-OTP-over-nvram-file.patch |   2 +-
  ...mfmac-disable-dump_survey-on-bcm2835.patch |   6 +-
+ ...DS-Params-IE-into-beacons-if-missing.patch |   4 +-
  ...700-mwl8k-missing-pci-id-for-WNR854T.patch |   2 +-
  .../801-libertas-configure-sysfs-links.patch  |   2 +-
  .../802-libertas-set-wireless-macaddr.patch   |   2 +-
@@ -63,7 +64,7 @@ Subject: [PATCH] mac80211: update to version 6.16.12
  ...llow-scanning-while-on-radar-channel.patch |  14 +-
  ...out-part-of-ieee80211_calc_expected_.patch |   2 +-
  ...d-MLO-support-to-ieee80211_probe_cli.patch |   6 +-
- 59 files changed, 1224 insertions(+), 815 deletions(-)
+ 60 files changed, 1226 insertions(+), 817 deletions(-)
  delete mode 100644 package/kernel/mac80211/patches/ath11k/941-ath11k-fix_sleeping-in-atomic_in_ath11k_mac_op_set_bitrate_mask.patch
  delete mode 100644 package/kernel/mac80211/patches/ath11k/942-ath11k-fix_dest_ring-buffer_corruption.patch
  delete mode 100644 package/kernel/mac80211/patches/ath11k/943-ath11k-fix_source_ring-buffer_corruption.patch
@@ -1659,15 +1660,37 @@ index 8bd63cd2d5..79d354f1ae 100644
   	if (brcmf_feat_is_enabled(ifp, BRCMF_FEAT_WOWL_GTK))
   		ops->set_rekey_data = brcmf_cfg80211_set_rekey_data;
   #endif
+diff --git a/package/kernel/mac80211/patches/mwl/001-mwl8k-inject-DS-Params-IE-into-beacons-if-missing.patch b/package/kernel/mac80211/patches/mwl/001-mwl8k-inject-DS-Params-IE-into-beacons-if-missing.patch
+index ca66c9c302..7e8ad23a49 100644
+--- a/package/kernel/mac80211/patches/mwl/001-mwl8k-inject-DS-Params-IE-into-beacons-if-missing.patch
++++ b/package/kernel/mac80211/patches/mwl/001-mwl8k-inject-DS-Params-IE-into-beacons-if-missing.patch
+@@ -33,7 +33,7 @@ Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+ 
+ --- a/drivers/net/wireless/marvell/mwl8k.c
+ +++ b/drivers/net/wireless/marvell/mwl8k.c
+-@@ -2962,6 +2962,42 @@ mwl8k_cmd_rf_antenna(struct ieee80211_hw
++@@ -2966,6 +2966,42 @@ mwl8k_cmd_rf_antenna(struct ieee80211_hw
+  /*
+   * CMD_SET_BEACON.
+   */
+@@ -76,7 +76,7 @@ Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+  struct mwl8k_cmd_set_beacon {
+  	struct mwl8k_cmd_pkt_hdr header;
+  	__le16 beacon_len;
+-@@ -2971,17 +3007,32 @@ struct mwl8k_cmd_set_beacon {
++@@ -2975,17 +3011,32 @@ struct mwl8k_cmd_set_beacon {
+  static int mwl8k_cmd_set_beacon(struct ieee80211_hw *hw,
+  				struct ieee80211_vif *vif, u8 *beacon, int len)
+  {
 diff --git a/package/kernel/mac80211/patches/mwl/700-mwl8k-missing-pci-id-for-WNR854T.patch b/package/kernel/mac80211/patches/mwl/700-mwl8k-missing-pci-id-for-WNR854T.patch
-index cfb7dcf738..7baab80d24 100644
+index 3998afcfbc..9fe2628ee2 100644
 --- a/package/kernel/mac80211/patches/mwl/700-mwl8k-missing-pci-id-for-WNR854T.patch
 +++ b/package/kernel/mac80211/patches/mwl/700-mwl8k-missing-pci-id-for-WNR854T.patch
 @@ -1,6 +1,6 @@
  --- a/drivers/net/wireless/marvell/mwl8k.c
  +++ b/drivers/net/wireless/marvell/mwl8k.c
--@@ -5712,6 +5712,7 @@ MODULE_FIRMWARE("mwl8k/fmimage_8366.fw")
-+@@ -5716,6 +5716,7 @@ MODULE_FIRMWARE("mwl8k/fmimage_8366.fw")
+-@@ -5763,6 +5763,7 @@ MODULE_FIRMWARE("mwl8k/fmimage_8366.fw")
++@@ -5767,6 +5767,7 @@ MODULE_FIRMWARE("mwl8k/fmimage_8366.fw")
   MODULE_FIRMWARE(MWL8K_8366_AP_FW(MWL8K_8366_AP_FW_API));
   
   static const struct pci_device_id mwl8k_pci_id_table[] = {
@@ -1696,14 +1719,14 @@ index 97ddd66b32..9aa4d05473 100644
   	wdev->wiphy->reg_notifier = lbs_reg_notifier;
   
 diff --git a/package/kernel/mac80211/patches/mwl/940-mwl8k_init_devices_synchronously.patch b/package/kernel/mac80211/patches/mwl/940-mwl8k_init_devices_synchronously.patch
-index d09cfac448..d021b1e40b 100644
+index a229be9961..e6a3a7a210 100644
 --- a/package/kernel/mac80211/patches/mwl/940-mwl8k_init_devices_synchronously.patch
 +++ b/package/kernel/mac80211/patches/mwl/940-mwl8k_init_devices_synchronously.patch
 @@ -1,6 +1,6 @@
  --- a/drivers/net/wireless/marvell/mwl8k.c
  +++ b/drivers/net/wireless/marvell/mwl8k.c
--@@ -6298,6 +6298,8 @@ static int mwl8k_probe(struct pci_dev *p
-+@@ -6302,6 +6302,8 @@ static int mwl8k_probe(struct pci_dev *p
+-@@ -6349,6 +6349,8 @@ static int mwl8k_probe(struct pci_dev *p
++@@ -6353,6 +6353,8 @@ static int mwl8k_probe(struct pci_dev *p
   
   	priv->running_bsses = 0;
   
@@ -1711,8 +1734,8 @@ index d09cfac448..d021b1e40b 100644
   	return rc;
   
   err_stop_firmware:
--@@ -6331,8 +6333,6 @@ static void mwl8k_remove(struct pci_dev
-+@@ -6335,8 +6337,6 @@ static void mwl8k_remove(struct pci_dev
+-@@ -6382,8 +6384,6 @@ static void mwl8k_remove(struct pci_dev
++@@ -6386,8 +6388,6 @@ static void mwl8k_remove(struct pci_dev
   		return;
   	priv = hw->priv;
   
