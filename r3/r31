@@ -801,3 +801,5 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_ex5601-t0-ubootmod is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_ex5700-telenor is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_nwa50ax-pro is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_imou_hx21 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax3000se is not set
