@@ -33,8 +33,8 @@ jobs:
                 cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
-                wget https://github.com/mj22226/openwrt-arm64/releases/download/bcm2712-20.1.8/llvm-bpf-20.1.8.Linux-aarch64.tar.zst
-                tar -xvf llvm-bpf-20.1.8.Linux-aarch64.tar.zst
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/bcm2712-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 wget https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2712/config.buildinfo -O .config
                 echo "CONFIG_BUILD_LOG=y" >> .config
                 echo "CONFIG_PACKAGE_luci=y" >> .config
