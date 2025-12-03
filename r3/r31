@@ -805,3 +805,6 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_iptime_ax3000se is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netgear_eax17 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wn536ax6-a is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_tuf-ax4200q
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mercusys_mr85x
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_widelantech_wap430x
