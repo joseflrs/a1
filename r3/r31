@@ -811,3 +811,4 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_keenetic_kn-1812 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netcraze_nc-1812 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netis_nx30v2 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_kebidumei_ax3000-u22 is not set
