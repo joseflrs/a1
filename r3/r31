@@ -808,3 +808,6 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_tuf-ax4200q is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_mercusys_mr85x is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_widelantech_wap430x is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_keenetic_kn-1812 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netcraze_nc-1812 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_netis_nx30v2 is not set
