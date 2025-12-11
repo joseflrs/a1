@@ -1,4 +1,4 @@
-name: Build bcm2712 aarch64
+name: 4a
 on:
    workflow_dispatch:
 jobs:
