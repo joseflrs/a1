@@ -1,0 +1,57 @@
+name: Build bcm2712 aarch64
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Build Rock Pi 4a
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+            - name: Setup Go
+              uses: actions/setup-go@main
+              with:
+                go-version: '1.25.4'
+            - name: checkout
+              uses: actions/checkout@main
+            - name: Build
+              run: |
+                git clone https://github.com/openwrt/openwrt.git
+                cd openwrt
+                sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                cd  feeds/packages
+                cd -
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                wget https://downloads.openwrt.org/snapshots/targets/rockchip/armv8/config.buildinfo -O .config
+                echo "CONFIG_BUILD_LOG=y" >> .config
+                echo "CONFIG_PACKAGE_luci=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
+                make defconfig
+                make download -j32
+                make -j$(nproc) 'IGNORE_ERRORS=n m'
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@main
+              with:
+                delete_release: true
+                tag_name: rockpi4a
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@main
+              with:
+                allowUpdates: true
+                name: Rock Pi 4a Images ${{ env.D }}
+                tag: rockpi4a
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/rockchip/armv8/*
