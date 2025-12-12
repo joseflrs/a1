@@ -93,24 +93,6 @@ diff --git a/package/base-files/Makefile b/package/base-files/Makefile
 index 693d259ee4..4309b9c1e2 100644
 --- a/package/base-files/Makefile
 +++ b/package/base-files/Makefile
-@@ -87,7 +87,7 @@ define ImageConfigOptions
- 	echo 'pi_init_cmd=$(if $(CONFIG_TARGET_INIT_CMD),$(CONFIG_TARGET_INIT_CMD),"/sbin/init")' >>$(1)/lib/preinit/00_preinit.conf
- 	echo 'pi_init_suppress_stderr="$(CONFIG_TARGET_INIT_SUPPRESS_STDERR)"' >>$(1)/lib/preinit/00_preinit.conf
- 	echo 'pi_ifname=$(if $(CONFIG_TARGET_PREINIT_IFNAME),$(CONFIG_TARGET_PREINIT_IFNAME),"")' >>$(1)/lib/preinit/00_preinit.conf
--	echo 'pi_ip=$(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.1.1")' >>$(1)/lib/preinit/00_preinit.conf
-+	echo 'pi_ip=$(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.10.1")' >>$(1)/lib/preinit/00_preinit.conf
- 	echo 'pi_netmask=$(if $(CONFIG_TARGET_PREINIT_NETMASK),$(CONFIG_TARGET_PREINIT_NETMASK),"255.255.255.0")' >>$(1)/lib/preinit/00_preinit.conf
- 	echo 'pi_broadcast=$(if $(CONFIG_TARGET_PREINIT_BROADCAST),$(CONFIG_TARGET_PREINIT_BROADCAST),"192.168.1.255")' >>$(1)/lib/preinit/00_preinit.conf
- 	echo 'pi_preinit_net_messages="$(CONFIG_TARGET_PREINIT_SHOW_NETMSG)"' >>$(1)/lib/preinit/00_preinit.conf
-@@ -100,7 +100,7 @@ ifeq ($(CONFIG_TARGET_DEFAULT_LAN_IP_FROM_PREINIT),y)
- 	echo 'board_config_update' >>$(1)/etc/board.d/99-lan-ip
- 	echo 'json_select network' >>$(1)/etc/board.d/99-lan-ip
- 	echo 'json_select lan' >>$(1)/etc/board.d/99-lan-ip
--	echo 'json_add_string ipaddr $(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.1.1")' >>$(1)/etc/board.d/99-lan-ip
-+	echo 'json_add_string ipaddr $(if $(CONFIG_TARGET_PREINIT_IP),$(CONFIG_TARGET_PREINIT_IP),"192.168.10.1")' >>$(1)/etc/board.d/99-lan-ip
- 	echo 'json_add_string netmask $(if $(CONFIG_TARGET_PREINIT_NETMASK),$(CONFIG_TARGET_PREINIT_NETMASK),"255.255.255.0")' >>$(1)/etc/board.d/99-lan-ip
- 	echo 'json_select ..' >>$(1)/etc/board.d/99-lan-ip
- 	echo 'json_select ..' >>$(1)/etc/board.d/99-lan-ip
 @@ -121,12 +121,10 @@ endef
  Build/Compile = $(Build/Compile/Default)
  
@@ -139,74 +121,6 @@ index 693d259ee4..4309b9c1e2 100644
  
  ifeq ($(CONFIG_NAND_SUPPORT),)
    define Package/base-files/nand-support
-diff --git a/package/base-files/files/bin/config_generate b/package/base-files/files/bin/config_generate
-index 7507aa612c..c54cfb6267 100755
---- a/package/base-files/files/bin/config_generate
-+++ b/package/base-files/files/bin/config_generate
-@@ -3,7 +3,6 @@
- CFG=/etc/board.json
- 
- . /usr/share/libubox/jshn.sh
--. /lib/functions/ipv4.sh
- 
- [ -s $CFG ] || /bin/board_detect || exit 1
- [ -s /etc/config/network -a -s /etc/config/system ] && exit 0
-@@ -43,7 +42,8 @@ generate_static_network() {
- 		set network.loopback='interface'
- 		set network.loopback.device='lo'
- 		set network.loopback.proto='static'
--		add_list network.loopback.ipaddr='127.0.0.1/8'
-+		set network.loopback.ipaddr='127.0.0.1'
-+		set network.loopback.netmask='255.0.0.0'
- 		delete network.globals
- 		set network.globals='globals'
- 		set network.globals.dhcp_default_duid='auto'
-@@ -160,19 +160,18 @@ generate_network() {
- 
- 	case "$protocol" in
- 		static)
--			local ipad netm prefix
-+			local ipad
- 			case "$1" in
--				lan) ipad=${ipaddr:-"192.168.1.1"} ;;
-+				lan) ipad=${ipaddr:-"192.168.10.1"} ;;
- 				*) ipad=${ipaddr:-"192.168.$((addr_offset++)).1"} ;;
- 			esac
- 
- 			netm=${netmask:-"255.255.255.0"}
--			str2ip netm "$netm"
--			netmask2prefix prefix "$netm"
- 
- 			uci -q batch <<-EOF
- 				set network.$1.proto='static'
--				add_list network.$1.ipaddr='$ipad/$prefix'
-+				set network.$1.ipaddr='$ipad'
-+				set network.$1.netmask='$netm'
- 			EOF
- 			[ -e /proc/sys/net/ipv6 ] && uci set network.$1.ip6assign='60'
- 		;;
-diff --git a/package/base-files/image-config.in b/package/base-files/image-config.in
-index 67ef4d415a..a8beb17acd 100644
---- a/package/base-files/image-config.in
-+++ b/package/base-files/image-config.in
-@@ -83,7 +83,7 @@ config TARGET_PREINIT_IFNAME
- config TARGET_PREINIT_IP
- 	string
- 	prompt "IP address for preinit network messages" if PREINITOPT
--	default "192.168.1.1"
-+	default "192.168.10.1"
- 	help
- 		IP address used to configure interface for preinit network
- 		messages, including failsafe messages
-@@ -99,7 +99,7 @@ config TARGET_PREINIT_NETMASK
- config TARGET_PREINIT_BROADCAST
- 	string
- 	prompt "Broadcast address for preinit network messages" if PREINITOPT
--	default "192.168.1.255"
-+	default "192.168.10.255"
- 	help
- 		Broadcast address to which to send preinit network messages, as
- 		as failsafe messages
 diff --git a/package/firmware/linux-firmware/broadcom.mk b/package/firmware/linux-firmware/broadcom.mk
 index c37edf211c..2140ae977c 100644
 --- a/package/firmware/linux-firmware/broadcom.mk
