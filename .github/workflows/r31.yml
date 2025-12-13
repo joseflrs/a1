@@ -49,6 +49,7 @@ jobs:
                 mkdir -p files/www/repo
                 mv r31 .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
+                sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
                 make defconfig
                 make download -j32
                 make -j$(nproc) 'IGNORE_ERRORS=n m'
