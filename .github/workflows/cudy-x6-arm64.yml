@@ -31,8 +31,9 @@ jobs:
                 ./scripts/feeds install -a -f
                 mv cudy-x6 .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
-                make defconfig
+                sed -i "17s/luci-app-attendedsysupgrade/luci-app-ttyd/" feeds/luci/collections/luci/Makefile
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                make defconfig
                 make download -j32
                 rm -rf files
                 make -j$(nproc) 'IGNORE_ERRORS=n m'
