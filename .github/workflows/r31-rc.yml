@@ -45,6 +45,7 @@ jobs:
                 git apply 20-lxc.patch
                 cd -
                 sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
+                sed -i "17s/luci-app-attendedsysupgrade/luci-app-ttyd/" feeds/luci/collections/luci/Makefile
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 mkdir -p files/www/repo
