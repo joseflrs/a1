@@ -159,19 +159,6 @@ diff --git a/target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch b/tar
 new file mode 100644
 index 0000000000..22d59a92cc
 --- /dev/null
-+++ b/target/linux/generic/pending-6.12/400-fixup-ubi-warning.patch
-@@ -0,0 +1,24 @@
-+--- a/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
-++++ b/arch/arm64/boot/dts/mediatek/mt7986a-bananapi-bpi-r3.dts
-+@@ -42,7 +42,7 @@
-+ 		compatible = "pwm-fan";
-+ 		#cooling-cells = <2>;
-+ 		/* cooling level (0, 1, 2) - pwm inverted */
-+-		cooling-levels = <255 96 0>;
-++		cooling-levels = <0 96 255>;
-+ 		pwms = <&pwm 0 10000>;
-+ 		status = "okay";
-+ 	};
 +--- a/drivers/mtd/mtdblock.c
 ++++ b/drivers/mtd/mtdblock.c
 +@@ -261,10 +261,6 @@ static int mtdblock_open(struct mtd_blkt
