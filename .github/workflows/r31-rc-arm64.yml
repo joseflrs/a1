@@ -24,6 +24,8 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
+                wget https://github.com/mj22226/source/commit/d1a52d0b575b6c9d7ece4a79a9d8929f41cceef2.patch
+                git apply d1a52d0b575b6c9d7ece4a79a9d8929f41cceef2.patch
                 git apply kernel.patch
                 git apply mac80211.patch
                 git apply pm.patch
@@ -57,7 +59,7 @@ jobs:
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 make defconfig
                 make download -j32
-                make -j$(nproc) V=s 'IGNORE_ERRORS=n m' || true
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
                 tar -czvf bin/targets/mediatek/filogic/packages.tar.gz bin/targets/mediatek/filogic/packages || true
                 tar -czvf bin/targets/mediatek/filogic/feeds-packages.tar.gz bin/packages || true
                 tar -czvf bin/targets/mediatek/filogic/logs.tar.gz logs
