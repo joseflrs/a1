@@ -57,7 +57,7 @@ jobs:
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 make defconfig
                 make download -j32
-                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                make -j$(nproc) V=s 'IGNORE_ERRORS=n m' || true
                 tar -czvf bin/targets/mediatek/filogic/packages.tar.gz bin/targets/mediatek/filogic/packages || true
                 tar -czvf bin/targets/mediatek/filogic/feeds-packages.tar.gz bin/packages || true
                 tar -czvf bin/targets/mediatek/filogic/logs.tar.gz logs
