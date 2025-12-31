@@ -1,21 +1,9 @@
-diff --git a/target/linux/generic/config-6.12 b/target/linux/generic/config-6.12
-index fda78b422e..b657e6cc67 100644
---- a/target/linux/generic/config-6.12
-+++ b/target/linux/generic/config-6.12
-@@ -6240,6 +6240,7 @@ CONFIG_SND_SOC_INTEL_SST_TOPLEVEL=y
- # CONFIG_SND_SOC_MT8365 is not set
- # CONFIG_SND_SOC_MTK_BTCVSD is not set
- # CONFIG_SND_SOC_NAU8315 is not set
-+# CONFIG_SND_SOC_NAU8325 is not set
- # CONFIG_SND_SOC_NAU8540 is not set
- # CONFIG_SND_SOC_NAU8810 is not set
- # CONFIG_SND_SOC_NAU8821 is not set
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 73c2f33a10..ee47400ffc 100644
+index 463c22204a..834fa9956f 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .62
--LINUX_KERNEL_HASH-6.12.62 = 13e2c685ac8fab5dd992dd105732554dae514aef350c2a8c7418e7b74eb62c13
+-LINUX_VERSION-6.12 = .63
+-LINUX_KERNEL_HASH-6.12.63 = 9502c5ffe4b894383c97abfccf74430a84732f04ee476b9c0d87635b29df7db3
 +LINUX_VERSION-6.12 = .64
-+LINUX_KERNEL_HASH-6.12.64 = 2696e06a6c1beb29f880fac01ca18ac2fdd89fa9604621806293c2efcbfc36ce
++LINUX_KERNEL_HASH-6.12.64 = 7c6ef1fec9734b7659d5e083df05a6adc6e6e8f263222682fd12606d1926529a
