@@ -814,3 +814,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_kebidumei_ax3000-u22 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_asus_rt-ax57m is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_archer-ax80-v1-eu is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wbr3000uax-v1 is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_cudy_wbr3000uax-v1-ubootmod is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
