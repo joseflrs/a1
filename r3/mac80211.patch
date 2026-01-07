@@ -1,22 +1,3 @@
-diff --git a/package/kernel/mac80211/patches/build/000-fix.patch b/package/kernel/mac80211/patches/build/000-fix.patch
-new file mode 100644
-index 0000000000..24d91110f7
---- /dev/null
-+++ b/package/kernel/mac80211/patches/build/000-fix.patch
-@@ -0,0 +1,13 @@
-+diff --git a/backport-include/linux/hrtimer.h b/backport-include/linux/hrtimer.h
-+index 3c35192..3b1ba19 100644
-+--- a/backport-include/linux/hrtimer.h
-++++ b/backport-include/linux/hrtimer.h
-+@@ -10,7 +10,7 @@
-+ 
-+ #endif /* < 4.16 */
-+ 
-+-#if LINUX_VERSION_IS_LESS(6,13,0)
-++#if LINUX_VERSION_IS_LESS(6,12,0)
-+ 
-+ static inline enum hrtimer_restart hrtimer_dummy_timeout(struct hrtimer *unused)
-+ {
 diff --git a/package/kernel/mac80211/Makefile b/package/kernel/mac80211/Makefile
 index 4267aa0e36..637610cfcd 100644
 --- a/package/kernel/mac80211/Makefile
