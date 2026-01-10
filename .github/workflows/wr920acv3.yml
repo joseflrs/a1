@@ -24,7 +24,7 @@ jobs:
                 git apply kernel.patch
                 git apply mt76x8.patch
                 git apply 01-ip-addr.patch
-                sed -i '5d' feeds.conf.default
+                sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 mv wr920acv3 .config
