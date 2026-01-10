@@ -1,51 +1,29 @@
-diff --git a/target/linux/generic/backport-6.12/0001-Revert-hrtimers-Introduce-hrtimer_update_function.patch b/target/linux/generic/backport-6.12/0001-Revert-hrtimers-Introduce-hrtimer_update_function.patch
-new file mode 100644
-index 0000000000..f171f952ba
---- /dev/null
-+++ b/target/linux/generic/backport-6.12/0001-Revert-hrtimers-Introduce-hrtimer_update_function.patch
-@@ -0,0 +1,42 @@
-+From b80feefa5d9d56825ea26e8778a7660ae58a636f Mon Sep 17 00:00:00 2001
-+From: Marty Jones <mj8263788@gmail.com>
-+Date: Wed, 7 Jan 2026 14:44:23 -0300
-+Subject: [PATCH] Revert "hrtimers: Introduce hrtimer_update_function()"
-+
-+This reverts commit 1892e32fea64e16a851f818749ecb9ce9bef8611.
-+---
-+ include/linux/hrtimer.h | 23 -----------------------
-+ 1 file changed, 23 deletions(-)
-+
-+--- a/include/linux/hrtimer.h
-++++ b/include/linux/hrtimer.h
-+@@ -337,29 +337,6 @@ static inline int hrtimer_callback_runni
-+ 	return timer->base->running == timer;
-+ }
-+ 
-+-/**
-+- * hrtimer_update_function - Update the timer's callback function
-+- * @timer:	Timer to update
-+- * @function:	New callback function
-+- *
-+- * Only safe to call if the timer is not enqueued. Can be called in the callback function if the
-+- * timer is not enqueued at the same time (see the comments above HRTIMER_STATE_ENQUEUED).
-+- */
-+-static inline void hrtimer_update_function(struct hrtimer *timer,
-+-					   enum hrtimer_restart (*function)(struct hrtimer *))
-+-{
-+-#ifdef CONFIG_PROVE_LOCKING
-+-	guard(raw_spinlock_irqsave)(&timer->base->cpu_base->lock);
-+-
-+-	if (WARN_ON_ONCE(hrtimer_is_queued(timer)))
-+-		return;
-+-
-+-	if (WARN_ON_ONCE(!function))
-+-		return;
-+-#endif
-+-	timer->function = function;
-+-}
-+-
-+ /* Forward a hrtimer so it expires after now: */
-+ extern u64
-+ hrtimer_forward(struct hrtimer *timer, ktime_t now, ktime_t interval);
+diff --git a/target/linux/generic/backport-6.12/720-04-v6.13-net-phy-mediatek-Re-organize-MediaTek-ethernet-phy-d.patch b/target/linux/generic/backport-6.12/720-04-v6.13-net-phy-mediatek-Re-organize-MediaTek-ethernet-phy-d.patch
+index 7161ffe069..32ada1abf4 100644
+--- a/target/linux/generic/backport-6.12/720-04-v6.13-net-phy-mediatek-Re-organize-MediaTek-ethernet-phy-d.patch
++++ b/target/linux/generic/backport-6.12/720-04-v6.13-net-phy-mediatek-Re-organize-MediaTek-ethernet-phy-d.patch
+@@ -1238,9 +1238,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ -	}
+ -
+ -	buf = (u32 *)nvmem_cell_read(cell, &len);
++-	nvmem_cell_put(cell);
+ -	if (IS_ERR(buf))
+ -		return PTR_ERR(buf);
+--	nvmem_cell_put(cell);
+ -
+ -	if (!buf[0] || !buf[1] || !buf[2] || !buf[3] || len < 4 * sizeof(u32)) {
+ -		phydev_err(phydev, "invalid efuse data\n");
+@@ -2965,9 +2965,9 @@ Signed-off-by: David S. Miller <davem@davemloft.net>
+ +	}
+ +
+ +	buf = (u32 *)nvmem_cell_read(cell, &len);
+++	nvmem_cell_put(cell);
+ +	if (IS_ERR(buf))
+ +		return PTR_ERR(buf);
+-+	nvmem_cell_put(cell);
+ +
+ +	if (!buf[0] || !buf[1] || !buf[2] || !buf[3] || len < 4 * sizeof(u32)) {
+ +		phydev_err(phydev, "invalid efuse data\n");
 diff --git a/target/linux/generic/backport-6.12/403-v6.19-mtd-mtdpart-ignore-error-ENOENT-from-parsers-on-subp.patch b/target/linux/generic/backport-6.12/403-v6.19-mtd-mtdpart-ignore-error-ENOENT-from-parsers-on-subp.patch
 deleted file mode 100644
 index 13e83ac4a6..0000000000
@@ -120,5 +98,5 @@ index 463c22204a..609b6f97b7 100644
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .63
 -LINUX_KERNEL_HASH-6.12.63 = 9502c5ffe4b894383c97abfccf74430a84732f04ee476b9c0d87635b29df7db3
-+LINUX_VERSION-6.12 = .64
-+LINUX_KERNEL_HASH-6.12.64 = a335a955894d8f00ff8df3c93b7859789f443f4229c5a0708606f88791edfacd
++LINUX_VERSION-6.12 = .65
++LINUX_KERNEL_HASH-6.12.65 = 2e2f71ce9bbd1e7d7d74766859f4b9f3d7a1b4373678c41d24a022b7b3e3cb97
