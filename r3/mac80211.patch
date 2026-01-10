@@ -1,5 +1,5 @@
 diff --git a/package/kernel/mac80211/Makefile b/package/kernel/mac80211/Makefile
-index 4267aa0e36..637610cfcd 100644
+index 4267aa0e36..c490655f23 100644
 --- a/package/kernel/mac80211/Makefile
 +++ b/package/kernel/mac80211/Makefile
 @@ -10,15 +10,15 @@ include $(INCLUDE_DIR)/kernel.mk
@@ -7,15 +7,15 @@ index 4267aa0e36..637610cfcd 100644
  PKG_NAME:=mac80211
  
 -PKG_VERSION:=6.18
-+PKG_VERSION:=6.18.1
++PKG_VERSION:=6.18.5
  PKG_RELEASE:=1
  PKG_LICENSE:=GPL-2.0-only
  PKG_LICENSE_FILES:=COPYING
  
 -PKG_SOURCE_URL:=https://github.com/openwrt/backports/releases/download/backports-v$(PKG_VERSION)
 -PKG_HASH:=3bd5d84b1e56cf8addff0d1e4bcf06753c51feee88c4d7925fb7b67784529436
-+PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.1/
-+PKG_HASH:=0ac463f5730e1d0b9c2bc4ec999c614e997664d582c070b0e0eb78528bfa286c
++PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.5-rc1/
++PKG_HASH:=3660913c407349b39d63243ac37b2a83c15a70a6d1ac678a433441c395684d5a
  
 -PKG_SOURCE:=backports-$(PKG_VERSION).tar.zst
 +PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
