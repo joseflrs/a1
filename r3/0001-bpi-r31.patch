@@ -183,8 +183,8 @@ index b8c59a2490..b14ec7bcb5 100644
 -		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 lan4 sfp2" "sfp1 wan"
 +		ucidef_set_interfaces_lan_wan "eth2 lan1 lan2 lan3 lan4 sfp1 sfp2" wan
  		;;
- 	bananapi,bpi-r3-mini|\
- 	edgecore,eap111|\
+ 	bananapi,bpi-r4)
+		ucidef_set_interfaces_lan_wan "lan1 lan2 lan3 sfp-lan" "wan sfp-wan"
 -- 
 2.48.1
 
