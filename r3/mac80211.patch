@@ -22,3 +22,28 @@ index 4267aa0e36..c490655f23 100644
  PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(if $(BUILD_VARIANT),$(PKG_NAME)-$(BUILD_VARIANT)/)backports-$(PKG_VERSION)
  PKG_BUILD_PARALLEL:=1
  
+diff --git a/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch b/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch
+deleted file mode 100644
+index 0b47fc63e5..0000000000
+--- a/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch
++++ /dev/null
+@@ -1,19 +0,0 @@
+-diff --git a/backport-include/linux/hrtimer.h b/backport-include/linux/hrtimer.h
+-index 3c351922c81d..d865dbf42e9b 100644
+---- a/backport-include/linux/hrtimer.h
+-+++ b/backport-include/linux/hrtimer.h
+-@@ -17,12 +17,14 @@ static inline enum hrtimer_restart hrtimer_dummy_timeout(struct hrtimer *unused)
+- 	return HRTIMER_NORESTART;
+- }
+- 
+-+#if LINUX_VERSION_IS_LESS(6,12,64)
+- static inline void
+- hrtimer_update_function(struct hrtimer *timer,
+- 			enum hrtimer_restart (*function)(struct hrtimer *))
+- {
+- 	timer->function = function;
+- }
+-+#endif /* < 6.12.64 */
+- 
+- static inline void
+- hrtimer_setup(struct hrtimer *timer, enum hrtimer_restart (*function)(struct hrtimer *),
