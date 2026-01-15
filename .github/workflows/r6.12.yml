@@ -38,7 +38,6 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                git revert --no-commit 2d844a077089575ab67fcbd15e021a981387e668
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
@@ -108,5 +107,6 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
