@@ -6,7 +6,7 @@ index c786e6ed44..d638b2f7bf 100644
 -LINUX_VERSION-6.12 = .66
 -LINUX_KERNEL_HASH-6.12.66 = ba3897a1c060b05a03cb4dda6f20d8c75e6f73c88b217744823a915056536eaf
 +LINUX_VERSION-6.12 = .67
-+LINUX_KERNEL_HASH-6.12.67 = ba06d8061db1fb7c3e164ba9e71909674465ee3718c02c15bfca162183a504a4
++LINUX_KERNEL_HASH-6.12.67 = 16805dc62e1fa5ef8a3f466f3f44a2efb171b5206d6840ced4ba5475cf12c432
 diff --git a/target/linux/rockchip/patches-6.12/160-01-phy-rockchip-inno-usb2-Simplify-rockchip-usbgrf-handling.patch b/target/linux/rockchip/patches-6.12/160-01-phy-rockchip-inno-usb2-Simplify-rockchip-usbgrf-handling.patch
 index 98d0b2c326..e6e842093a 100644
 --- a/target/linux/rockchip/patches-6.12/160-01-phy-rockchip-inno-usb2-Simplify-rockchip-usbgrf-handling.patch
