@@ -38,8 +38,6 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/21668.patch
-                git apply 21668.patch
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
@@ -109,6 +107,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
