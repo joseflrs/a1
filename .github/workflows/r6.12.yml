@@ -35,6 +35,7 @@ jobs:
                 cp -rf r3/49-d-fll.patch openwrt/
                 cp -rf r3/rk3599-overclock.patch openwrt/
                 cp -rf r3/mac80211.patch openwrt/
+                cp -rf r3/mini-disk.patch openwrt/
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
@@ -43,6 +44,7 @@ jobs:
                 git apply ms.patch
                 git apply 44.patch
                 git apply pm.patch
+                git apply mini-disk.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 sed -i '5d' feeds.conf.default
                 ./scripts/feeds update -a
@@ -108,6 +110,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
