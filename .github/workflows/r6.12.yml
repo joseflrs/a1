@@ -67,6 +67,7 @@ jobs:
                 sed -i "212s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                sed -i "1595s/KERNEL_PREEMPT_NONE/KERNEL_PREEMPT_VOLUNTARY/" config/Config-kernel.in
                 sed -i "17s/luci-app-attendedsysupgrade/luci-app-ttyd/" feeds/luci/collections/luci/Makefile
                 rm -f target/linux/generic/hack-6.12/930-Revert-Revert-Revert-driver-core-Set-fw_devlink-on-b.patch
                 ./scripts/feeds update -a
@@ -107,6 +108,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
