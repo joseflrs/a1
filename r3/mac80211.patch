@@ -1,49 +1,25 @@
 diff --git a/package/kernel/mac80211/Makefile b/package/kernel/mac80211/Makefile
-index 4267aa0e36..c490655f23 100644
+index 0beb264db1..6b09cef08f 100644
 --- a/package/kernel/mac80211/Makefile
 +++ b/package/kernel/mac80211/Makefile
 @@ -10,15 +10,15 @@ include $(INCLUDE_DIR)/kernel.mk
  
  PKG_NAME:=mac80211
  
--PKG_VERSION:=6.18
-+PKG_VERSION:=6.18.7
+-PKG_VERSION:=6.18.7
++PKG_VERSION:=6.18.8
  PKG_RELEASE:=1
  PKG_LICENSE:=GPL-2.0-only
  PKG_LICENSE_FILES:=COPYING
  
 -PKG_SOURCE_URL:=https://github.com/openwrt/backports/releases/download/backports-v$(PKG_VERSION)
--PKG_HASH:=3bd5d84b1e56cf8addff0d1e4bcf06753c51feee88c4d7925fb7b67784529436
-+PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.7/
-+PKG_HASH:=2abd4971a414957368605a47fafc29cb9bb56e99413a05dcb71a734c151da4c7
+-PKG_HASH:=623e5cf46ca8e81fd413f4f465e2580a0143e24929f9c22ce1ba7c34f2872989
++PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.8-rc0/
++PKG_HASH:=47ed1171c70569da3083b7c9ccb9219d5372ea7b5f6d75b3330f97953bb06a10
  
 -PKG_SOURCE:=backports-$(PKG_VERSION).tar.zst
 +PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
  PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(if $(BUILD_VARIANT),$(PKG_NAME)-$(BUILD_VARIANT)/)backports-$(PKG_VERSION)
  PKG_BUILD_PARALLEL:=1
  
-diff --git a/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch b/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch
-deleted file mode 100644
-index 0b47fc63e5..0000000000
---- a/package/kernel/mac80211/patches/build/999-kernel-6.12.64.patch
-+++ /dev/null
-@@ -1,19 +0,0 @@
--diff --git a/backport-include/linux/hrtimer.h b/backport-include/linux/hrtimer.h
--index 3c351922c81d..d865dbf42e9b 100644
----- a/backport-include/linux/hrtimer.h
--+++ b/backport-include/linux/hrtimer.h
--@@ -17,12 +17,14 @@ static inline enum hrtimer_restart hrtimer_dummy_timeout(struct hrtimer *unused)
-- 	return HRTIMER_NORESTART;
-- }
-- 
--+#if LINUX_VERSION_IS_LESS(6,12,64)
-- static inline void
-- hrtimer_update_function(struct hrtimer *timer,
-- 			enum hrtimer_restart (*function)(struct hrtimer *))
-- {
-- 	timer->function = function;
-- }
--+#endif /* < 6.12.64 */
-- 
-- static inline void
-- hrtimer_setup(struct hrtimer *timer, enum hrtimer_restart (*function)(struct hrtimer *),
+
