@@ -24,6 +24,7 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/config-rockchip openwrt/
                 cp -rf r3/66332b9cebe3ef77cf4b4217877e059353bdcca3.patch openwrt/
+                cp -rf r3/mini-disk.patch openwrt/
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
@@ -34,6 +35,7 @@ jobs:
                 git checkout main
                 git apply 001.patch
                 git apply 66332b9cebe3ef77cf4b4217877e059353bdcca3.patch
+                git apply mini-disk.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
@@ -93,6 +95,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
