@@ -35,16 +35,19 @@ jobs:
                 cp -rf r3/49-d-fll.patch openwrt/
                 cp -rf r3/rk3599-overclock.patch openwrt/
                 cp -rf r3/mac80211.patch openwrt/
-                cp -rf r3/mini-disk.patch openwrt/
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
+                wget https://github.com/4IceG/luci-app-mini-diskmanager/archive/refs/heads/main.zip
+                unzip main.zip
+                mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
+                rm -rf luci-app-mini-diskmanager-main
+                rm *.zip
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
                 git apply 44.patch
                 git apply pm.patch
-                git apply mini-disk.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 sed -i '5d' feeds.conf.default
                 ./scripts/feeds update -a
@@ -110,6 +113,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
