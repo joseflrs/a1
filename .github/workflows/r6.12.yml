@@ -84,6 +84,7 @@ jobs:
                 wget https://github.com/mj22226/luci/commit/239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 cd -
+                ./scripts/feeds install -a -f
                 mv rk-snapshot .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
@@ -118,6 +119,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
