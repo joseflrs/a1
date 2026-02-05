@@ -49,14 +49,15 @@ jobs:
                 git apply 44.patch
                 git apply pm.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
-                sed -i "2s/luci.git/luci.git^d8f4b45a207213beb041a5141b1e3ce56ff33af4/" feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
                 wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 wget https://github.com/mj22226/luci/commit/d881aeee82e944b41253b37285af3d8b66586aed.patch
+                wget https://github.com/mj22226/luci/commit/2d600ec76766d792f681febcca1e99988d0f2ffb.patch
                 git apply 01-diskman.patch
                 git apply d881aeee82e944b41253b37285af3d8b66586aed.patch
+                git apply 2d600ec76766d792f681febcca1e99988d0f2ffb.patch
                 cd -
                 cd  feeds/packages
                 wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
@@ -79,6 +80,12 @@ jobs:
                 ./scripts/feeds install -a -f
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                cd feeds/luci
+                rm -rf applications/luci-app-dockerman
+                wget https://github.com/mj22226/luci/commit/8208d2b45575c05333d53a117874cdfb1acb5004.patch
+                git apply 8208d2b45575c05333d53a117874cdfb1acb5004.patch
+                ./scripts/feeds install -a -f
+                cd -
                 mv rk-snapshot .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
@@ -113,6 +120,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
