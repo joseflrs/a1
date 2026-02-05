@@ -81,8 +81,8 @@ jobs:
                 tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 cd feeds/luci
                 rm -rf applications/luci-app-dockerman
-                wget https://github.com/mj22226/luci/commit/e606dc985204c3915acccd2eec96a6a24f2908cd.patch
-                git apply e606dc985204c3915acccd2eec96a6a24f2908cd.patch
+                wget https://github.com/mj22226/luci/commit/239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
+                git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 cd -
                 mv rk-snapshot .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
@@ -118,6 +118,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
