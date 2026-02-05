@@ -49,7 +49,7 @@ jobs:
                 git apply 44.patch
                 git apply pm.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
-                sed -i '5d' feeds.conf.default
+                sed -i "2s/luci.git/luci.git^d8f4b45a207213beb041a5141b1e3ce56ff33af4/" feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
@@ -79,12 +79,6 @@ jobs:
                 ./scripts/feeds install -a -f
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
-                cd feeds/luci
-                rm -rf applications/luci-app-dockerman
-                wget https://github.com/mj22226/luci/commit/239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
-                git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
-                cd -
-                ./scripts/feeds install -a -f
                 mv rk-snapshot .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
@@ -119,6 +113,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
