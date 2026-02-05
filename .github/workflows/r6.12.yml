@@ -80,7 +80,7 @@ jobs:
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
                 cd feeds/luci
-                rm -rf luci/applications/luci-app-dockerman
+                rm -rf applications/luci-app-dockerman
                 wget https://github.com/mj22226/luci/commit/e606dc985204c3915acccd2eec96a6a24f2908cd.patch
                 git apply e606dc985204c3915acccd2eec96a6a24f2908cd.patch
                 cd -
@@ -118,6 +118,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
