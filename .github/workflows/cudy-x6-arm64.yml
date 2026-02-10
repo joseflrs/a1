@@ -21,6 +21,7 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
+                rm -f target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply pm.patch
