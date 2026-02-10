@@ -21,8 +21,6 @@ jobs:
                 git clone https://github.com/openwrt/openwrt.git
                 cp -rf r3/* openwrt/
                 cd openwrt
-                // git apply mac80211.patch //
-                // git apply kernel.patch //
                 git apply pm.patch
                 git apply mt7621.patch
                 git apply 01-ip-addr.patch
