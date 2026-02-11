@@ -22,6 +22,8 @@ jobs:
                 cp -rf r3/* openwrt/
                 cd openwrt
                 git reset --hard 08ab732b25de8dd1643837d4432be2f1e6856f69
+                git apply mac80211.patch
+                git apply kernel.patch
                 git apply pm.patch
                 git apply mt7621.patch
                 git apply 01-ip-addr.patch
