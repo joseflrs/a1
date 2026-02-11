@@ -38,7 +38,7 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                git reset --hard 08ab732b25de8dd1643837d4432be2f1e6856f69
+                git revert -n 64ec08eee1cc35417a6b0189e40b92665056da25
                 wget https://github.com/4IceG/luci-app-mini-diskmanager/archive/refs/heads/main.zip
                 unzip main.zip
                 mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
@@ -116,6 +116,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
