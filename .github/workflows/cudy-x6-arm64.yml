@@ -37,7 +37,7 @@ jobs:
                 make defconfig
                 make download -j32
                 rm -rf files
-                make -j$(nproc) V=s 'IGNORE_ERRORS=n m'
+                make -j$(nproc) 'IGNORE_ERRORS=n m'
                 rm -rf bin/targets/ramips/mt7621/packages
                 echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
             - name: Delete tag
