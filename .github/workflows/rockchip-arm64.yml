@@ -57,7 +57,7 @@ jobs:
                 sed -i "212s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
-                sed -i "17s/luci-app-attendedsysupgrade/luci-app-ttyd/" feeds/luci/collections/luci/Makefile
+                sed -i '12d' feeds/luci/applications/luci-app-attendedsysupgrade/Makefile
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/rockchip-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
@@ -99,6 +99,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
