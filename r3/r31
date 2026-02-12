@@ -830,3 +830,4 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
+CONFIG_PACKAGE_luci-app-wifihistory=y
