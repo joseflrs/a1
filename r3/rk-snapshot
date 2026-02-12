@@ -527,3 +527,4 @@ CONFIG_PACKAGE_kmod-usb2=y
 CONFIG_PACKAGE_kmod-usb3=y
 CONFIG_PACKAGE_kmod-fs-f2fs=y
 CONFIG_PACKAGE_kmod-ata-ahci-dwc=y
+CONFIG_PACKAGE_luci-app-wifihistory=y
