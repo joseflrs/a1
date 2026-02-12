@@ -797,3 +797,4 @@ CONFIG_PACKAGE_kmod-btusb=y
 # CONFIG_KERNEL_PREEMPT_NONE is not set
 CONFIG_KERNEL_PREEMPT_VOLUNTARY=y
 CONFIG_PACKAGE_luci-app-mini-diskmanager=y
+CONFIG_PACKAGE_luci-app-wifihistory=y
