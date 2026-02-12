@@ -823,6 +823,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tenda_be12-pro is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_eap683-lr is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_tplink_eap683-ur is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_bazis_ax3000wm is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_ is not set
