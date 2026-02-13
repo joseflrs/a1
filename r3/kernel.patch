@@ -5,8 +5,8 @@ index c786e6ed44..d638b2f7bf 100644
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .69
 -LINUX_KERNEL_HASH-6.12.69 = 4b493657f218703239c4f22415f027b3644949bf2761abd18b849f0aad5f7665
-+LINUX_VERSION-6.12 = .70
-+LINUX_KERNEL_HASH-6.12.70 = 9b4ccec7d8ceff4824f149e476ec06e83c86546ae8af82582871647809a62ef0
++LINUX_VERSION-6.12 = .72
++LINUX_KERNEL_HASH-6.12.72 = 0703584b9b4d738e38e26d2ad9e0d336f3db627d23f7c4ca8e901180df7a4e24
 diff --git a/target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch b/target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch
 deleted file mode 100644
 index 3a09a23703..0000000000
