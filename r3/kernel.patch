@@ -1,42 +1,9 @@
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index c786e6ed44..d638b2f7bf 100644
+index 6baa933825..9d7c4d9a90 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .69
--LINUX_KERNEL_HASH-6.12.69 = 4b493657f218703239c4f22415f027b3644949bf2761abd18b849f0aad5f7665
+-LINUX_VERSION-6.12 = .71
+-LINUX_KERNEL_HASH-6.12.71 = 143e8bc76cc41f831b51aa5e75819bed55bed41f299d35922820f1d2d2b02600
 +LINUX_VERSION-6.12 = .72
 +LINUX_KERNEL_HASH-6.12.72 = 0703584b9b4d738e38e26d2ad9e0d336f3db627d23f7c4ca8e901180df7a4e24
-diff --git a/target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch b/target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch
-deleted file mode 100644
-index 3a09a23703..0000000000
---- a/target/linux/generic/backport-6.12/605-01-v6.17-net-phy-add-phy_interface_weight.patch
-+++ /dev/null
-@@ -1,27 +0,0 @@
--From 4beb44a2d62dddfe450f310aa1a950901731cb3a Mon Sep 17 00:00:00 2001
--From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
--Date: Sun, 31 Aug 2025 18:34:33 +0100
--Subject: net: phy: add phy_interface_weight()
--
--Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
--Reviewed-by: Andrew Lunn <andrew@lunn.ch>
--Link: https://patch.msgid.link/E1uslwn-00000001SOx-0a7H@rmk-PC.armlinux.org.uk
--Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-----
-- include/linux/phy.h | 5 +++++
-- 1 file changed, 5 insertions(+)
--
----- a/include/linux/phy.h
--+++ b/include/linux/phy.h
--@@ -187,6 +187,11 @@ static inline bool phy_interface_empty(c
-- 	return bitmap_empty(intf, PHY_INTERFACE_MODE_MAX);
-- }
-- 
--+static inline unsigned int phy_interface_weight(const unsigned long *intf)
--+{
--+	return bitmap_weight(intf, PHY_INTERFACE_MODE_MAX);
--+}
--+
-- static inline void phy_interface_and(unsigned long *dst, const unsigned long *a,
-- 				     const unsigned long *b)
-- {
