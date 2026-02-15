@@ -43,6 +43,11 @@ jobs:
                 mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
                 rm -rf luci-app-mini-diskmanager-main
                 rm *.zip
+                wget https://github.com/4IceG/luci-app-ports-status-mod/archive/refs/heads/main.zip
+                unzip main.zip
+                mv luci-app-ports-status-mod-main/luci-app-ports-status-mod package/luci-app-ports-status-mod
+                rm -rf luci-app-ports-status-mod-main
+                rm *.zip
                 git apply mac80211.patch
                 git apply kernel.patch
                 git apply ms.patch
@@ -115,6 +120,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
