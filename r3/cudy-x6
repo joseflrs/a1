@@ -437,6 +437,7 @@ CONFIG_MODULE_DEFAULT_uboot-envtools=m
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_iptime_ax2002m is not set
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_tplink_archer-ax21-v4 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt7621_DEVICE_dlink_dir-1360-a1 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_tl-mr6400-v7 is not set
 CONFIG_PACKAGE_adblock-fast=y
 CONFIG_PACKAGE_luci-app-adblock-fast=y
 CONFIG_PACKAGE_gawk=y
