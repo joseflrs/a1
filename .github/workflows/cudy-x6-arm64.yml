@@ -31,7 +31,7 @@ jobs:
                 sed -i "2s/luci.git/luci.git;openwrt-24.10/" feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
-                cd feeds/luci
+                cd feeds/packages
                 wget https://github.com/openwrt/packages/commit/8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
                 git apply 8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
                 cd -
