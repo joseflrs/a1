@@ -29,6 +29,16 @@ jobs:
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
+                cd feeds/luci
+                git revert -n f0b11adf7ef6d0c708fc4e3b9ab94c99e67b6fcf
+                cd -
+                cd  feeds/packages
+                rm -rf net/openvpn
+                wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
+                git apply 61ce0292a9aef9b4cea54d65ceb6.patch
+                cd -
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
                 mv cudy-x6 .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 sed -i '12d' feeds/luci/applications/luci-app-attendedsysupgrade/Makefile
