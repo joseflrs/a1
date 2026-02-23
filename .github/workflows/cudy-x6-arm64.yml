@@ -30,6 +30,7 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 cd feeds/luci
+                git pull
                 git revert -n f0b11adf7ef6d0c708fc4e3b9ab94c99e67b6fcf
                 cd -
                 cd  feeds/packages
