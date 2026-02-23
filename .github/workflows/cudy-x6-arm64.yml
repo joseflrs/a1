@@ -31,6 +31,12 @@ jobs:
                 sed -i "2s/luci.git/luci.git;openwrt-24.10/" feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
+                cd cd feeds/luci
+                wget https://github.com/openwrt/packages/commit/8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
+                git apply 8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
+                cd -
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
                 mv cudy-x6 .config
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 sed -i '12d' feeds/luci/applications/luci-app-attendedsysupgrade/Makefile
