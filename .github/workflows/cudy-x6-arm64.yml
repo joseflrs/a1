@@ -31,7 +31,9 @@ jobs:
                 ./scripts/feeds install -a -f
                 cd feeds/luci
                 wget https://github.com/mj22226/luci/commit/f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
+                wget https://github.com/mj22226/luci/commit/c501dfde4cbeab222bb8c109938457ec07f38a0d.patch
                 git apply f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
+                git apply c501dfde4cbeab222bb8c109938457ec07f38a0d.patch
                 cd -
                 cd  feeds/packages
                 rm -rf net/openvpn
