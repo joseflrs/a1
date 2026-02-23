@@ -27,19 +27,8 @@ jobs:
                 git apply mt7621.patch
                 git apply 01-ip-addr.patch
                 sed -i -E 's;git.openwrt.org/(feed|project);github.com/openwrt;' feeds.conf.default
-                ./scripts/feeds update -a
-                ./scripts/feeds install -a -f
-                cd feeds/luci
-                wget https://github.com/mj22226/luci/commit/f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
-                wget https://github.com/mj22226/luci/commit/c501dfde4cbeab222bb8c109938457ec07f38a0d.patch
-                git apply f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
-                git apply c501dfde4cbeab222bb8c109938457ec07f38a0d.patch
-                cd -
-                cd  feeds/packages
-                rm -rf net/openvpn
-                wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
-                git apply 6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
-                cd -
+                sed -i "1s/packages.git/packages.git;openwrt-24.10/" feeds.conf.default
+                sed -i "2s/luci.git/luci.git;openwrt-24.10/" feeds.conf.default
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 mv cudy-x6 .config
