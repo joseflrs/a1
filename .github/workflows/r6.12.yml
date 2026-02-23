@@ -59,13 +59,18 @@ jobs:
                 cd feeds/luci
                 wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 wget https://github.com/mj22226/luci/commit/d881aeee82e944b41253b37285af3d8b66586aed.patch
+                wget https://github.com/mj22226/luci/commit/f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
                 git apply 01-diskman.patch
                 git apply d881aeee82e944b41253b37285af3d8b66586aed.patch
+                git apply f58b53cc33d0c4a21f724f7115cb3c0f144b37a0.patch
                 wget https://github.com/mj22226/luci/commit/239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 rm -rf applications/luci-app-dockerman
                 git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 cd -
                 cd  feeds/packages
+                rm -rf net/openvpn
+                wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
+                git apply 6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
                 wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
                 wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
                 wget https://github.com/mj22226/packages/commit/41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -120,6 +125,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
