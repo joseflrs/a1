@@ -70,6 +70,8 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
                 wget https://github.com/openwrt/packages/commit/7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
                 wget https://github.com/openwrt/packages/commit/7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
+                wget https://github.com/openwrt/packages/commit/0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
+                wget https://github.com/openwrt/packages/commit/d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -78,6 +80,8 @@ jobs:
                 git apply 5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
                 git apply 7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
                 git apply 7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
+                git apply 0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
+                git apply d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -125,3 +129,4 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
