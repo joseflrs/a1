@@ -34,8 +34,12 @@ jobs:
                 cd feeds/packages
                 wget https://github.com/openwrt/packages/commit/8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
                 wget https://github.com/openwrt/packages/commit/209070b5cea8200b21f165b88a46b88f05ec803c.patch
+                wget https://github.com/openwrt/packages/commit/5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
+                wget https://github.com/openwrt/packages/commit/7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
                 git apply 8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
                 git apply 209070b5cea8200b21f165b88a46b88f05ec803c.patch
+                git apply 5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
+                git apply 7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
                 cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
