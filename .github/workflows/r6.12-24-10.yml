@@ -72,6 +72,7 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
                 wget https://github.com/openwrt/packages/commit/0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
                 wget https://github.com/openwrt/packages/commit/d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
+                wget https://github.com/openwrt/packages/commit/2c811dd762493c12ec899e1e89b47cc97f877c45.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -82,6 +83,7 @@ jobs:
                 git apply 7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
                 git apply 0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
                 git apply d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
+                git apply 2c811dd762493c12ec899e1e89b47cc97f877c45.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -129,4 +131,5 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
