@@ -81,6 +81,19 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/63f5058415a145c450fb162d0475af2409cc312c.patch
                 wget https://github.com/openwrt/packages/commit/33e116297809aca1c2848ebcf90cb46c08a3ff05.patch
                 wget https://github.com/openwrt/packages/commit/0d58d027535ca33527297e6bc27844a1283ff656.patch
+                wget https://github.com/openwrt/packages/commit/2c78935539f06d1b4c48a358e95ff2e0fcdbeab5.patch
+                wget https://github.com/openwrt/packages/commit/b093eea601195184ea1364c4678c35f96269f7f5.patch
+                wget https://github.com/openwrt/packages/commit/0d18846dab8aba7a2c7a0ad3feeae42660fac36f.patch
+                wget https://github.com/openwrt/packages/commit/5c26a8717b271a56316ff709f9e2d5cbb1bd14d9.patch
+                wget https://github.com/openwrt/packages/commit/269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
+                wget https://github.com/openwrt/packages/commit/51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
+                wget https://github.com/openwrt/packages/commit/a5473150f3b1dcda1c8770b674870f2183a90143.patch
+                wget https://github.com/openwrt/packages/commit/565866a47210c9711c29173052063779b6d3bcfc.patch
+                wget https://github.com/openwrt/packages/commit/e7d9c865036d7bc2ac30604e8573f25ae601aed1.patch
+                wget https://github.com/openwrt/packages/commit/0c10c224be81f9221dabfab449855ab6718d2a0c.patch
+                wget https://github.com/openwrt/packages/commit/db34f33cc712ef2c6c4ca2f7ace1f428e83f316c.patch
+                wget https://github.com/openwrt/packages/commit/7ccbb9a66cfadba035e2ad95a7931877e5faf504.patch
+                wget https://github.com/openwrt/packages/commit/2a317ac466005961cb27ac4d6502535c39014269.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -100,6 +113,19 @@ jobs:
                 git apply 63f5058415a145c450fb162d0475af2409cc312c.patch
                 git apply 33e116297809aca1c2848ebcf90cb46c08a3ff05.patch
                 git apply 0d58d027535ca33527297e6bc27844a1283ff656.patch
+                git apply 2c78935539f06d1b4c48a358e95ff2e0fcdbeab5.patch
+                git apply b093eea601195184ea1364c4678c35f96269f7f5.patch
+                git apply 0d18846dab8aba7a2c7a0ad3feeae42660fac36f.patch
+                git apply 5c26a8717b271a56316ff709f9e2d5cbb1bd14d9.patch
+                git apply 269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
+                git apply 51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
+                git apply a5473150f3b1dcda1c8770b674870f2183a90143.patch
+                git apply 565866a47210c9711c29173052063779b6d3bcfc.patch
+                git apply e7d9c865036d7bc2ac30604e8573f25ae601aed1.patch
+                git apply 0c10c224be81f9221dabfab449855ab6718d2a0c.patch
+                git apply db34f33cc712ef2c6c4ca2f7ace1f428e83f316c.patch
+                git apply 7ccbb9a66cfadba035e2ad95a7931877e5faf504.patch
+                git apply 2a317ac466005961cb27ac4d6502535c39014269.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
                 sed -i "84s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -147,6 +173,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
