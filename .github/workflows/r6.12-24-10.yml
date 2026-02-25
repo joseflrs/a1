@@ -88,11 +88,6 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
                 wget https://github.com/openwrt/packages/commit/51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
                 wget https://github.com/openwrt/packages/commit/a5473150f3b1dcda1c8770b674870f2183a90143.patch
-                wget https://github.com/openwrt/packages/commit/565866a47210c9711c29173052063779b6d3bcfc.patch
-                wget https://github.com/openwrt/packages/commit/e7d9c865036d7bc2ac30604e8573f25ae601aed1.patch
-                wget https://github.com/openwrt/packages/commit/0c10c224be81f9221dabfab449855ab6718d2a0c.patch
-                wget https://github.com/openwrt/packages/commit/db34f33cc712ef2c6c4ca2f7ace1f428e83f316c.patch
-                wget https://github.com/openwrt/packages/commit/7ccbb9a66cfadba035e2ad95a7931877e5faf504.patch
                 wget https://github.com/openwrt/packages/commit/2a317ac466005961cb27ac4d6502535c39014269.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
@@ -120,11 +115,6 @@ jobs:
                 git apply 269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
                 git apply 51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
                 git apply a5473150f3b1dcda1c8770b674870f2183a90143.patch
-                git apply 565866a47210c9711c29173052063779b6d3bcfc.patch
-                git apply e7d9c865036d7bc2ac30604e8573f25ae601aed1.patch
-                git apply 0c10c224be81f9221dabfab449855ab6718d2a0c.patch
-                git apply db34f33cc712ef2c6c4ca2f7ace1f428e83f316c.patch
-                git apply 7ccbb9a66cfadba035e2ad95a7931877e5faf504.patch
                 git apply 2a317ac466005961cb27ac4d6502535c39014269.patch
                 cd -
                 sed -i "71s/'0'/'1'/" feeds/luci/applications/luci-app-statistics/root/etc/config/luci_statistics
@@ -173,6 +163,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
