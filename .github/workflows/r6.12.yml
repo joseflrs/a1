@@ -9,7 +9,7 @@ jobs:
             - name: Setup Ubuntu
               run: |
                 sudo apt update
-                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+                sudo apt install -y gcc-14 g++-14 subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
             - name: Setup Go
               uses: actions/setup-go@main
               with:
@@ -127,5 +127,6 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
