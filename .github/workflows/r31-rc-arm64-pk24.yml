@@ -1,0 +1,141 @@
+name: bpi-r3 v1.2-rc images pk24 on arm64
+on:
+   workflow_dispatch:
+   schedule:
+    - cron: '01 08 * * *'
+jobs:
+    build:
+        name: Build BPI-R3 v1.2-rc-pk24 Images
+        runs-on: ubuntu-24.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext 2to3 python3-pyelftools python3-distutils-extra
+            - name: Setut Go
+              uses: actions/setup-go@v6
+              with:
+                 go-version: '1.25.4'
+                 cache: false
+            - name: checkout
+              uses: actions/checkout@main
+            - name: Build
+              run: |
+                git clone https://github.com/openwrt/openwrt.git
+                cp -rf r3/* openwrt/
+                cd openwrt
+                git apply kernel.patch
+                git apply mac80211.patch
+                git apply pm.patch
+                git apply 0001-bpi-r31.patch
+                git apply 01-ip-addr.patch
+                git apply kmod-apk.patch
+                sed -i "1s/packages.git/packages.git;openwrt-24.10/" feeds.conf.default
+                sed -i "2s/luci.git/luci.git;openwrt-24.10/" feeds.conf.default
+                wget https://github.com/mj22226/openwrt/commit/4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
+                git apply 4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-21.1.6.Linux-aarch64.tar.zst
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                cd feeds/luci
+                wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
+                wget https://github.com/openwrt/luci/commit/721369b8bf04f87974e9757c465f827df936ef69.patch
+                wget https://github.com/openwrt/luci/commit/9c7e472edb207cb18a46fd191471dcdfc2645da0.patch
+                wget https://github.com/openwrt/luci/commit/9c4b2ee8dedd4df676ee3e85dc5bda112236806a.patch
+                wget https://github.com/openwrt/luci/commit/45de9becd1d23aa6772a804d99c3f9355a40a327.patch
+                git apply 01-diskman.patch
+                git apply 721369b8bf04f87974e9757c465f827df936ef69.patch
+                git apply 9c7e472edb207cb18a46fd191471dcdfc2645da0.patch
+                git apply 9c4b2ee8dedd4df676ee3e85dc5bda112236806a.patch
+                git apply 45de9becd1d23aa6772a804d99c3f9355a40a327.patch
+                cd -
+                cd  feeds/packages
+                wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
+                wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
+                wget https://github.com/mj22226/packages/commit/41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
+                wget https://github.com/openwrt/packages/commit/8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
+                wget https://github.com/openwrt/packages/commit/209070b5cea8200b21f165b88a46b88f05ec803c.patch
+                wget https://github.com/openwrt/packages/commit/5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
+                wget https://github.com/openwrt/packages/commit/7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
+                wget https://github.com/openwrt/packages/commit/7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
+                wget https://github.com/openwrt/packages/commit/0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
+                wget https://github.com/openwrt/packages/commit/d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
+                wget https://github.com/openwrt/packages/commit/2c811dd762493c12ec899e1e89b47cc97f877c45.patch
+                wget https://github.com/openwrt/packages/commit/ffec24dfcc614582ad71a3487f1a5aa8bfdc5454.patch
+                wget https://github.com/openwrt/packages/commit/4e62e45aba016793c5fd4b9f1bcf3ee1616d4683.patch
+                wget https://github.com/openwrt/packages/commit/983d7181cc42549efc3910ab3f5c7fde69886c54.patch
+                wget https://github.com/openwrt/packages/commit/7699915b87bd7f5bdc831dd439ea4b807fa6ecd1.patch
+                wget https://github.com/openwrt/packages/commit/7b39f0c1b8781df9d75d6d10d8dfee74bb74e0d9.patch
+                wget https://github.com/openwrt/packages/commit/63f5058415a145c450fb162d0475af2409cc312c.patch
+                wget https://github.com/openwrt/packages/commit/33e116297809aca1c2848ebcf90cb46c08a3ff05.patch
+                wget https://github.com/openwrt/packages/commit/0d58d027535ca33527297e6bc27844a1283ff656.patch
+                wget https://github.com/openwrt/packages/commit/2c78935539f06d1b4c48a358e95ff2e0fcdbeab5.patch
+                wget https://github.com/openwrt/packages/commit/b093eea601195184ea1364c4678c35f96269f7f5.patch
+                wget https://github.com/openwrt/packages/commit/0d18846dab8aba7a2c7a0ad3feeae42660fac36f.patch
+                wget https://github.com/openwrt/packages/commit/5c26a8717b271a56316ff709f9e2d5cbb1bd14d9.patch
+                wget https://github.com/openwrt/packages/commit/269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
+                wget https://github.com/openwrt/packages/commit/51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
+                wget https://github.com/openwrt/packages/commit/a5473150f3b1dcda1c8770b674870f2183a90143.patch
+                wget https://github.com/openwrt/packages/commit/2a317ac466005961cb27ac4d6502535c39014269.patch
+                git apply 01-cpu.patch
+                git apply 20-lxc.patch
+                git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
+                git apply 8a87d20fd7f16f80f10a15c1f24230e9257e97c5.patch
+                git apply 209070b5cea8200b21f165b88a46b88f05ec803c.patch
+                git apply 5aff25eba62bf6df88c3cbacdddd20adc886ae3e.patch
+                git apply 7a64ae9da2edf2a504d751a0f07b7995492d7902.patch
+                git apply 7f0772c1a41a20698e23dbd53eff8643fde2d64f.patch
+                git apply 0c571ef5058b338cd6c77273cff3a225d1281e2a.patch
+                git apply d29215e6b8a2b0a1f6e9c8b3236377128f1d13cd.patch
+                git apply 2c811dd762493c12ec899e1e89b47cc97f877c45.patch
+                git apply ffec24dfcc614582ad71a3487f1a5aa8bfdc5454.patch
+                git apply 4e62e45aba016793c5fd4b9f1bcf3ee1616d4683.patch
+                git apply 983d7181cc42549efc3910ab3f5c7fde69886c54.patch
+                git apply 7699915b87bd7f5bdc831dd439ea4b807fa6ecd1.patch
+                git apply 7b39f0c1b8781df9d75d6d10d8dfee74bb74e0d9.patch
+                git apply 63f5058415a145c450fb162d0475af2409cc312c.patch
+                git apply 33e116297809aca1c2848ebcf90cb46c08a3ff05.patch
+                git apply 0d58d027535ca33527297e6bc27844a1283ff656.patch
+                git apply 2c78935539f06d1b4c48a358e95ff2e0fcdbeab5.patch
+                git apply b093eea601195184ea1364c4678c35f96269f7f5.patch
+                git apply 0d18846dab8aba7a2c7a0ad3feeae42660fac36f.patch
+                git apply 5c26a8717b271a56316ff709f9e2d5cbb1bd14d9.patch
+                git apply 269af99ab1f5272134a6a7e2e911d01726fa1d75.patch
+                git apply 51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
+                git apply a5473150f3b1dcda1c8770b674870f2183a90143.patch
+                git apply 2a317ac466005961cb27ac4d6502535c39014269.patch
+                cd -
+                sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
+                sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a -f
+                mkdir -p files/www/repo
+                mv r31 .config
+                echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
+                make defconfig
+                make download -j32
+                make -j$(nproc) V=s 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/mediatek/filogic/packages.tar.gz bin/targets/mediatek/filogic/packages || true
+                tar -czvf bin/targets/mediatek/filogic/feeds-packages.tar.gz bin/packages || true
+                tar -czvf bin/targets/mediatek/filogic/logs.tar.gz logs
+                rm -rf bin/targets/mediatek/filogic/packages || true
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: v1.2-rc-arm64-pk24
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@main
+              with:
+                allowUpdates: true
+                name: BPI-R3 v1.2-rc-pk24 Images ARM64 ${{ env.D }}
+                tag: v1.2-rc-arm64-pk24
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/mediatek/filogic/*
