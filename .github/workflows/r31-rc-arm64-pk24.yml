@@ -81,6 +81,7 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/d82e2db28b076b1a9d4c21293879e3377a00dff2.patch
                 wget https://github.com/openwrt/packages/commit/ad82c17f713d89db6eabe8cbb331a210d0102904.patch
                 wget https://github.com/openwrt/packages/commit/3dcc4f1d3fcb624892bde9dd3600aa6d324397c7.patch
+                wget https://github.com/openwrt/packages/commit/317798178fea162732e58024b8d8593d4662cc0f.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -111,6 +112,7 @@ jobs:
                 git apply d82e2db28b076b1a9d4c21293879e3377a00dff2.patch
                 git apply ad82c17f713d89db6eabe8cbb331a210d0102904.patch
                 git apply 3dcc4f1d3fcb624892bde9dd3600aa6d324397c7.patch
+                git apply 317798178fea162732e58024b8d8593d4662cc0f.patch
                 cd -
                 sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
