@@ -78,6 +78,9 @@ jobs:
                 wget https://github.com/openwrt/packages/commit/51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
                 wget https://github.com/openwrt/packages/commit/a5473150f3b1dcda1c8770b674870f2183a90143.patch
                 wget https://github.com/openwrt/packages/commit/2a317ac466005961cb27ac4d6502535c39014269.patch
+                wget https://github.com/openwrt/packages/commit/d82e2db28b076b1a9d4c21293879e3377a00dff2.patch
+                wget https://github.com/openwrt/packages/commit/ad82c17f713d89db6eabe8cbb331a210d0102904.patch
+                wget https://github.com/openwrt/packages/commit/3dcc4f1d3fcb624892bde9dd3600aa6d324397c7.patch
                 git apply 01-cpu.patch
                 git apply 20-lxc.patch
                 git apply 41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
@@ -105,6 +108,9 @@ jobs:
                 git apply 51b65ec78487e6da9c1ad0f3c4c802eba929f91b.patch
                 git apply a5473150f3b1dcda1c8770b674870f2183a90143.patch
                 git apply 2a317ac466005961cb27ac4d6502535c39014269.patch
+                git apply d82e2db28b076b1a9d4c21293879e3377a00dff2.patch
+                git apply ad82c17f713d89db6eabe8cbb331a210d0102904.patch
+                git apply 3dcc4f1d3fcb624892bde9dd3600aa6d324397c7.patch
                 cd -
                 sed -i "13s/'1'/'0'/" feeds/packages/utils/dockerd/files/etc/config/dockerd
                 sed -i "4s/login/login -f root/" feeds/packages/utils/ttyd/files/ttyd.config
@@ -116,7 +122,7 @@ jobs:
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 make defconfig
                 make download -j32
-                make -j$(nproc) V=s 'IGNORE_ERRORS=n m' || true
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
                 tar -czvf bin/targets/mediatek/filogic/packages.tar.gz bin/targets/mediatek/filogic/packages || true
                 tar -czvf bin/targets/mediatek/filogic/feeds-packages.tar.gz bin/packages || true
                 tar -czvf bin/targets/mediatek/filogic/logs.tar.gz logs
