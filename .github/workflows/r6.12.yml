@@ -57,6 +57,8 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/luci/pull/8408.patch
+                git apply 8408.patch
                 wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 wget https://github.com/mj22226/luci/commit/d881aeee82e944b41253b37285af3d8b66586aed.patch
                 wget https://github.com/mj22226/luci/commit/8f4a290b4e8ecd64888ad1feea9c2b3c6383cc60.patch
@@ -70,6 +72,8 @@ jobs:
                 git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 cd -
                 cd  feeds/packages
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/packages/pull/28735.patch
+                git apply 28735.patch
                 rm -rf net/openvpn
                 wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
                 git apply 6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
@@ -127,6 +131,7 @@ jobs:
                 makeLatest: true
                 token: "${{ secrets.GITHUB_TOKEN }}"
                 artifacts: openwrt/bin/targets/rockchip/armv8/*
+
 
 
 
