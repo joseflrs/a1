@@ -38,6 +38,7 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
+                rm -f package/kernel/mt76/patches/0001-wifi-mt76-mt7915-set-mt76-specific-PS-flag.patch
                 wget https://github.com/4IceG/luci-app-mini-diskmanager/archive/refs/heads/main.zip
                 unzip main.zip
                 mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
@@ -57,6 +58,8 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/luci/pull/8444.patch
+                git apply 8444.patch
                 wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 wget https://github.com/mj22226/luci/commit/d881aeee82e944b41253b37285af3d8b66586aed.patch
                 wget https://github.com/mj22226/luci/commit/8f4a290b4e8ecd64888ad1feea9c2b3c6383cc60.patch
@@ -70,6 +73,8 @@ jobs:
                 git apply 239fd8e34a7e3d85d104be72b385ce46ccb9dfb4.patch
                 cd -
                 cd  feeds/packages
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/packages/pull/28893.patch
+                git apply 28893.patch
                 rm -rf net/openvpn
                 wget https://github.com/mj22226/packages/commit/edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
                 git apply edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
