@@ -37,8 +37,8 @@ jobs:
                 cd -
                 cd feeds/packages
                 rm -rf net/openvpn
-                wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
-                git apply 6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
+                wget https://github.com/mj22226/packages/commit/edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
+                git apply edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
                 cd -
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f

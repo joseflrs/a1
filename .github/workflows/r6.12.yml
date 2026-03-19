@@ -71,8 +71,8 @@ jobs:
                 cd -
                 cd  feeds/packages
                 rm -rf net/openvpn
-                wget https://github.com/mj22226/packages/commit/6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
-                git apply 6a1a860f7b7d61ce0292a9aef9b4cea54d65ceb6.patch
+                wget https://github.com/mj22226/packages/commit/edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
+                git apply edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
                 wget https://gist.githubusercontent.com/mj22226/351f11e66f08f06e37a985719a31ddb4/raw/89452f476c58d91de06e84560e5762b8e5df456e/01-cpu.patch
                 wget https://gist.githubusercontent.com/mj22226/b66f5c1bd5fc7e1cb3cf2c690b5dbd5a/raw/b955e726cbb0948d932c8d6143229ad604320149/20-lxc.patch
                 wget https://github.com/mj22226/packages/commit/41f8afe544dc8d3405888626e0a79efe67d5aa17.patch
