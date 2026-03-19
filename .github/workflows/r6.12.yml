@@ -38,7 +38,6 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
-                rm -f package/kernel/mt76/patches/0001-wifi-mt76-mt7915-set-mt76-specific-PS-flag.patch
                 wget https://github.com/4IceG/luci-app-mini-diskmanager/archive/refs/heads/main.zip
                 unzip main.zip
                 mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
