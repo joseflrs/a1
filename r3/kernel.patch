@@ -1,118 +1,286 @@
-diff --git a/target/linux/generic/config-6.12 b/target/linux/generic/config-6.12
-index 53bebdd3fe838d..37fdcc87f80b79 100644
---- a/target/linux/generic/config-6.12
-+++ b/target/linux/generic/config-6.12
-@@ -3570,6 +3570,7 @@ CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
- # CONFIG_MFD_SL28CPLD is not set
- # CONFIG_MFD_SM501 is not set
- # CONFIG_MFD_SMPRO is not set
-+# CONFIG_MFD_SPACEMIT_P1 is not set
- # CONFIG_MFD_STMFX is not set
- # CONFIG_MFD_STMPE is not set
- # CONFIG_MFD_STPMIC1 is not set
-@@ -3581,6 +3582,7 @@ CONFIG_MESSAGE_LOGLEVEL_DEFAULT=4
- # CONFIG_MFD_TI_LMU is not set
- # CONFIG_MFD_TI_LP873X is not set
- # CONFIG_MFD_TI_LP87565 is not set
-+# CONFIG_MFD_TN48M_CPLD is not set
- # CONFIG_MFD_TPS65086 is not set
- # CONFIG_MFD_TPS65090 is not set
- # CONFIG_MFD_TPS65217 is not set
-@@ -4912,8 +4914,8 @@ CONFIG_PROC_SYSCTL=y
- # CONFIG_PSAMPLE is not set
- # CONFIG_PSB6970_PHY is not set
- # CONFIG_PSE_CONTROLLER is not set
--# CONFIG_PSE_REGULATOR is not set
- # CONFIG_PSE_PD692X0 is not set
-+# CONFIG_PSE_REGULATOR is not set
- # CONFIG_PSE_SI3474 is not set
- # CONFIG_PSE_TPS23881 is not set
- # CONFIG_PSI is not set
-diff --git a/target/linux/generic/backport-6.12/204-v6.13-resource-Add-resource-set-range-and-size-helpers.patch b/target/linux/generic/backport-6.12/204-v6.13-resource-Add-resource-set-range-and-size-helpers.patch
-deleted file mode 100644
-index 0ea3e2ab5d..0000000000
---- a/target/linux/generic/backport-6.12/204-v6.13-resource-Add-resource-set-range-and-size-helpers.patch
-+++ /dev/null
-@@ -1,73 +0,0 @@
--From 9fb6fef0fb49124291837af1da5028f79d53f98e Mon Sep 17 00:00:00 2001
--From: =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
--Date: Fri, 14 Jun 2024 13:06:03 +0300
--Subject: [PATCH] resource: Add resource set range and size helpers
--MIME-Version: 1.0
--Content-Type: text/plain; charset=UTF-8
--Content-Transfer-Encoding: 8bit
--
--Setting the end address for a resource with a given size lacks a helper and
--is therefore coded manually unlike the getter side which has a helper for
--resource size calculation. Also, almost all callsites that calculate the
--end address for a resource also set the start address right before it like
--this:
--
--  res->start = start_addr;
--  res->end = res->start + size - 1;
--
--Add resource_set_range(res, start_addr, size) that sets the start address
--and calculates the end address to simplify this often repeated fragment.
--
--Also add resource_set_size() for the cases where setting the start address
--of the resource is not necessary but mention in its kerneldoc that
--resource_set_range() is preferred when setting both addresses.
--
--Link: https://lore.kernel.org/r/20240614100606.15830-2-ilpo.jarvinen@linux.intel.com
--Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
--Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
--Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-----
-- include/linux/ioport.h | 32 ++++++++++++++++++++++++++++++++
-- 1 file changed, 32 insertions(+)
--
----- a/include/linux/ioport.h
--+++ b/include/linux/ioport.h
--@@ -249,6 +249,38 @@ struct resource *lookup_resource(struct
-- int adjust_resource(struct resource *res, resource_size_t start,
-- 		    resource_size_t size);
-- resource_size_t resource_alignment(struct resource *res);
--+
--+/**
--+ * resource_set_size - Calculate resource end address from size and start
--+ * @res: Resource descriptor
--+ * @size: Size of the resource
--+ *
--+ * Calculate the end address for @res based on @size.
--+ *
--+ * Note: The start address of @res must be set when calling this function.
--+ * Prefer resource_set_range() if setting both the start address and @size.
--+ */
--+static inline void resource_set_size(struct resource *res, resource_size_t size)
--+{
--+	res->end = res->start + size - 1;
--+}
--+
--+/**
--+ * resource_set_range - Set resource start and end addresses
--+ * @res: Resource descriptor
--+ * @start: Start address for the resource
--+ * @size: Size of the resource
--+ *
--+ * Set @res start address and calculate the end address based on @size.
--+ */
--+static inline void resource_set_range(struct resource *res,
--+				      resource_size_t start,
--+				      resource_size_t size)
--+{
--+	res->start = start;
--+	resource_set_size(res, size);
--+}
--+
-- static inline resource_size_t resource_size(const struct resource *res)
-- {
-- 	return res->end - res->start + 1;
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 6baa933825..2a0542f4c5 100644
+index 848f89c66c..5128e70a28 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .74
--LINUX_KERNEL_HASH-6.12.74 = 3b56eeb1dc9a437f189ca56b823be3769994f59a4ea0895b08ec0d20acaca13e
-+LINUX_VERSION-6.12 = .77
-+LINUX_KERNEL_HASH-6.12.77 = 358836ebe5caef41e7ae9492e7fbcdf5be6e53ee43c99752aebda81e1b2cff67
+-LINUX_VERSION-6.12 = .77
+-LINUX_KERNEL_HASH-6.12.77 = 358836ebe5caef41e7ae9492e7fbcdf5be6e53ee43c99752aebda81e1b2cff67
++LINUX_VERSION-6.12 = .78
++LINUX_KERNEL_HASH-6.12.78 = c24da1bccd99485bb8978b5f134195f164e997cd609f26bec048dea8d12ebd8c
+diff --git a/target/linux/generic/pending-6.12/620-net-sfp-improve-Huawei-MA5671a-fixup.patch b/target/linux/generic/pending-6.12/620-net-sfp-improve-Huawei-MA5671a-fixup.patch
+deleted file mode 100644
+index dd0a4a57f5..0000000000
+--- a/target/linux/generic/pending-6.12/620-net-sfp-improve-Huawei-MA5671a-fixup.patch
++++ /dev/null
+@@ -1,149 +0,0 @@
+-From patchwork Fri Mar  6 12:29:55 2026
+-Content-Type: text/plain; charset="utf-8"
+-MIME-Version: 1.0
+-Content-Transfer-Encoding: 8bit
+-X-Patchwork-Submitter: =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas?=
+- <noltari@gmail.com>
+-X-Patchwork-Id: 14457090
+-X-Patchwork-Delegate: kuba@kernel.org
+-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com
+- [209.85.221.48])
+-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+-	(No client certificate requested)
+-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF3F4386459
+-	for <netdev@vger.kernel.org>; Fri,  6 Mar 2026 12:52:18 +0000 (UTC)
+-Authentication-Results: smtp.subspace.kernel.org;
+- arc=none smtp.client-ip=209.85.221.48
+-ARC-Seal: i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+-	t=1772801540; cv=none;
+- b=LVeywxv8ajenPZ8Kr1arieKosbrf60O9l+ouIPKPFNt5btxWDZ59pIU9BfZjv5n9ifEOyUA/UD0phxnG77+oB/k6UCd7DdGQQASZB3NHq5cvmErbgXm0XG3C8BBxVXU5pF7atPS23kBqM9ptxsv3IaeH/fDFcj6k6SH61rGEpuQ=
+-ARC-Message-Signature: i=1; a=rsa-sha256; d=subspace.kernel.org;
+-	s=arc-20240116; t=1772801540; c=relaxed/simple;
+-	bh=HAy43ssDo0xlUcBDIU7vQZtNnpxG03JPCL6Ldi51ASI=;
+-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type;
+- b=OBk8kI0I91psFRaIxb6nCnAzQlsc7jrXkOPW8lL7cYCosY08yfQDwAlWBFfdFs/VDuVJjD5VEdeQeMt2K4kWGgjLNXhTrRqgs6JNe7PxALDJKvt+kcJ833TRz3hKl2eb2Ft6WnKPf/6hp5Q3qm8+/Q703ixD4sF/0aDNw1BrDY4=
+-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org;
+- dmarc=pass (p=none dis=none) header.from=gmail.com;
+- spf=pass smtp.mailfrom=gmail.com;
+- dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+- header.b=RCEse1HL; arc=none smtp.client-ip=209.85.221.48
+-Authentication-Results: smtp.subspace.kernel.org;
+- dmarc=pass (p=none dis=none) header.from=gmail.com
+-Authentication-Results: smtp.subspace.kernel.org;
+- spf=pass smtp.mailfrom=gmail.com
+-Authentication-Results: smtp.subspace.kernel.org;
+-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com
+- header.b="RCEse1HL"
+-Received: by mail-wr1-f48.google.com with SMTP id
+- ffacd0b85a97d-439b7c2788dso4008389f8f.1
+-        for <netdev@vger.kernel.org>; Fri, 06 Mar 2026 04:52:18 -0800 (PST)
+-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+-        d=gmail.com; s=20230601; t=1772801537; x=1773406337;
+- darn=vger.kernel.org;
+-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+-         :to:from:from:to:cc:subject:date:message-id:reply-to;
+-        bh=y8B8kg8ACcCsMXy3SgsyRYngVEpIsqkcoCsLOS/nNqQ=;
+-        b=RCEse1HLoUtQApOdbPXFvYItGrEKWhMZ5FH1L4npAxteGeWOhAEAekijg3Ur83ovNu
+-         D7j0Aio5nwazNQz3y4rO88a+svlEbLx5fyxypjkMFUV4PDnOpv7HYjT9Aw1NVdIwO6l+
+-         sTgZ1jssfWdVnLQwQe6naotyBRoBV2AugdTmASE0Okxrsi3juIOafyTCxnp4K0weRpaH
+-         XodiSWNrkHzZSWM6/wl3D42yExGGPiuDybF+9otR/5TaBWNzrcLkSb73hvP6va35kQWK
+-         mnp6OV+L7iHTbxYpTfTm4axD+IZ/Q/dtFxxA6XolA28oMQbRPK0SIHepheSZx4bgl64w
+-         FM4w==
+-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+-        d=1e100.net; s=20230601; t=1772801537; x=1773406337;
+-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+-         :message-id:reply-to;
+-        bh=y8B8kg8ACcCsMXy3SgsyRYngVEpIsqkcoCsLOS/nNqQ=;
+-        b=KomubXrbvHQI4WbFxBztyfrvNNRRWm7V46yQSwx0bP8PXKIJP38kAYzK+ZKWhmcd7e
+-         LpS7422VcYyLywLRxlevD2YaXsF0CK6e00YpTtixakHxYs/4KxGaU21vfwYV8mRhfu7g
+-         HVmxKvNQ6DTdC7wAIGT6TrcZCK4VCvgCx3z9yC62hQc8C6w+9mDnnGPvXNR74ofvvXdC
+-         eVZjm56layRoEr4PTpR2F33OVSt8+HRikH7eBzIKtQ5n/lEKtmJKDHRaodAaCyFGWMWa
+-         qDVoOR8VI4NIJABfsOT6OqisXLPLf+jkKpGkCY2ioRPRKK9GzW4PgIuNcKvPQilQQkgD
+-         Xlnw==
+-X-Forwarded-Encrypted: i=1;
+- AJvYcCVcziiSg1n0cDakmiQXH3869FECP24dcIqrZzs8zKakP+vHT958hnq9Bp0alDnLeVtXgo0B8T4=@vger.kernel.org
+-X-Gm-Message-State: AOJu0Yx2OF1e3PiuR4Zqpe9qXA6kz6T2CCtro6kv8eL2j4Zh2HCjWywo
+-	/rZTavazOZRoq7zTvc4fGZ/yupjkTT9xRPZCKRkM9pc0UuK/KDSP4pan
+-X-Gm-Gg: ATEYQzx75s3OlYg8XKMgu042++2+ZPa/CZDw09DYtnwEHHBsuylQF0+eXzcFM166JtP
+-	EMuM6Nq/sGQx2WNTPNEyu1BRGci/SV005CzkExhd1KK52D/nC1c76MBxvAtioaI/+5tgNoyCg8v
+-	ZFRyiqDReKfJ6JHa3YRI213dTzMluN1sZTYNSqlWI1MwW66gaDCf0myU81ehAfiAff34wmxnm8C
+-	PUF0YrLYtgZl1I/ZcYM1npoL3PBOnrhaulSqhbn7S5NaZMkHLrNQm6ns1lof+7Ciju05dQpEcBe
+-	pumVg15Dy+PcSXQSSQt4CULH7bbuJvZ0PHJ7dS+74i/OqFSgxD4E7LCqM5ufHYdbESx0/ERaR/z
+-	CAyT3oTz6S1oMQCUTPevHjHjTbDOWhu74SqyTZETzwGnjZnfrPMa56ebQVRfYgOYW0bbx6j3O2M
+-	v3CSEBiXpdFTdaLuRcqIb56JeDryaHx87SOThqnYP6gMiu7EljKYIhr572Rpgz+UIRkrYyNjL9c
+-	BLmrcmhsXX4hU4X5KocoApkO04w
+-X-Received: by 2002:a05:600c:8b8b:b0:483:103c:b1ee with SMTP id
+- 5b1f17b1804b1-48526922599mr34173745e9.8.1772801536778;
+-        Fri, 06 Mar 2026 04:52:16 -0800 (PST)
+-Received: from skynet.lan
+- (2a02-9142-4581-3c00-0000-0000-0000-0008.red-2a02-914.customerbaf.ipv6.rima-tde.net.
+- [2a02:9142:4581:3c00::8])
+-        by smtp.gmail.com with ESMTPSA id
+- 5b1f17b1804b1-48527681a3esm76085715e9.4.2026.03.06.04.52.14
+-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+-        Fri, 06 Mar 2026 04:52:15 -0800 (PST)
+-From: =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas?= <noltari@gmail.com>
+-To: linux@armlinux.org.uk,
+-	andrew@lunn.ch,
+-	hkallweit1@gmail.com,
+-	davem@davemloft.net,
+-	edumazet@google.com,
+-	kuba@kernel.org,
+-	pabeni@redhat.com,
+-	mnhagan88@gmail.com,
+-	netdev@vger.kernel.org,
+-	linux-kernel@vger.kernel.org
+-Cc: =?utf-8?q?=C3=81lvaro_Fern=C3=A1ndez_Rojas?= <noltari@gmail.com>
+-Subject: [PATCH net v3] net: sfp: improve Huawei MA5671a fixup
+-Date: Fri,  6 Mar 2026 13:29:55 +0100
+-Message-ID: <20260306125139.213637-1-noltari@gmail.com>
+-X-Mailer: git-send-email 2.47.3
+-Precedence: bulk
+-X-Mailing-List: netdev@vger.kernel.org
+-List-Id: <netdev.vger.kernel.org>
+-List-Subscribe: <mailto:netdev+subscribe@vger.kernel.org>
+-List-Unsubscribe: <mailto:netdev+unsubscribe@vger.kernel.org>
+-MIME-Version: 1.0
+-X-Patchwork-Delegate: kuba@kernel.org
+-
+-With the current sfp_fixup_ignore_tx_fault() fixup we ignore the TX_FAULT
+-signal, but we also need to apply sfp_fixup_ignore_los() in order to be
+-able to communicate with the module even if the fiber isn't connected for
+-configuration purposes.
+-This is needed for all the MA5671a firmwares, excluding the FS modded
+-firmware.
+-
+-Fixes: 2069624dac19 ("net: sfp: Add tx-fault workaround for Huawei MA5671A SFP ONT")
+-Signed-off-by: Álvaro Fernández Rojas <noltari@gmail.com>
+----
+- v3: avoid using a vendor name in the function
+- v2: rebase on top of net/main instead of linux/master
+-
+- drivers/net/phy/sfp.c | 8 +++++++-
+- 1 file changed, 7 insertions(+), 1 deletion(-)
+-
+---- a/drivers/net/phy/sfp.c
+-+++ b/drivers/net/phy/sfp.c
+-@@ -360,6 +360,12 @@ static void sfp_fixup_ignore_tx_fault(st
+- 	sfp->state_ignore_mask |= SFP_F_TX_FAULT;
+- }
+- 
+-+static void sfp_fixup_ignore_tx_fault_and_los(struct sfp *sfp)
+-+{
+-+	sfp_fixup_ignore_tx_fault(sfp);
+-+	sfp_fixup_ignore_los(sfp);
+-+}
+-+
+- static void sfp_fixup_ignore_hw(struct sfp *sfp, unsigned int mask)
+- {
+- 	sfp->state_hw_mask &= ~mask;
+-@@ -523,7 +529,7 @@ static const struct sfp_quirk sfp_quirks
+- 	// Huawei MA5671A can operate at 2500base-X, but report 1.2GBd NRZ in
+- 	// their EEPROM
+- 	SFP_QUIRK("HUAWEI", "MA5671A", sfp_quirk_2500basex,
+--		  sfp_fixup_ignore_tx_fault),
+-+		  sfp_fixup_ignore_tx_fault_and_los),
+- 
+- 	// Lantech 8330-262D-E and 8330-265D can operate at 2500base-X, but
+- 	// incorrectly report 2500MBd NRZ in their EEPROM.
+diff --git a/target/linux/generic/pending-6.12/704-net-phy-register-phy-led_triggers-during-probe-to-av.patch b/target/linux/generic/pending-6.12/704-net-phy-register-phy-led_triggers-during-probe-to-av.patch
+deleted file mode 100644
+index 126275c7ec..0000000000
+--- a/target/linux/generic/pending-6.12/704-net-phy-register-phy-led_triggers-during-probe-to-av.patch
++++ /dev/null
+@@ -1,116 +0,0 @@
+-From 5225349f1e750dfd107a4c5dc97d91fa212dc1ed Mon Sep 17 00:00:00 2001
+-From: Andrew Lunn <andrew@lunn.ch>
+-Date: Sat, 21 Feb 2026 14:51:54 -0600
+-Subject: [PATCH] net: phy: register phy led_triggers during probe to avoid
+- AB-BA deadlock
+-
+-There is an AB-BA deadlock when both LEDS_TRIGGER_NETDEV and
+-LED_TRIGGER_PHY are enabled:
+-
+-[ 1362.049207] [<8054e4b8>] led_trigger_register+0x5c/0x1fc             <-- Trying to get lock "triggers_list_lock" via down_write(&triggers_list_lock);
+-[ 1362.054536] [<80662830>] phy_led_triggers_register+0xd0/0x234
+-[ 1362.060329] [<8065e200>] phy_attach_direct+0x33c/0x40c
+-[ 1362.065489] [<80651fc4>] phylink_fwnode_phy_connect+0x15c/0x23c
+-[ 1362.071480] [<8066ee18>] mtk_open+0x7c/0xba0
+-[ 1362.075849] [<806d714c>] __dev_open+0x280/0x2b0
+-[ 1362.080384] [<806d7668>] __dev_change_flags+0x244/0x24c
+-[ 1362.085598] [<806d7698>] dev_change_flags+0x28/0x78
+-[ 1362.090528] [<807150e4>] dev_ioctl+0x4c0/0x654                       <-- Hold lock "rtnl_mutex" by calling rtnl_lock();
+-[ 1362.094985] [<80694360>] sock_ioctl+0x2f4/0x4e0
+-[ 1362.099567] [<802e9c4c>] sys_ioctl+0x32c/0xd8c
+-[ 1362.104022] [<80014504>] syscall_common+0x34/0x58
+-
+-Here LED_TRIGGER_PHY is registering LED triggers during phy_attach
+-while holding RTNL and then taking triggers_list_lock.
+-
+-[ 1362.191101] [<806c2640>] register_netdevice_notifier+0x60/0x168      <-- Trying to get lock "rtnl_mutex" via rtnl_lock();
+-[ 1362.197073] [<805504ac>] netdev_trig_activate+0x194/0x1e4
+-[ 1362.202490] [<8054e28c>] led_trigger_set+0x1d4/0x360                 <-- Hold lock "triggers_list_lock" by down_read(&triggers_list_lock);
+-[ 1362.207511] [<8054eb38>] led_trigger_write+0xd8/0x14c
+-[ 1362.212566] [<80381d98>] sysfs_kf_bin_write+0x80/0xbc
+-[ 1362.217688] [<8037fcd8>] kernfs_fop_write_iter+0x17c/0x28c
+-[ 1362.223174] [<802cbd70>] vfs_write+0x21c/0x3c4
+-[ 1362.227712] [<802cc0c4>] ksys_write+0x78/0x12c
+-[ 1362.232164] [<80014504>] syscall_common+0x34/0x58
+-
+-Here LEDS_TRIGGER_NETDEV is being enabled on an LED. It first takes
+-triggers_list_lock and then RTNL. A classical AB-BA deadlock.
+-
+-phy_led_triggers_registers() does not require the RTNL, it does not
+-make any calls into the network stack which require protection. There
+-is also no requirement the PHY has been attached to a MAC, the
+-triggers only make use of phydev state. This allows the call to
+-phy_led_triggers_registers() to be placed elsewhere. PHY probe() and
+-release() don't hold RTNL, so solving the AB-BA deadlock.
+-
+-Reported-by: Shiji Yang <yangshiji66@outlook.com>
+-Closes: https://lore.kernel.org/all/OS7PR01MB13602B128BA1AD3FA38B6D1FFBC69A@OS7PR01MB13602.jpnprd01.prod.outlook.com/
+-Fixes: 06f502f57d0d ("leds: trigger: Introduce a NETDEV trigger")
+-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+----
+- drivers/net/phy/phy_device.c | 25 +++++++++++++++++--------
+- 1 file changed, 17 insertions(+), 8 deletions(-)
+-
+---- a/drivers/net/phy/phy_device.c
+-+++ b/drivers/net/phy/phy_device.c
+-@@ -1684,8 +1684,6 @@ int phy_attach_direct(struct net_device
+- 		goto error;
+- 
+- 	phy_resume(phydev);
+--	if (!phydev->is_on_sfp_module)
+--		phy_led_triggers_register(phydev);
+- 
+- 	/**
+- 	 * If the external phy used by current mac interface is managed by
+-@@ -2058,9 +2056,6 @@ void phy_detach(struct phy_device *phyde
+- 	}
+- 	phydev->phylink = NULL;
+- 
+--	if (!phydev->is_on_sfp_module)
+--		phy_led_triggers_unregister(phydev);
+--
+- 	if (phydev->mdio.dev.driver)
+- 		module_put(phydev->mdio.dev.driver->owner);
+- 
+-@@ -3691,17 +3686,28 @@ static int phy_probe(struct device *dev)
+- 	/* Set the state to READY by default */
+- 	phydev->state = PHY_READY;
+- 
+-+	/* Register the PHY LED triggers */
+-+	if (!phydev->is_on_sfp_module)
+-+		phy_led_triggers_register(phydev);
+-+
+- 	/* Get the LEDs from the device tree, and instantiate standard
+- 	 * LEDs for them.
+- 	 */
+- 	if (IS_ENABLED(CONFIG_PHYLIB_LEDS) && !phy_driver_is_genphy(phydev) &&
+--	    !phy_driver_is_genphy_10g(phydev))
+-+	    !phy_driver_is_genphy_10g(phydev)) {
+- 		err = of_phy_leds(phydev);
+-+		if (err)
+-+			goto out;
+-+	}
+-+
+-+	return 0;
+- 
+- out:
+-+	if (!phydev->is_on_sfp_module)
+-+		phy_led_triggers_unregister(phydev);
+-+
+- 	/* Re-assert the reset signal on error */
+--	if (err)
+--		phy_device_reset(phydev, 1);
+-+	phy_device_reset(phydev, 1);
+- 
+- 	return err;
+- }
+-@@ -3716,6 +3722,9 @@ static int phy_remove(struct device *dev
+- 	    !phy_driver_is_genphy_10g(phydev))
+- 		phy_leds_unregister(phydev);
+- 
+-+	if (!phydev->is_on_sfp_module)
+-+		phy_led_triggers_unregister(phydev);
+-+
+- 	phydev->state = PHY_DOWN;
+- 
+- 	sfp_bus_del_upstream(phydev->sfp_bus);
