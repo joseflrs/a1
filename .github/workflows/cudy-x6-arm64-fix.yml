@@ -30,12 +30,16 @@ jobs:
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a -f
                 cd feeds/luci
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/luci/pull/8450.patch
+                git apply 8450.patch
                 wget https://github.com/mj22226/luci/commit/8f4a290b4e8ecd64888ad1feea9c2b3c6383cc60.patch
                 wget https://github.com/mj22226/luci/commit/22c05f0beb664c8d4cbc0a9b6fa17a5feb00f5bb.patch
                 git apply 8f4a290b4e8ecd64888ad1feea9c2b3c6383cc60.patch
                 git apply 22c05f0beb664c8d4cbc0a9b6fa17a5feb00f5bb.patch
                 cd -
                 cd feeds/packages
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/packages/pull/28932.patch
+                git apply 28932.patch
                 rm -rf net/openvpn
                 wget https://github.com/mj22226/packages/commit/edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
                 git apply edb8a63a5a69a13848aa39d9298ebb39972daf41.patch
