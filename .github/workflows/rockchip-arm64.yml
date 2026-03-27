@@ -40,7 +40,7 @@ jobs:
                 ./scripts/feeds install -a
                 cd feeds/luci
                 wget https://patch-diff.githubusercontent.com/raw/openwrt/luci/pull/8422.patch
-                
+                git apply 8422.patch
                 wget https://gist.githubusercontent.com/mj22226/363cefecd314e45b49d8eafff8473fcf/raw/f327d1fcae5513be3abbeea1c6696c1da845a635/01-diskman.patch
                 git apply 01-diskman.patch
                 cd -
