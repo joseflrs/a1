@@ -5,8 +5,8 @@ index 848f89c66c..5128e70a28 100644
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .77
 -LINUX_KERNEL_HASH-6.12.77 = 358836ebe5caef41e7ae9492e7fbcdf5be6e53ee43c99752aebda81e1b2cff67
-+LINUX_VERSION-6.12 = .78
-+LINUX_KERNEL_HASH-6.12.78 = 4bfa751f33de2a5d7ecb4ff964743a027fc726a2225a76a18f92f0582aa0790b
++LINUX_VERSION-6.12 = .79
++LINUX_KERNEL_HASH-6.12.79 = 4bfa751f33de2a5d7ecb4ff964743a027fc726a2225a76a18f92f0582aa0790b
 diff --git a/target/linux/generic/pending-6.12/620-net-sfp-improve-Huawei-MA5671a-fixup.patch b/target/linux/generic/pending-6.12/620-net-sfp-improve-Huawei-MA5671a-fixup.patch
 deleted file mode 100644
 index dd0a4a57f5..0000000000
