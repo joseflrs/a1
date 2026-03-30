@@ -38,6 +38,11 @@ jobs:
                 git config --global user.email md@any.ccc
                 git config --global user.name 'M Z'
                 cd openwrt
+                git reset --hard eb6dd61a8d4d8a6ffcb5a64642ee2be46233259d
+                wget https://github.com/mj22226/openwrt/commit/b041c89007953b9ccc1f26c230301d21e2374ba1.patch
+                wget https://github.com/mj22226/openwrt/commit/82b498b138371be3709e7a7bda4e9b3c4931f6cf.patch
+                git apply b041c89007953b9ccc1f26c230301d21e2374ba1.patch
+                git apply 82b498b138371be3709e7a7bda4e9b3c4931f6cf.patch
                 wget https://github.com/4IceG/luci-app-mini-diskmanager/archive/refs/heads/main.zip
                 unzip main.zip
                 mv luci-app-mini-diskmanager-main/luci-app-mini-diskmanager package/luci-app-mini-diskmanager
