@@ -89,8 +89,8 @@ index 0beb264db1..7272d0e946 100644
  
 -PKG_SOURCE_URL:=https://github.com/openwrt/backports/releases/download/backports-v$(PKG_VERSION)
 -PKG_HASH:=623e5cf46ca8e81fd413f4f465e2580a0143e24929f9c22ce1ba7c34f2872989
-+PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.21-rc1/
-+PKG_HASH:=2c8c93b4c56bbdb4aa9077bcef640a30832720f3aceb76263a49c78937c22e98
++PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.21/
++PKG_HASH:=4472a6da52e1f0381eaded1d36410f7ca96ebc241d85ebb493fc4085005f6d49
  
 -PKG_SOURCE:=backports-$(PKG_VERSION).tar.zst
 +PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
