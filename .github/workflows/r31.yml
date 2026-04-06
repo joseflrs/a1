@@ -20,7 +20,7 @@ jobs:
                 remove-codeql: 'true'
                 remove-docker-images: 'true'
             - name: checkout
-              uses: actions/checkout@v4
+              uses: actions/checkout@main
             - name: Build
               run: |
                 git clone https://github.com/openwrt/openwrt.git
@@ -64,7 +64,7 @@ jobs:
               env:
                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Create release
-              uses: ncipollo/release-action@v1.14.0
+              uses: ncipollo/release-action@main
               with:
                 allowUpdates: true
                 name: BPI-R3 v1.2 Images ${{ env.D }}
