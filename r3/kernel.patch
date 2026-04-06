@@ -1,44 +1,9 @@
-diff --git a/target/linux/generic/hack-6.12/902-debloat_proc.patch b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-index e3e2defa96..3469172eaa 100644
---- a/target/linux/generic/hack-6.12/902-debloat_proc.patch
-+++ b/target/linux/generic/hack-6.12/902-debloat_proc.patch
-@@ -287,7 +287,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  		goto err;
- --- a/net/core/net-procfs.c
- +++ b/net/core/net-procfs.c
--@@ -295,10 +295,12 @@ static int __net_init dev_proc_net_init(
-+@@ -329,10 +329,12 @@ static int __net_init dev_proc_net_init(
-  	if (!proc_create_net("dev", 0444, net->proc_net, &dev_seq_ops,
-  			sizeof(struct seq_net_private)))
-  		goto out;
-@@ -299,10 +299,10 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
- -	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
- +	if (!IS_ENABLED(CONFIG_PROC_STRIPPED) &&
- +			!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
-- 			sizeof(struct seq_net_private)))
-+ 			sizeof(struct ptype_iter_state)))
-  		goto out_softnet;
-  
--@@ -308,9 +310,11 @@ static int __net_init dev_proc_net_init(
-+@@ -342,9 +344,11 @@ static int __net_init dev_proc_net_init(
-  out:
-  	return rc;
-  out_ptype:
-@@ -316,7 +316,7 @@ Signed-off-by: Felix Fietkau <nbd@nbd.name>
-  out_dev:
-  	remove_proc_entry("dev", net->proc_net);
-  	goto out;
--@@ -320,8 +324,10 @@ static void __net_exit dev_proc_net_exit
-+@@ -354,8 +358,10 @@ static void __net_exit dev_proc_net_exit
-  {
-  	wext_proc_exit(net);
-  
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index eda0774e7d..31a30591f1 100644
+index 427a005af7..3c95b1d36e 100644
 --- a/target/linux/generic/kernel-6.12
 +++ b/target/linux/generic/kernel-6.12
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .79
--LINUX_KERNEL_HASH-6.12.79 = 4bfa751f33de2a5d7ecb4ff964743a027fc726a2225a76a18f92f0582aa0790b
-+LINUX_VERSION-6.12 = .80
-+LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
+-LINUX_VERSION-6.12 = .80
+-LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
++LINUX_VERSION-6.12 = .81
++LINUX_KERNEL_HASH-6.12.81 = 412b58d42bb3dd98be9ceab190e714ff426f35810aed159f68f877b32777114d
