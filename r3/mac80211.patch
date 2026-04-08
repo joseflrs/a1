@@ -82,15 +82,15 @@ index 0beb264db1..7272d0e946 100644
  PKG_NAME:=mac80211
  
 -PKG_VERSION:=6.18.7
-+PKG_VERSION:=6.18.21
++PKG_VERSION:=6.18.22
  PKG_RELEASE:=1
  PKG_LICENSE:=GPL-2.0-only
  PKG_LICENSE_FILES:=COPYING
  
 -PKG_SOURCE_URL:=https://github.com/openwrt/backports/releases/download/backports-v$(PKG_VERSION)
 -PKG_HASH:=623e5cf46ca8e81fd413f4f465e2580a0143e24929f9c22ce1ba7c34f2872989
-+PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.21/
-+PKG_HASH:=4472a6da52e1f0381eaded1d36410f7ca96ebc241d85ebb493fc4085005f6d49
++PKG_SOURCE_URL:=https://github.com/mj22226/backports/releases/download/v6.18.22-rc1/
++PKG_HASH:=e799f7c84c468ea4cfb6f3c4a137f85b80418b6fd11726a58c4b035e01c5622d
  
 -PKG_SOURCE:=backports-$(PKG_VERSION).tar.zst
 +PKG_SOURCE:=backports-$(PKG_VERSION).tar.xz
