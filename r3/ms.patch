@@ -383,7 +383,7 @@ index 3f6d4c7e8d..d095c2e001 100644
 ++	(2402 - 2482 @ 40), (30)
 ++	(5170 - 5330 @ 160), (30)
 ++	(5490 - 5835 @ 160), (30)
-++	(5925 - 7125 @ 320), (12), AUTO-BW
+++	(5925 - 7125 @ 320), (30)
 + 
 + country AS: DFS-FCC
 + 	(2402 - 2472 @ 40), (30)
@@ -419,7 +419,7 @@ index 3f6d4c7e8d..d095c2e001 100644
 + 	# 6g band
 + 	# https://www.federalregister.gov/documents/2020/05/26/2020-11236/unlicensed-use-of-the-6ghz-band
 +-	(5925 - 7125 @ 320), (12), NO-OUTDOOR, NO-IR
-++	(5925 - 7125 @ 320), (12), AUTO-BW
+++	(5925 - 7125 @ 320), (30)
 + 	# 60g band
 + 	# reference: section IV-D https://docs.fcc.gov/public/attachments/FCC-16-89A1.pdf
 + 	# channels 1-6 EIRP=40dBm(43dBm peak)
