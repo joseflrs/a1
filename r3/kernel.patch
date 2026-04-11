@@ -6,7 +6,7 @@ index 427a005af7..4e1c4950f6 100644
 -LINUX_VERSION-6.12 = .80
 -LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
 +LINUX_VERSION-6.12 = .81
-+LINUX_KERNEL_HASH-6.12.81 = 439d9de3016c55da23764470a6bdc408f65c16deed68207502302cd1179156ea
++LINUX_KERNEL_HASH-6.12.81 = c2b09c3643946a7097c5371e1dcb123c66505ea30fafd0b0a22dc1d5f0228847
 diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
 index 522fccd8e2..72c422e0e9 100644
 --- a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
