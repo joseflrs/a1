@@ -1,0 +1,13 @@
+diff --git a/target/linux/mediatek/image/filogic.mk b/target/linux/mediatek/image/filogic.mk
+index 77c8055d60..8af0cc51b7 100644
+--- a/target/linux/mediatek/image/filogic.mk
++++ b/target/linux/mediatek/image/filogic.mk
+@@ -10,7 +10,7 @@ endef
+ 
+ define Build/fit-with-netgear-top-level-rootfs-node
+ 	$(call Build/fit-its,$(1))
+-	$(TOPDIR)/scripts/gen_netgear_rootfs_node.sh $(KERNEL_BUILD_DIR)/root.squashfs$(if $(TARGET_PER_DEVICE_ROOTFS),+pkg=$(ROOTFS_ID/$(DEVICE_NAME))) > $@.rootfs
++	$(TOPDIR)/scripts/gen_netgear_rootfs_node.sh $(KERNEL_BUILD_DIR)/root.squashfs > $@.rootfs
+ 	awk '/configurations/ { system("cat $@.rootfs") } 1' $@.its > $@.its.tmp
+ 	@mv -f $@.its.tmp $@.its
+ 	@rm -f $@.rootfs
