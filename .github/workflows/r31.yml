@@ -31,6 +31,7 @@ jobs:
                 git apply 0001-bpi-r31.patch
                 git apply kmod-apk.patch
                 git apply 01-ip-addr.patch
+                git apply 03.patch
                 ./scripts/feeds update -a
                 ./scripts/feeds install -a
                 cd feeds/luci
