@@ -30,6 +30,7 @@ jobs:
                 git apply 0001-bpi-r31.patch
                 git apply 01-ip-addr.patch
                 git apply kmod-apk.patch
+                git apply 03.patch
                 wget https://github.com/mj22226/openwrt/commit/4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
                 git apply 4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
                 wget https://github.com/mj22226/openwrt-arm64/releases/download/filogic-21.1.6/llvm-bpf-21.1.6.Linux-aarch64.tar.zst
