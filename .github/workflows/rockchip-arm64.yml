@@ -33,7 +33,7 @@ jobs:
                 git switch linux-6.6
                 git format-patch main...linux-6.6 --stdout > 001.patch
                 git checkout main
-                git apply 001.patch
+                patch -p 1 -i 001.patch
                 git apply 66332b9cebe3ef77cf4b4217877e059353bdcca3.patch
                 git apply mini-disk.patch
                 ./scripts/feeds update -a
