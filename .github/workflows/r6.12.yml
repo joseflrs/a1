@@ -49,8 +49,8 @@ jobs:
                 mv luci-app-ports-status-mod-main/luci-app-ports-status-mod package/luci-app-ports-status-mod
                 rm -rf luci-app-ports-status-mod-main
                 rm *.zip
-                git apply mac80211.patch
-                git apply kernel.patch
+                patch -p 1 -i mac80211.patch
+                patch -p 1 -i kernel.patch
                 git apply ms.patch
                 git apply 44.patch
                 git apply pm.patch
