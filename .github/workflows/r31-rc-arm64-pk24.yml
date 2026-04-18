@@ -30,6 +30,7 @@ jobs:
                 git apply 0001-bpi-r31.patch
                 git apply 01-ip-addr.patch
                 git apply kmod-apk.patch
+                git apply 03.patch
                 sed -i "1s/packages.git/packages.git;openwrt-24.10/" feeds.conf.default
                 sed -i "2s/luci.git/luci.git;openwrt-24.10/" feeds.conf.default
                 wget https://github.com/mj22226/openwrt/commit/4d4846f42fd7adccaf48b74e2b78ffb6ad65a0c3.patch
