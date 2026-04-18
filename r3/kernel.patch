@@ -1,3 +1,221 @@
+diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
+deleted file mode 100644
+index 72c422e0e9..0000000000
+--- a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
++++ /dev/null
+@@ -1,60 +0,0 @@
+-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+-From: Hauke Mehrtens <hauke@hauke-m.de>
+-Date: Mon, 15 Dec 2025 01:45:07 +0100
+-Subject: Revert "MIPS: mm: kmalloc tlb_vpn array to avoid stack overflow"
+-
+-This reverts commit 63a93d1cd6077d79735f804f5a4957bfb240280c.
+----
+- arch/mips/mm/tlb-r4k.c | 18 ++----------------
+- 1 file changed, 2 insertions(+), 16 deletions(-)
+-
+---- a/arch/mips/mm/tlb-r4k.c
+-+++ b/arch/mips/mm/tlb-r4k.c
+-@@ -12,7 +12,6 @@
+- #include <linux/init.h>
+- #include <linux/sched.h>
+- #include <linux/smp.h>
+--#include <linux/memblock.h>
+- #include <linux/mm.h>
+- #include <linux/hugetlb.h>
+- #include <linux/export.h>
+-@@ -523,26 +522,17 @@ static int r4k_vpn_cmp(const void *a, co
+-  * Initialise all TLB entries with unique values that do not clash with
+-  * what we have been handed over and what we'll be using ourselves.
+-  */
+--static void __ref r4k_tlb_uniquify(void)
+-+static void r4k_tlb_uniquify(void)
+- {
+-+	unsigned long tlb_vpns[1 << MIPS_CONF1_TLBS_SIZE];
+- 	int tlbsize = current_cpu_data.tlbsize;
+--	bool use_slab = slab_is_available();
+- 	int start = num_wired_entries();
+--	phys_addr_t tlb_vpn_size;
+--	unsigned long *tlb_vpns;
+- 	unsigned long vpn_mask;
+- 	int cnt, ent, idx, i;
+- 
+- 	vpn_mask = GENMASK(cpu_vmbits - 1, 13);
+- 	vpn_mask |= IS_ENABLED(CONFIG_64BIT) ? 3ULL << 62 : 1 << 31;
+- 
+--	tlb_vpn_size = tlbsize * sizeof(*tlb_vpns);
+--	tlb_vpns = (use_slab ?
+--		    kmalloc(tlb_vpn_size, GFP_ATOMIC) :
+--		    memblock_alloc_raw(tlb_vpn_size, sizeof(*tlb_vpns)));
+--	if (WARN_ON(!tlb_vpns))
+--		return; /* Pray local_flush_tlb_all() is good enough. */
+--
+- 	htw_stop();
+- 
+- 	for (i = start, cnt = 0; i < tlbsize; i++, cnt++) {
+-@@ -595,10 +585,6 @@ static void __ref r4k_tlb_uniquify(void)
+- 	tlbw_use_hazard();
+- 	htw_start();
+- 	flush_micro_tlb();
+--	if (use_slab)
+--		kfree(tlb_vpns);
+--	else
+--		memblock_free(tlb_vpns, tlb_vpn_size);
+- }
+- 
+- /*
+diff --git a/target/linux/generic/pending-6.12/361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch b/target/linux/generic/pending-6.12/361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch
+deleted file mode 100644
+index 826ed8efb2..0000000000
+--- a/target/linux/generic/pending-6.12/361-Revert-MIPS-mm-Prevent-a-TLB-shutdown-on-initial-uni.patch
++++ /dev/null
+@@ -1,146 +0,0 @@
+-From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+-From: Hauke Mehrtens <hauke@hauke-m.de>
+-Date: Mon, 15 Dec 2025 01:45:20 +0100
+-Subject: Revert "MIPS: mm: Prevent a TLB shutdown on initial uniquification"
+-
+-This reverts commit 135178e90aa43ad949534e1d6e376c4034942caa.
+----
+- arch/mips/mm/tlb-r4k.c | 100 +++++++++++++++--------------------------
+- 1 file changed, 37 insertions(+), 63 deletions(-)
+-
+---- a/arch/mips/mm/tlb-r4k.c
+-+++ b/arch/mips/mm/tlb-r4k.c
+-@@ -15,7 +15,6 @@
+- #include <linux/mm.h>
+- #include <linux/hugetlb.h>
+- #include <linux/export.h>
+--#include <linux/sort.h>
+- 
+- #include <asm/cpu.h>
+- #include <asm/cpu-type.h>
+-@@ -509,79 +508,55 @@ static int __init set_ntlb(char *str)
+- 
+- __setup("ntlb=", set_ntlb);
+- 
+--
+--/* Comparison function for EntryHi VPN fields.  */
+--static int r4k_vpn_cmp(const void *a, const void *b)
+--{
+--	long v = *(unsigned long *)a - *(unsigned long *)b;
+--	int s = sizeof(long) > sizeof(int) ? sizeof(long) * 8 - 1: 0;
+--	return s ? (v != 0) | v >> s : v;
+--}
+--
+--/*
+-- * Initialise all TLB entries with unique values that do not clash with
+-- * what we have been handed over and what we'll be using ourselves.
+-- */
+-+/* Initialise all TLB entries with unique values */
+- static void r4k_tlb_uniquify(void)
+- {
+--	unsigned long tlb_vpns[1 << MIPS_CONF1_TLBS_SIZE];
+--	int tlbsize = current_cpu_data.tlbsize;
+--	int start = num_wired_entries();
+--	unsigned long vpn_mask;
+--	int cnt, ent, idx, i;
+--
+--	vpn_mask = GENMASK(cpu_vmbits - 1, 13);
+--	vpn_mask |= IS_ENABLED(CONFIG_64BIT) ? 3ULL << 62 : 1 << 31;
+-+	int entry = num_wired_entries();
+- 
+- 	htw_stop();
+-+	write_c0_entrylo0(0);
+-+	write_c0_entrylo1(0);
+- 
+--	for (i = start, cnt = 0; i < tlbsize; i++, cnt++) {
+--		unsigned long vpn;
+-+	while (entry < current_cpu_data.tlbsize) {
+-+		unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+-+		unsigned long asid = 0;
+-+		int idx;
+- 
+--		write_c0_index(i);
+--		mtc0_tlbr_hazard();
+--		tlb_read();
+--		tlb_read_hazard();
+--		vpn = read_c0_entryhi();
+--		vpn &= vpn_mask & PAGE_MASK;
+--		tlb_vpns[cnt] = vpn;
+-+		/* Skip wired MMID to make ginvt_mmid work */
+-+		if (cpu_has_mmid)
+-+			asid = MMID_KERNEL_WIRED + 1;
+- 
+--		/* Prevent any large pages from overlapping regular ones.  */
+--		write_c0_pagemask(read_c0_pagemask() & PM_DEFAULT_MASK);
+-+		/* Check for match before using UNIQUE_ENTRYHI */
+-+		do {
+-+			if (cpu_has_mmid) {
+-+				write_c0_memorymapid(asid);
+-+				write_c0_entryhi(UNIQUE_ENTRYHI(entry));
+-+			} else {
+-+				write_c0_entryhi(UNIQUE_ENTRYHI(entry) | asid);
+-+			}
+-+			mtc0_tlbw_hazard();
+-+			tlb_probe();
+-+			tlb_probe_hazard();
+-+			idx = read_c0_index();
+-+			/* No match or match is on current entry */
+-+			if (idx < 0 || idx == entry)
+-+				break;
+-+			/*
+-+			 * If we hit a match, we need to try again with
+-+			 * a different ASID.
+-+			 */
+-+			asid++;
+-+		} while (asid < asid_mask);
+-+
+-+		if (idx >= 0 && idx != entry)
+-+			panic("Unable to uniquify TLB entry %d", idx);
+-+
+-+		write_c0_index(entry);
+- 		mtc0_tlbw_hazard();
+- 		tlb_write_indexed();
+--		tlbw_use_hazard();
+-+		entry++;
+- 	}
+- 
+--	sort(tlb_vpns, cnt, sizeof(tlb_vpns[0]), r4k_vpn_cmp, NULL);
+--
+--	write_c0_pagemask(PM_DEFAULT_MASK);
+--	write_c0_entrylo0(0);
+--	write_c0_entrylo1(0);
+--
+--	idx = 0;
+--	ent = tlbsize;
+--	for (i = start; i < tlbsize; i++)
+--		while (1) {
+--			unsigned long entryhi, vpn;
+--
+--			entryhi = UNIQUE_ENTRYHI(ent);
+--			vpn = entryhi & vpn_mask & PAGE_MASK;
+--
+--			if (idx >= cnt || vpn < tlb_vpns[idx]) {
+--				write_c0_entryhi(entryhi);
+--				write_c0_index(i);
+--				mtc0_tlbw_hazard();
+--				tlb_write_indexed();
+--				ent++;
+--				break;
+--			} else if (vpn == tlb_vpns[idx]) {
+--				ent++;
+--			} else {
+--				idx++;
+--			}
+--		}
+--
+- 	tlbw_use_hazard();
+- 	htw_start();
+- 	flush_micro_tlb();
+-@@ -627,7 +602,6 @@ static void r4k_tlb_configure(void)
+- 
+- 	/* From this point on the ARC firmware is dead.	 */
+- 	r4k_tlb_uniquify();
+--	local_flush_tlb_all();
+- 
+- 	/* Did I tell you that ARC SUCKS?  */
+- }
 diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
 index 427a005af7..4e1c4950f6 100644
 --- a/target/linux/generic/kernel-6.12
@@ -5,8 +223,8 @@ index 427a005af7..4e1c4950f6 100644
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .80
 -LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
-+LINUX_VERSION-6.12 = .81
-+LINUX_KERNEL_HASH-6.12.81 = c2b09c3643946a7097c5371e1dcb123c66505ea30fafd0b0a22dc1d5f0228847
++LINUX_VERSION-6.12 = .82
++LINUX_KERNEL_HASH-6.12.82 = 0e570b05cd73981bb4a5bcf0e03751d4f0e2ac776c6d4fdcc2366bed3e0f19a9
 diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
 index 522fccd8e2..72c422e0e9 100644
 --- a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
