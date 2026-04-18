@@ -1,6 +1,15 @@
+diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
+index 427a005af7..d03f5fe689 100644
+--- a/target/linux/generic/kernel-6.12
++++ b/target/linux/generic/kernel-6.12
+@@ -1,2 +1,2 @@
+-LINUX_VERSION-6.12 = .80
+-LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
++LINUX_VERSION-6.12 = .82
++LINUX_KERNEL_HASH-6.12.82 = 0e570b05cd73981bb4a5bcf0e03751d4f0e2ac776c6d4fdcc2366bed3e0f19a9
 diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
 deleted file mode 100644
-index 72c422e0e9..0000000000
+index 522fccd8e2..0000000000
 --- a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
 +++ /dev/null
 @@ -1,60 +0,0 @@
@@ -45,7 +54,7 @@ index 72c422e0e9..0000000000
 - 
 --	tlb_vpn_size = tlbsize * sizeof(*tlb_vpns);
 --	tlb_vpns = (use_slab ?
---		    kmalloc(tlb_vpn_size, GFP_ATOMIC) :
+--		    kmalloc(tlb_vpn_size, GFP_KERNEL) :
 --		    memblock_alloc_raw(tlb_vpn_size, sizeof(*tlb_vpns)));
 --	if (WARN_ON(!tlb_vpns))
 --		return; /* Pray local_flush_tlb_all() is good enough. */
@@ -216,28 +225,6 @@ index 826ed8efb2..0000000000
 - 
 - 	/* Did I tell you that ARC SUCKS?  */
 - }
-diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index 427a005af7..4e1c4950f6 100644
---- a/target/linux/generic/kernel-6.12
-+++ b/target/linux/generic/kernel-6.12
-@@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .80
--LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
-+LINUX_VERSION-6.12 = .82
-+LINUX_KERNEL_HASH-6.12.82 = 0e570b05cd73981bb4a5bcf0e03751d4f0e2ac776c6d4fdcc2366bed3e0f19a9
-diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
-index 522fccd8e2..72c422e0e9 100644
---- a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
-+++ b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
-@@ -39,7 +39,7 @@ This reverts commit 63a93d1cd6077d79735f804f5a4957bfb240280c.
-  
- -	tlb_vpn_size = tlbsize * sizeof(*tlb_vpns);
- -	tlb_vpns = (use_slab ?
---		    kmalloc(tlb_vpn_size, GFP_KERNEL) :
-+-		    kmalloc(tlb_vpn_size, GFP_ATOMIC) :
- -		    memblock_alloc_raw(tlb_vpn_size, sizeof(*tlb_vpns)));
- -	if (WARN_ON(!tlb_vpns))
- -		return; /* Pray local_flush_tlb_all() is good enough. */
 diff --git a/target/linux/ramips/patches-6.12/100-mips-ralink-update-CPU-clock-index.patch b/target/linux/ramips/patches-6.12/100-mips-ralink-update-CPU-clock-index.patch
 deleted file mode 100644
 index c19771ee87..0000000000
