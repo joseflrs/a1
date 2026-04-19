@@ -27,7 +27,7 @@ jobs:
                 cp -rf r3/* openwrt/
                 cd openwrt
                 wget https://downloads.openwrt.org/snapshots/targets/mediatek/filogic/llvm-bpf-21.1.6.Linux-x86_64.tar.zst
-                tar -xvf llvm-bpf-21.1.6.Linux-x86_64.tar.zst
+                tar -xvf llvm-bpf-22.1.3.Linux-x86_64.tar.zst
                 git apply 0001-bpi-r31.patch
                 git apply kmod-apk.patch
                 git apply 01-ip-addr.patch
