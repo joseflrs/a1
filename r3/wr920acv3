@@ -194,6 +194,8 @@ CONFIG_TARGET_OPTIONS=y
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_teltonika_rut976 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_cudy_lt400e-v1 is not set
 # CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_tplink_tl-mr6400-v7 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_cudy_lt300-v3 is not set
+# CONFIG_TARGET_DEVICE_ramips_mt76x8_DEVICE_keenetic_kn-1510 is not set
 CONFIG_HOST_EXTRA_CFLAGS=""
 CONFIG_HOST_EXTRA_CPPFLAGS=""
 CONFIG_HOST_EXTRA_CXXFLAGS=""
