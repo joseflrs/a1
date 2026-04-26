@@ -64,7 +64,8 @@ jobs:
                 ./scripts/feeds install -a -f
                 mkdir -p files/www/repo
                 mv r31 .config
-                echo "# CONFIG_ARM64_CONTPTE is not set" >> target/linux/generic/config-6.12
+                echo "# CONFIG_PERSISTENT_HUGE_ZERO_FOLIO is not set" >> target/linux/generic/config-6.18
+                echo "# CONFIG_NO_PAGE_MAPCOUNT is not set" >> target/linux/generic/config-6.18
                 echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.25.4/arm64/bin"' >> .config
                 make defconfig
                 make download -j32
