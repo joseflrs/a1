@@ -5,8 +5,8 @@ index 427a005af7..d03f5fe689 100644
 @@ -1,2 +1,2 @@
 -LINUX_VERSION-6.12 = .80
 -LINUX_KERNEL_HASH-6.12.80 = c92591d896e79ecddbc3319136f0c2f855e832b397de7593f013ad7590a43e53
-+LINUX_VERSION-6.12 = .83
-+LINUX_KERNEL_HASH-6.12.83 = 39e3172cd1dfa526d353b603e6388db2ab122bbf6a08e05930559a832adcdf31
++LINUX_VERSION-6.12 = .84
++LINUX_KERNEL_HASH-6.12.84 = 55449dcf87cea0894111e8b2100ae10d7a548df31655c152b5e80560392649a7
 diff --git a/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch b/target/linux/generic/pending-6.12/360-Revert-MIPS-mm-kmalloc-tlb_vpn-array-to-avoid-stack-.patch
 deleted file mode 100644
 index 522fccd8e2..0000000000
