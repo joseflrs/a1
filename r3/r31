@@ -827,3 +827,7 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_nwa50ax-pro is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zyxel_wx5600-t0-ubootmod is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_glinet_gl-mt3600be is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_elecom_wrc-x6000gsd is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_elecom_wrc-x6000qs is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_qihoo_360t7-ubi is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zbtlink_zbt-z8106ax-s is not set
