@@ -1,9 +1,49 @@
-diff --git a/target/linux/generic/kernel-6.12 b/target/linux/generic/kernel-6.12
-index f5313cd820..42b2621682 100644
---- a/target/linux/generic/kernel-6.12
-+++ b/target/linux/generic/kernel-6.12
+diff --git a/target/linux/generic/backport-6.18/627-v7.1-net-pse-pd-fix-sign-on-ENOENT-check-in-of_load_pse_p.patch b/target/linux/generic/backport-6.18/627-v7.1-net-pse-pd-fix-sign-on-ENOENT-check-in-of_load_pse_p.patch
+deleted file mode 100644
+index 2ef6d58661..0000000000
+--- a/target/linux/generic/backport-6.18/627-v7.1-net-pse-pd-fix-sign-on-ENOENT-check-in-of_load_pse_p.patch
++++ /dev/null
+@@ -1,33 +0,0 @@
+-From 33d35975cbead3fa6b738ee57e5e45e14fbe0886 Mon Sep 17 00:00:00 2001
+-From: Jonas Jelonek <jelonek.jonas@gmail.com>
+-Date: Fri, 15 May 2026 14:31:03 +0000
+-Subject: [PATCH] net: pse-pd: fix sign on -ENOENT check in of_load_pse_pis()
+-
+-of_count_phandle_with_args() returns the count on success and a negative
+-errno on failure, including -ENOENT when the "pairsets" property is
+-absent. The existing comparison in of_load_pse_pis() checks against
+-ENOENT (positive 2) instead of -ENOENT, so the branch is taken for any
+-error return: legitimate DTs that omit "pairsets" trigger a spurious
+-"wrong number of pairsets" error and probe fails with -EINVAL.
+-
+-Compare against -ENOENT so a missing "pairsets" property is correctly
+-treated as "this PI has no pairsets, continue".
+-
+-Fixes: 9be9567a7c59 ("net: pse-pd: Add support for PSE PIs")
+-Cc: stable@vger.kernel.org
+-Signed-off-by: Jonas Jelonek <jelonek.jonas@gmail.com>
+-Acked-by: Oleksij Rempel <o.rempel@pengutronix.de>
+-Link: https://patch.msgid.link/20260515143103.1721888-1-jelonek.jonas@gmail.com
+-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+-
+---- a/drivers/net/pse-pd/pse_core.c
+-+++ b/drivers/net/pse-pd/pse_core.c
+-@@ -210,7 +210,7 @@ static int of_load_pse_pis(struct pse_co
+- 			ret = of_load_pse_pi_pairsets(node, &pi, ret);
+- 			if (ret)
+- 				goto out;
+--		} else if (ret != ENOENT) {
+-+		} else if (ret != -ENOENT) {
+- 			dev_err(pcdev->dev,
+- 				"error: wrong number of pairsets. Should be 1 or 2, got %d (%pOF)\n",
+- 				ret, node); 
+diff --git a/target/linux/generic/kernel-6.18 b/target/linux/generic/kernel-6.18
+index d2dcb5eb41..028abd8f48 100644
+--- a/target/linux/generic/kernel-6.18
++++ b/target/linux/generic/kernel-6.18
 @@ -1,2 +1,2 @@
--LINUX_VERSION-6.12 = .84
--LINUX_KERNEL_HASH-6.12.84 = d56e463a7b1f5355794ae83a102453ad930a51f9cb46b295fcf24a717bff52dd
-+LINUX_VERSION-6.12 = .85
-+LINUX_KERNEL_HASH-6.12.85 = e35ac999f40a6874493d8d60f33f1150d7a89ae5841c428da82257fbcd070aed
+-LINUX_VERSION-6.18 = .33
+-LINUX_KERNEL_HASH-6.18.33 = 6f16ff302599f6fe34742890322cf0775703105fbd8767449682fca6af0fb782
++LINUX_VERSION-6.18 = .34
++LINUX_KERNEL_HASH-6.18.34 = 24c8175b7c038062f920134ab817360bc9eca004584c46b69d50a2c6658a2f44
+
