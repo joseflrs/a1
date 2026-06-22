@@ -841,3 +841,4 @@ CONFIG_shadow-all=y
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wnt100x3 is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_wavlink_wl-wnt100x3-ubootmod is not set
 # CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_zbtlink_zbt-z8803be is not set
+# CONFIG_TARGET_DEVICE_mediatek_filogic_DEVICE_creatlentem_clt-r30b1-ubi is not set
