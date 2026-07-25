@@ -1,0 +1,69 @@
+name: Build X64 main
+on:
+   workflow_dispatch:
+jobs:
+    build:
+        name: Build rockchip main
+        runs-on: ubuntu-26.04-arm
+        steps:
+            - name: Setup Ubuntu
+              run: |
+                sudo apt update
+                sudo apt install -y subversion build-essential gettext python3-pyelftools python3-distutils-extra
+            - name: Setup Go
+              uses: actions/setup-go@main
+              with:
+                go-version: '1.26.5'
+            - name: Go Version
+              run: go version
+            - name: checkout
+              uses: actions/checkout@main
+            - name: Build
+              run: |
+                git clone https://github.com/openwrt/openwrt.git
+                cd openwrt
+                wget https://github.com/mj22226/openwrt-arm64/releases/download/x86_64-22.1.3/llvm-bpf-22.1.3.Linux-aarch64.tar.zst
+                tar -xvf llvm-bpf-22.1.3.Linux-aarch64.tar.zst
+                wget https://patch-diff.githubusercontent.com/raw/openwrt/openwrt/pull/24419.patch
+                git apply 24419.patch
+                ./scripts/feeds update -a
+                ./scripts/feeds install -a
+                wget https://mirror-03.infra.openwrt.org/snapshots/targets/x86/64/config.buildinfo -O .config
+                echo "CONFIG_PACKAGE_luci=y" >> .config
+                echo "CONFIG_PACKAGE_kmod-usb-net-rtl8152=y" >> .config
+                echo "CONFIG_BUILD_LOG=y" >> .config
+                echo "CONFIG_USE_LLVM_PREBUILT=y" >> .config
+                echo "# CONFIG_BPF_TOOLCHAIN_BUILD_LLVM is not set" >> .config
+                echo "CONFIG_BPF_TOOLCHAIN_PREBUILT=y" >> .config
+                echo "# CONFIG_COLLECT_KERNEL_DEBUG is not set" >> .config
+                echo "# CONFIG_MAKE_TOOLCHAIN is not set" >> .config
+                echo "# CONFIG_SDK is not set" >> .config
+                
+                echo 'CONFIG_GOLANG_EXTERNAL_BOOTSTRAP_ROOT="/opt/hostedtoolcache/go/1.26.5/arm64/bin"' >> .config
+                make defconfig
+                make download -j32
+                make -j$(nproc) 'IGNORE_ERRORS=n m' || true
+                tar -czvf bin/targets/x86/64/packages.tar.gz bin/targets/x86/64/packages || true
+                tar -czvf bin/targets/x86/64/logs.tar.gz logs
+                rm -rf bin/targets/x86/64/packages
+                echo "D=$(date +'%Y.%m.%d')" >> $GITHUB_ENV
+            - name: Delete tag
+              uses: ClementTsang/delete-tag-and-release@v0.4.0
+              with:
+                delete_release: true
+                tag_name: X64-main
+              env:
+                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create release
+              uses: ncipollo/release-action@main
+              with:
+                allowUpdates: true
+                name: X64 Main Firmware Images ${{ env.D }}
+                tag: X64-main
+                replacesArtifacts: true
+                makeLatest: true
+                token: "${{ secrets.GITHUB_TOKEN }}"
+                artifacts: openwrt/bin/targets/x86/64/*
+
+
+
