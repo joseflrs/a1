@@ -3,7 +3,7 @@ on:
    workflow_dispatch:
 jobs:
     build:
-        name: Build rockchip main
+        name: Build X64 main
         runs-on: ubuntu-26.04-arm
         steps:
             - name: Setup Ubuntu
